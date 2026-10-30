@@ -33,12 +33,17 @@ jobs:
           - name: debian
             os: ubuntu-latest
             kind: linux
+            target: x86_64-unknown-linux-gnu
           - name: macos-arm64
             os: macos-26
             kind: macos
+            target: aarch64-apple-darwin
+          # Intel installer: cross-compile on an ARM runner (macos-latest is
+          # macos-14+ Apple silicon). Do not use macos-13 / *-intel runners.
           - name: macos-x64
-            os: macos-26-intel
+            os: macos-latest
             kind: macos
+            target: x86_64-apple-darwin
     steps:
       - name: Checkout private source
         uses: actions/checkout@v7
@@ -52,6 +57,17 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.96.0
+          targets: ${{ matrix.target }}
+
+      - name: Add Intel macOS Rust target
+        if: matrix.target == 'x86_64-apple-darwin'
+        run: rustup target add x86_64-apple-darwin
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ github.workspace }}
+          key: ${{ matrix.target }}
 
       - name: Node
         uses: actions/setup-node@v7
@@ -65,10 +81,20 @@ jobs:
         run: ./scripts/build.sh --no-install
 
       - name: Build the .dmg
-        if: matrix.kind == 'macos'
+        if: matrix.kind == 'macos' && matrix.target != 'x86_64-apple-darwin'
         run: ./scripts/build.sh --no-install
 
+      - name: Build the Intel .dmg
+        if: matrix.target == 'x86_64-apple-darwin'
+        run: |
+          set -euo pipefail
+          # Tauri: tauri build --target x86_64-apple-darwin
+          # phund (and the other workspace bins) likewise via --target.
+          ./scripts/build.sh --no-install --target x86_64-apple-darwin
+
       - name: Collect Linux and macOS installers
+        env:
+          RUST_TARGET: ${{ matrix.target }}
         run: |
           set -euo pipefail
           mkdir -p dist
@@ -86,10 +112,31 @@ jobs:
             echo "no build output directory" >&2
             exit 1
           fi
-          find "${roots[@]}" \
-            -type f -path '*/bundle/*' \
-            \( -name '*.deb' -o -name '*.dmg' \) \
-            -exec cp {} dist/ \;
+          # Cross-compiled Intel output is under
+          # target/x86_64-apple-darwin/release/bundle/... — require that
+          # path so a host-arch (aarch64) dmg cannot be attached as x64.
+          if [ "$RUST_TARGET" = "x86_64-apple-darwin" ]; then
+            search=()
+            for root in "${roots[@]}"; do
+              dir="$root/$RUST_TARGET/release/bundle"
+              if [ -d "$dir" ]; then
+                search+=("$dir")
+              fi
+            done
+            if [ "${#search[@]}" -eq 0 ]; then
+              echo "no $RUST_TARGET/release/bundle under ${roots[*]}" >&2
+              exit 1
+            fi
+            find "${search[@]}" \
+              -type f \
+              \( -name '*.deb' -o -name '*.dmg' \) \
+              -exec cp {} dist/ \;
+          else
+            find "${roots[@]}" \
+              -type f -path '*/bundle/*' \
+              \( -name '*.deb' -o -name '*.dmg' \) \
+              -exec cp {} dist/ \;
+          fi
           find dist -type f -print
           test -n "$(find dist -type f -print -quit)"
 
