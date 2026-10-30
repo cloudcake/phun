@@ -1,0 +1,161 @@
+# Manual release only. Stephen starts this from the Actions tab.
+# It does not run on push, pull request, schedule, or tag.
+# Builds the private cloudcake/phun source with a read-only deploy key
+# (secret PHUN_DEPLOY_KEY) and publishes the installers on this public repo.
+# The source is never committed here.
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version / tag to create or update, for example v2.1.0-rc.1
+        required: true
+        type: string
+      ref:
+        description: Branch, tag or commit of cloudcake/phun to build
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu
+            os: ubuntu-latest
+            kind: linux
+          - name: windows
+            os: windows-latest
+            kind: windows
+          - name: macos-arm64
+            os: macos-26
+            kind: macos
+          - name: macos-x64
+            os: macos-26-intel
+            kind: macos
+    steps:
+      - name: Checkout private source
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.96.0
+
+      - name: Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/phun-gui/package-lock.json
+
+      - name: Build the .deb
+        if: matrix.kind == 'linux'
+        run: ./scripts/build.sh --no-install
+
+      - name: Build the .dmg
+        if: matrix.kind == 'macos'
+        run: ./scripts/build.sh --no-install
+
+      - name: Build the Windows installers
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall
+
+      - name: Collect Linux and macOS installers
+        if: matrix.kind != 'windows'
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          # Tauri writes the workspace target/ when the crate is in a
+          # workspace, and src-tauri/target otherwise. GNU find exits
+          # non-zero for a missing start path, which aborts this step
+          # under set -e even when the other directory has the bundles.
+          roots=()
+          for root in target apps/phun-gui/src-tauri/target; do
+            if [ -d "$root" ]; then
+              roots+=("$root")
+            fi
+          done
+          if [ "${#roots[@]}" -eq 0 ]; then
+            echo "no build output directory" >&2
+            exit 1
+          fi
+          find "${roots[@]}" \
+            -type f -path '*/bundle/*' \
+            \( -name '*.deb' -o -name '*.dmg' \) \
+            -exec cp {} dist/ \;
+          find dist -type f -print
+          test -n "$(find dist -type f -print -quit)"
+
+      - name: Collect Windows installers
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Get-ChildItem -Path target, apps/phun-gui/src-tauri/target -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match '[\\/]bundle[\\/](nsis|msi)[\\/]' -and ($_.Extension -eq '.exe' -or $_.Extension -eq '.msi') } |
+            ForEach-Object { Copy-Item $_.FullName -Destination dist -Force; $_.Name }
+          if (-not (Get-ChildItem dist -File)) { throw 'no Windows installer was produced' }
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.name }}
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v4
+        with:
+          pattern: installers-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$TAG" =~ ^[A-Za-z0-9._+-]+$ ]]; then
+            echo "tag must be a version token such as v2.1.0-rc.1" >&2
+            exit 1
+          fi
+          shopt -s nullglob
+          files=(release-assets/*)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "no installers were downloaded" >&2
+            exit 1
+          fi
+          printf 'attaching:\n'
+          printf '  %s\n' "${files[@]}"
+          notes="Phun ${TAG}. Unsigned installers; updater signing is off."
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${files[@]}" --clobber
+          elif gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
+            gh release create "$TAG" "${files[@]}" --title "$TAG" --notes "$notes"
+          else
+            gh release create "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes "$notes"
+          fi
