@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Version / tag to create or update, for example v2.1.0-rc.1
+        description: Version / tag to create or update
         required: true
         type: string
       ref:
