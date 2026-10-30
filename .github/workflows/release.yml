@@ -164,6 +164,7 @@ jobs:
       - name: Create or update the release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
@@ -180,10 +181,10 @@ jobs:
           printf 'attaching:\n'
           printf '  %s\n' "${files[@]}"
           notes="Phun ${TAG}. Unsigned installers; updater signing is off."
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "${files[@]}" --clobber
+          if gh release view --repo "$GITHUB_REPOSITORY" "$TAG" >/dev/null 2>&1; then
+            gh release upload --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --clobber
           elif gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
-            gh release create "$TAG" "${files[@]}" --title "$TAG" --notes "$notes"
+            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --title "$TAG" --notes "$notes"
           else
-            gh release create "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes "$notes"
+            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes "$notes"
           fi
