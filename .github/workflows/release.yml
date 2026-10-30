@@ -30,12 +30,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: ubuntu
+          - name: debian
             os: ubuntu-latest
             kind: linux
-          - name: windows
-            os: windows-latest
-            kind: windows
           - name: macos-arm64
             os: macos-26
             kind: macos
@@ -71,13 +68,7 @@ jobs:
         if: matrix.kind == 'macos'
         run: ./scripts/build.sh --no-install
 
-      - name: Build the Windows installers
-        if: matrix.kind == 'windows'
-        shell: pwsh
-        run: powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall
-
       - name: Collect Linux and macOS installers
-        if: matrix.kind != 'windows'
         run: |
           set -euo pipefail
           mkdir -p dist
@@ -101,16 +92,6 @@ jobs:
             -exec cp {} dist/ \;
           find dist -type f -print
           test -n "$(find dist -type f -print -quit)"
-
-      - name: Collect Windows installers
-        if: matrix.kind == 'windows'
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Get-ChildItem -Path target, apps/phun-gui/src-tauri/target -Recurse -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.FullName -match '[\\/]bundle[\\/](nsis|msi)[\\/]' -and ($_.Extension -eq '.exe' -or $_.Extension -eq '.msi') } |
-            ForEach-Object { Copy-Item $_.FullName -Destination dist -Force; $_.Name }
-          if (-not (Get-ChildItem dist -File)) { throw 'no Windows installer was produced' }
 
       - name: Upload installers
         uses: actions/upload-artifact@v4
