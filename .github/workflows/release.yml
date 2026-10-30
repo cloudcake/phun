@@ -3,6 +3,10 @@
 # Builds the private cloudcake/phun source with a read-only deploy key
 # (secret PHUN_DEPLOY_KEY) and publishes the installers on this public repo.
 # The source is never committed here.
+# Before each OS build, the entered tag (leading 'v' stripped, must be
+# semver) is stamped into the phun checkout so installer names and the
+# in-app version match the release. The GUI should read that build
+# version (Tauri getVersion / AboutMetadata), not a hardcoded string.
 
 name: Release
 
@@ -76,6 +80,26 @@ jobs:
           cache: npm
           cache-dependency-path: apps/phun-gui/package-lock.json
 
+      # The private checkout replaced this repo. Pull the stamp script
+      # from phun-releases into a side directory, then remove it so it
+      # cannot leak into the bundle.
+      - name: Checkout version stamp script
+        uses: actions/checkout@v7
+        with:
+          path: .phun-releases-tools
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Stamp version from the release tag
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          python3 .phun-releases-tools/.github/scripts/stamp-version.py \
+            --tag "$TAG" \
+            --root .
+          rm -rf .phun-releases-tools
+
       - name: Build the .deb
         if: matrix.kind == 'linux'
         run: ./scripts/build.sh --no-install
@@ -95,6 +119,7 @@ jobs:
       - name: Collect Linux and macOS installers
         env:
           RUST_TARGET: ${{ matrix.target }}
+          TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
           mkdir -p dist
@@ -139,6 +164,29 @@ jobs:
           fi
           find dist -type f -print
           test -n "$(find dist -type f -print -quit)"
+          VERSION="$TAG"
+          case "$VERSION" in
+            v*|V*) VERSION="${VERSION#?}" ;;
+          esac
+          if [ -z "$VERSION" ]; then
+            echo "empty version after stripping a leading v from tag $TAG" >&2
+            exit 1
+          fi
+          mismatch=0
+          while IFS= read -r f; do
+            base=$(basename "$f")
+            case "$base" in
+              *"$VERSION"*) ;;
+              *)
+                echo "artifact $base does not contain version $VERSION" >&2
+                mismatch=1
+                ;;
+            esac
+          done < <(find dist -type f -print)
+          if [ "$mismatch" -ne 0 ]; then
+            echo "installer names must include the tag version $VERSION" >&2
+            exit 1
+          fi
 
       - name: Upload installers
         uses: actions/upload-artifact@v4
