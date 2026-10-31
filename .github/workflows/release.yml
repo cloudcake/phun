@@ -132,15 +132,19 @@ jobs:
         shell: pwsh
         run: powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall
 
-      # Tauri's unsigned .app is rejected by Gatekeeper as "damaged".
-      # Ad-hoc sign both macOS jobs (no Developer ID / notarization), verify
-      # the signature and a single expected arch, then rebuild the .dmg so
-      # testers download the signed .app. Do not copy Tauri's original dmg.
-      - name: Ad-hoc sign the .app, verify, and rebuild the .dmg
+      # build.sh builds the .app with `tauri build --bundles app --no-sign`
+      # and then a styled DMG (background, icon layout, window size from
+      # tauri.bundle-macos.conf.json). A later hdiutil -srcfolder rebuild
+      # drops that Finder styling. Ad-hoc sign the .app, then re-run
+      # Tauri's dmg bundler (signingIdentity "-") so the signed app is
+      # packed into the original styled DMG. Verify the .app inside the
+      # final image, not a plain srcfolder remake.
+      - name: Ad-hoc sign the .app, remake the styled DMG, and verify
         if: matrix.kind == 'macos'
         env:
           RUST_TARGET: ${{ matrix.target }}
           TAG: ${{ inputs.tag }}
+          APPLE_SIGNING_IDENTITY: "-"
         run: |
           set -euo pipefail
           roots=()
@@ -178,17 +182,91 @@ jobs:
             exit 1
           fi
           echo "signing $app"
-
           codesign --force --deep --sign - "$app"
-          codesign --verify --deep --strict --verbose=2 "$app"
 
-          plist="$app/Contents/Info.plist"
+          gui=apps/phun-gui
+          if [ ! -d "$gui/node_modules" ]; then
+            echo "missing $gui/node_modules; npm ci should have run in build.sh" >&2
+            exit 1
+          fi
+          extra=()
+          if [ "$RUST_TARGET" = "x86_64-apple-darwin" ]; then
+            extra+=(--target x86_64-apple-darwin)
+          fi
+          extra+=(--bundles dmg)
+          if [ -f "$gui/src-tauri/tauri.bundle-macos.conf.json" ]; then
+            extra+=(--config src-tauri/tauri.bundle-macos.conf.json)
+          fi
+          extra+=(--config '{"bundle":{"createUpdaterArtifacts":false,"macOS":{"signingIdentity":"-"}}}')
+          echo "re-bundling styled dmg: npm run tauri -- bundle ${extra[*]}"
+          (
+            cd "$gui"
+            npm run tauri -- bundle "${extra[@]}"
+          )
+
+          VERSION="$TAG"
+          case "$VERSION" in
+            v*|V*) VERSION="${VERSION#?}" ;;
+          esac
+          if [ -z "$VERSION" ]; then
+            echo "empty version after stripping a leading v from tag $TAG" >&2
+            exit 1
+          fi
+          case "$RUST_TARGET" in
+            aarch64-apple-darwin) dmg_name="Phun_${VERSION}_apple-silicon.dmg" ;;
+            x86_64-apple-darwin) dmg_name="Phun_${VERSION}_intel.dmg" ;;
+          esac
+
+          dmg=""
+          for root in "${roots[@]}"; do
+            for dir in \
+              "$root/$RUST_TARGET/release/bundle/dmg" \
+              "$root/release/bundle/dmg"; do
+              if [ "$RUST_TARGET" = "x86_64-apple-darwin" ] && [[ "$dir" != *"/x86_64-apple-darwin/"* ]]; then
+                continue
+              fi
+              if [ ! -d "$dir" ]; then
+                continue
+              fi
+              found=$(find "$dir" -maxdepth 1 -type f -name 'Phun_*.dmg' -print)
+              if [ -n "$found" ]; then
+                dmg=$(printf '%s\n' "$found" | head -n 1)
+                break 2
+              fi
+            done
+          done
+          if [ -z "$dmg" ] || [ ! -f "$dmg" ]; then
+            echo "styled Tauri dmg not found under ${roots[*]} for $RUST_TARGET" >&2
+            exit 1
+          fi
+          mkdir -p dist
+          out="$(pwd)/dist/$dmg_name"
+          cp "$dmg" "$out"
+          echo "copied $dmg -> $out"
+
+          mnt=$(mktemp -d)
+          detach() {
+            hdiutil detach "$mnt" -force >/dev/null 2>&1 || true
+            rm -rf "$mnt"
+          }
+          trap detach EXIT
+          hdiutil attach -readonly -nobrowse -mountpoint "$mnt" "$out"
+          inner="$mnt/Phun.app"
+          if [ ! -d "$inner" ]; then
+            echo "Phun.app missing from $out" >&2
+            ls -la "$mnt" >&2
+            exit 1
+          fi
+          echo "verifying $inner"
+          codesign --verify --deep --strict --verbose=2 "$inner"
+
+          plist="$inner/Contents/Info.plist"
           if [ ! -f "$plist" ]; then
-            echo "missing Info.plist in $app" >&2
+            echo "missing Info.plist in $inner" >&2
             exit 1
           fi
           exe_name=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$plist")
-          exe="$app/Contents/MacOS/$exe_name"
+          exe="$inner/Contents/MacOS/$exe_name"
           if [ ! -f "$exe" ]; then
             echo "missing main executable $exe" >&2
             exit 1
@@ -211,32 +289,7 @@ jobs:
             echo "expected $expected, lipo -archs reported: $archs" >&2
             exit 1
           fi
-
-          VERSION="$TAG"
-          case "$VERSION" in
-            v*|V*) VERSION="${VERSION#?}" ;;
-          esac
-          if [ -z "$VERSION" ]; then
-            echo "empty version after stripping a leading v from tag $TAG" >&2
-            exit 1
-          fi
-          case "$RUST_TARGET" in
-            aarch64-apple-darwin) dmg_name="Phun_${VERSION}_apple-silicon.dmg" ;;
-            x86_64-apple-darwin) dmg_name="Phun_${VERSION}_intel.dmg" ;;
-          esac
-
-          staging=$(mktemp -d)
-          trap 'rm -rf "$staging"' EXIT
-          ditto "$app" "$staging/Phun.app"
-          ln -s /Applications "$staging/Applications"
-          mkdir -p dist
-          out="$(pwd)/dist/$dmg_name"
-          hdiutil create -volname Phun -srcfolder "$staging" -ov -format UDZO -o "$out"
-          if [ ! -f "$out" ]; then
-            echo "hdiutil did not write $out" >&2
-            exit 1
-          fi
-          echo "wrote $out"
+          echo "verified signed $expected Phun.app inside $out"
 
       - name: Collect Linux and macOS installers
         if: matrix.kind != 'windows'
@@ -266,8 +319,8 @@ jobs:
               -name '*.deb' \
               -exec cp {} dist/ \;
           elif [ "$KIND" = "macos" ]; then
-            # macOS: the ad-hoc-signed, renamed .dmg is already in dist/.
-            # Do not copy Tauri's original unsigned .dmg.
+            # macOS: the ad-hoc-signed, styled, renamed .dmg is already in
+            # dist/. Do not copy Tauri's default-arch-named .dmg.
             if [ -z "$(find dist -type f -name '*.dmg' -print -quit)" ]; then
               echo "signed macOS dmg missing from dist/" >&2
               exit 1
