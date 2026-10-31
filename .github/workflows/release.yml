@@ -31,6 +31,8 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
+      # One platform failing must not cancel the others; Stephen needs
+      # every job's real result (attach flakes must not hide arm64).
       fail-fast: false
       matrix:
         include:
@@ -244,13 +246,63 @@ jobs:
           cp "$dmg" "$out"
           echo "copied $dmg -> $out"
 
+          # bundle_dmg.sh / create-dmg leaves /Volumes/Phun mounted.
+          # A second attach of the same volume name then prints
+          # "hdiutil: attach canceled" and exits 1.
+          detach_lingering_phun_volumes() {
+            echo "hdiutil info (looking for leftover Phun volumes):"
+            hdiutil info || true
+            shopt -s nullglob
+            local mp
+            for mp in /Volumes/Phun*; do
+              echo "detaching leftover $mp"
+              hdiutil detach "$mp" -force || true
+            done
+            shopt -u nullglob
+            local dev
+            while IFS= read -r dev; do
+              [ -n "$dev" ] || continue
+              echo "detaching leftover device $dev"
+              hdiutil detach "$dev" -force || true
+            done < <(hdiutil info 2>/dev/null | awk '
+              BEGIN { keep=0 }
+              /^====/ { keep=0 }
+              /[Pp]hun/ { keep=1 }
+              keep && $1 ~ /^\/dev\// { print $1 }
+            ')
+          }
+
           mnt=$(mktemp -d)
           detach() {
             hdiutil detach "$mnt" -force >/dev/null 2>&1 || true
             rm -rf "$mnt"
           }
           trap detach EXIT
-          hdiutil attach -readonly -nobrowse -mountpoint "$mnt" "$out"
+          detach_lingering_phun_volumes
+          attached=0
+          attempt=1
+          while [ "$attempt" -le 3 ]; do
+            echo "hdiutil attach attempt $attempt/3"
+            if hdiutil attach -noverify -noautoopen -readonly -nobrowse -mountpoint "$mnt" "$out"; then
+              attached=1
+              break
+            fi
+            echo "attach attempt $attempt failed; sleeping before retry"
+            sleep 3
+            detach_lingering_phun_volumes
+            attempt=$((attempt + 1))
+          done
+          if [ "$attached" -ne 1 ]; then
+            echo "hdiutil attach failed after 3 attempts" >&2
+            echo "===== hdiutil imageinfo =====" >&2
+            hdiutil imageinfo "$out" >&2 || true
+            echo "===== hdiutil info =====" >&2
+            hdiutil info >&2 || true
+            echo "===== hdiutil attach -debug =====" >&2
+            hdiutil attach -debug -noverify -noautoopen -readonly -nobrowse -mountpoint "$mnt" "$out" >&2 || true
+            detach_lingering_phun_volumes
+            exit 1
+          fi
           inner="$mnt/Phun.app"
           if [ ! -d "$inner" ]; then
             echo "Phun.app missing from $out" >&2
