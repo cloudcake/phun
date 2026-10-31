@@ -1,0 +1,127 @@
+# On-demand macOS check, started from the Actions tab. Builds the private
+# cloudcake/phun source with the same read-only deploy key as release.yml,
+# then runs its scripts/macos-smoke.sh on the runner: install to
+# /Applications, launch, resolver install + a real DNS lookup, screenshot,
+# Dock Quit. Nothing is published and no source is committed here. The
+# evidence (doctor output, screenshot, window geometry, full diagnostics)
+# is uploaded as the smoke-<arch> artifact.
+#
+# Runs on this public repo so the macOS minutes are free.
+
+name: macOS smoke test
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or commit of cloudcake/phun to test
+        required: true
+        default: main
+        type: string
+      arch:
+        description: Which Macs to test on (Intel runs the x86_64 build under Rosetta on an Apple silicon runner)
+        required: true
+        default: arm64
+        type: choice
+        options:
+          - arm64
+          - intel
+          - both
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: ${{ matrix.name }}
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-arm64
+            arch: arm64
+            target: aarch64-apple-darwin
+          - name: macos-x64
+            arch: intel
+            target: x86_64-apple-darwin
+    # A job-level `if` cannot see `matrix`, so the architecture choice is
+    # applied per step; the unselected job still appears, with every step
+    # skipped.
+    env:
+      SELECTED: ${{ inputs.arch == 'both' || inputs.arch == matrix.arch }}
+    steps:
+      - name: Checkout private source
+        if: env.SELECTED == 'true'
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Rust
+        if: env.SELECTED == 'true'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.96.0
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        if: env.SELECTED == 'true'
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ github.workspace }}
+          key: ${{ matrix.target }}
+
+      - name: Node
+        if: env.SELECTED == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/phun-gui/package-lock.json
+
+      - name: Build the .app
+        if: env.SELECTED == 'true' && (matrix.arch == 'arm64')
+        run: ./scripts/build.sh --no-install
+
+      - name: Build the Intel .app
+        if: env.SELECTED == 'true' && (matrix.arch == 'intel')
+        run: ./scripts/build.sh --no-install --target x86_64-apple-darwin
+
+      - name: Smoke test
+        if: env.SELECTED == 'true'
+        env:
+          PHUN_TLD: phun
+          RUST_TARGET: ${{ matrix.target }}
+        run: |
+          set -uo pipefail
+          # Pick the .app for this target so an Intel run cannot test the
+          # host-arch build by mistake.
+          app=""
+          for root in target apps/phun-gui/src-tauri/target; do
+            for candidate in \
+              "$root/$RUST_TARGET/release/bundle/macos/Phun.app" \
+              "$root/release/bundle/macos/Phun.app"; do
+              if [ -d "$candidate" ]; then
+                app="$candidate"
+                break 2
+              fi
+            done
+          done
+          if [ -z "$app" ]; then
+            echo "Phun.app not found for $RUST_TARGET" >&2
+            exit 1
+          fi
+          echo "testing $app"
+          lipo -archs "$app/Contents/MacOS/phun-gui" || true
+          bash scripts/macos-smoke.sh "$app"
+
+      - name: Upload evidence
+        if: always() && env.SELECTED == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-${{ matrix.name }}
+          path: smoke/
+          if-no-files-found: ignore
