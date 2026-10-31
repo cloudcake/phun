@@ -35,6 +35,9 @@ jobs:
   smoke:
     name: ${{ matrix.name }}
     runs-on: macos-latest
+    # The build is 15-25 minutes; the smoke steps a few more. Anything past
+    # this is a hang, not a slow run.
+    timeout-minutes: 50
     strategy:
       fail-fast: false
       matrix:
