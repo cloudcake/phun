@@ -48,6 +48,10 @@ jobs:
             os: macos-latest
             kind: macos
             target: x86_64-apple-darwin
+          - name: windows-x64
+            os: windows-latest
+            kind: windows
+            target: x86_64-pc-windows-msvc
     steps:
       - name: Checkout private source
         uses: actions/checkout@v7
@@ -91,11 +95,18 @@ jobs:
           persist-credentials: false
 
       - name: Stamp version from the release tag
+        shell: bash
         env:
           TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          python3 .phun-releases-tools/.github/scripts/stamp-version.py \
+          # Windows runners may only expose `python`, not `python3`.
+          if command -v python3 >/dev/null 2>&1; then
+            PY=python3
+          else
+            PY=python
+          fi
+          "$PY" .phun-releases-tools/.github/scripts/stamp-version.py \
             --tag "$TAG" \
             --root .
           rm -rf .phun-releases-tools
@@ -115,6 +126,11 @@ jobs:
           # Tauri: tauri build --target x86_64-apple-darwin
           # phund (and the other workspace bins) likewise via --target.
           ./scripts/build.sh --no-install --target x86_64-apple-darwin
+
+      - name: Build the Windows installers
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall
 
       # Tauri's unsigned .app is rejected by Gatekeeper as "damaged".
       # Ad-hoc sign both macOS jobs (no Developer ID / notarization), verify
@@ -223,6 +239,7 @@ jobs:
           echo "wrote $out"
 
       - name: Collect Linux and macOS installers
+        if: matrix.kind != 'windows'
         env:
           KIND: ${{ matrix.kind }}
           TAG: ${{ inputs.tag }}
@@ -248,13 +265,16 @@ jobs:
               -type f -path '*/bundle/*' \
               -name '*.deb' \
               -exec cp {} dist/ \;
-          else
+          elif [ "$KIND" = "macos" ]; then
             # macOS: the ad-hoc-signed, renamed .dmg is already in dist/.
             # Do not copy Tauri's original unsigned .dmg.
             if [ -z "$(find dist -type f -name '*.dmg' -print -quit)" ]; then
               echo "signed macOS dmg missing from dist/" >&2
               exit 1
             fi
+          else
+            echo "unexpected kind $KIND" >&2
+            exit 1
           fi
           find dist -type f -print
           test -n "$(find dist -type f -print -quit)"
@@ -281,6 +301,77 @@ jobs:
             echo "installer names must include the tag version $VERSION" >&2
             exit 1
           fi
+
+      - name: Collect Windows installers
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $version = $env:TAG
+          if ($version -match '^[vV]') { $version = $version.Substring(1) }
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            throw "empty version after stripping a leading v from tag $($env:TAG)"
+          }
+
+          $roots = @()
+          foreach ($root in @('target', 'apps/phun-gui/src-tauri/target')) {
+            if (Test-Path $root) { $roots += $root }
+          }
+          if ($roots.Count -eq 0) { throw 'no build output directory' }
+
+          # Tauri writes bundle/nsis/Phun_<ver>_x64-setup.exe and
+          # bundle/msi/Phun_<ver>_x64_en-US.msi under target/release/bundle
+          # or apps/phun-gui/src-tauri/target/release/bundle.
+          $nsis = @()
+          $msi = @()
+          foreach ($root in $roots) {
+            $foundNsis = Get-ChildItem -Path $root -Recurse -File -ErrorAction SilentlyContinue |
+              Where-Object {
+                $_.FullName -match '[\\/]bundle[\\/]nsis[\\/]' -and
+                $_.Name -like 'Phun_*_x64-setup.exe'
+              }
+            if ($foundNsis) { $nsis += @($foundNsis) }
+            $foundMsi = Get-ChildItem -Path $root -Recurse -File -ErrorAction SilentlyContinue |
+              Where-Object {
+                $_.FullName -match '[\\/]bundle[\\/]msi[\\/]' -and
+                $_.Name -like 'Phun_*_x64_en-US.msi'
+              }
+            if ($foundMsi) { $msi += @($foundMsi) }
+          }
+          if ($nsis.Count -eq 0) { throw 'no bundle/nsis/Phun_*_x64-setup.exe' }
+          if ($msi.Count -eq 0) { throw 'no bundle/msi/Phun_*_x64_en-US.msi' }
+          if ($nsis.Count -ne 1) {
+            throw "expected 1 NSIS setup, found $($nsis.Count): $($nsis.Name -join ', ')"
+          }
+          if ($msi.Count -ne 1) {
+            throw "expected 1 MSI, found $($msi.Count): $($msi.Name -join ', ')"
+          }
+          foreach ($f in @($nsis[0], $msi[0])) {
+            if ($f.Name -notlike "*${version}*") {
+              throw "artifact $($f.Name) does not contain version $version"
+            }
+          }
+
+          $exeOut = "Phun_${version}_windows-x64-setup.exe"
+          $msiOut = "Phun_${version}_windows-x64.msi"
+          Copy-Item $nsis[0].FullName -Destination (Join-Path 'dist' $exeOut) -Force
+          Copy-Item $msi[0].FullName -Destination (Join-Path 'dist' $msiOut) -Force
+          $files = @(Get-ChildItem dist -File)
+          if ($files.Count -eq 0) { throw 'no Windows installer was produced' }
+          $mismatch = $false
+          foreach ($f in $files) {
+            Write-Host $f.Name
+            if ($f.Name -notlike "*${version}*") {
+              Write-Host "artifact $($f.Name) does not contain version $version"
+              $mismatch = $true
+            }
+          }
+          if ($mismatch) {
+            throw "installer names must include the tag version $version"
+          }
 
       - name: Upload installers
         uses: actions/upload-artifact@v4
@@ -322,7 +413,7 @@ jobs:
           fi
           printf 'attaching:\n'
           printf '  %s\n' "${files[@]}"
-          notes="Phun ${TAG}. Mac builds are ad-hoc signed, not notarized; on first launch right-click Phun > Open, or run \`xattr -cr /Applications/Phun.app\`. Apple Silicon Macs use the apple-silicon dmg, Intel Macs the intel dmg. Updater signing is off."
+          notes="Phun ${TAG}. Mac builds are ad-hoc signed, not notarized; on first launch right-click Phun > Open, or run \`xattr -cr /Applications/Phun.app\`. Apple Silicon Macs use the apple-silicon dmg, Intel Macs the intel dmg. Windows installers are unsigned, so SmartScreen may warn ('More info' > 'Run anyway'). Updater signing is off."
           if gh release view --repo "$GITHUB_REPOSITORY" "$TAG" >/dev/null 2>&1; then
             gh release upload --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --clobber
           elif gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
