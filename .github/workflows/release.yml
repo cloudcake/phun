@@ -40,8 +40,12 @@ jobs:
             os: ubuntu-latest
             kind: linux
             target: x86_64-unknown-linux-gnu
+          # Apple silicon runner. macos-latest (macOS 15) rather than macos-26:
+          # Tauri's bundle_dmg.sh lays the DMG window out through Finder via
+          # AppleScript, and that failed on the macos-26 image while the same
+          # step passed on macos-latest in the Intel job.
           - name: macos-arm64
-            os: macos-26
+            os: macos-latest
             kind: macos
             target: aarch64-apple-darwin
           # Intel installer: cross-compile on an ARM runner (macos-latest is
@@ -201,10 +205,21 @@ jobs:
           fi
           extra+=(--config '{"bundle":{"createUpdaterArtifacts":false,"macOS":{"signingIdentity":"-"}}}')
           echo "re-bundling styled dmg: npm run tauri -- bundle ${extra[*]}"
-          (
-            cd "$gui"
-            npm run tauri -- bundle "${extra[@]}"
-          )
+          # bundle_dmg.sh (hdiutil + Finder AppleScript) fails intermittently on
+          # hosted runners; a second or third attempt normally succeeds.
+          bundled=0
+          for attempt in 1 2 3; do
+            if (cd "$gui" && npm run tauri -- bundle "${extra[@]}"); then
+              bundled=1
+              break
+            fi
+            echo "dmg bundle attempt $attempt failed; retrying in 10s" >&2
+            sleep 10
+          done
+          if [ "$bundled" -ne 1 ]; then
+            echo "dmg bundling failed after 3 attempts" >&2
+            exit 1
+          fi
 
           VERSION="$TAG"
           case "$VERSION" in
