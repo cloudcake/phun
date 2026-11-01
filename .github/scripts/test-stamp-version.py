@@ -130,6 +130,33 @@ class StampVersionTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.tmp.cleanup()
 
+    def test_releases_the_changelog_unreleased_section(self) -> None:
+        changelog = self.root / "CHANGELOG.md"
+        changelog.write_text(
+            "# Changelog\n\nIntro.\n\n## Unreleased\n\n### Improved\n\n- A new thing.\n\n"
+            "## 0.0.1 - 2026-01-01\n\n### New\n\n- First.\n"
+        )
+        result = stamp(self.root, "v0.0.2")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = changelog.read_text()
+        self.assertIn("## Unreleased\n\n## 0.0.2 - ", text)
+        self.assertIn("## 0.0.2 - 20", text)
+        self.assertIn("### Improved\n\n- A new thing.", text)
+        self.assertIn("## 0.0.1 - 2026-01-01", text)
+        self.assertEqual(text.count("## Unreleased"), 1)
+        self.assertIn("CHANGELOG.md", result.stdout)
+
+    def test_changelog_untouched_when_unreleased_is_empty_or_version_exists(self) -> None:
+        changelog = self.root / "CHANGELOG.md"
+        empty = "# Changelog\n\n## Unreleased\n\n## 0.0.1 - 2026-01-01\n\n- First.\n"
+        changelog.write_text(empty)
+        self.assertEqual(stamp(self.root, "v0.0.2").returncode, 0)
+        self.assertEqual(changelog.read_text(), empty)
+        listed = "# Changelog\n\n## Unreleased\n\n- Pending.\n\n## 0.0.2 - 2026-02-02\n\n- Done.\n"
+        changelog.write_text(listed)
+        self.assertEqual(stamp(self.root, "v0.0.2").returncode, 0)
+        self.assertEqual(changelog.read_text(), listed)
+
     def test_rejects_non_semver(self) -> None:
         result = stamp(self.root, "latest")
         self.assertNotEqual(result.returncode, 0)

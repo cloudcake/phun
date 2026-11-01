@@ -5,7 +5,9 @@ Used by the Release workflow after the private source is checked out and
 before any OS job builds. Strips a leading 'v' from the tag and requires
 a semver. Writes the version into Cargo.toml / Cargo.lock workspace
 crates, tauri.conf.json, package.json, package-lock.json, and any other
-version constant the GUI or daemon is likely to display.
+version constant the GUI or daemon is likely to display. Also releases the
+CHANGELOG's `## Unreleased` section as this version, dated today, so the
+app's What's new shows the notes under the version it ships as.
 
 Does not commit. Prints every file it edits.
 """
@@ -13,6 +15,7 @@ Does not commit. Prints every file it edits.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import re
 import sys
@@ -313,6 +316,48 @@ def hardcoded_gui_files(root: Path) -> list[str]:
     return sorted(found)
 
 
+def stamp_changelog(path: Path, version: str, today: str) -> bool:
+    """Turn `## Unreleased` into `## <version> - <today>` and leave a fresh,
+    empty Unreleased heading above it.
+
+    No-op when the file has no Unreleased section with entries, or when a
+    heading for this version already exists (someone released it by hand).
+    Returns whether the file changed.
+    """
+    text = path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+    heading_re = re.compile(r"^## (?P<title>.+?)\s*$")
+    unreleased_at = None
+    for i, line in enumerate(lines):
+        m = heading_re.match(line)
+        if not m:
+            continue
+        title = m.group("title").strip()
+        if title.lower() == "unreleased" and unreleased_at is None:
+            unreleased_at = i
+        elif title.split(" - ")[0].strip() == version:
+            return False
+    if unreleased_at is None:
+        return False
+    next_heading = len(lines)
+    for j in range(unreleased_at + 1, len(lines)):
+        if heading_re.match(lines[j]):
+            next_heading = j
+            break
+    body = lines[unreleased_at + 1 : next_heading]
+    if not any(line.lstrip().startswith("- ") for line in body):
+        return False
+    released = [f"## {version} - {today}"] + body
+    new_lines = (
+        lines[:unreleased_at]
+        + ["## Unreleased", ""]
+        + released
+        + lines[next_heading:]
+    )
+    path.write_text("\n".join(new_lines), encoding="utf-8")
+    return True
+
+
 def required_exists(root: Path, rel: str) -> Path:
     path = root / rel
     if not path.is_file():
@@ -411,6 +456,15 @@ def main(argv: list[str] | None = None) -> int:
                 edited.append(rel)
         except UnicodeDecodeError:
             continue
+
+    changelog = root / "CHANGELOG.md"
+    if changelog.is_file():
+        today = _dt.date.today().isoformat()
+        if stamp_changelog(changelog, version, today):
+            edited.append("CHANGELOG.md")
+            print(f"released CHANGELOG Unreleased section as {version} - {today}")
+        else:
+            print("note: CHANGELOG.md has nothing under Unreleased (or this version is already listed)")
 
     if not edited:
         print("no version fields needed rewriting (already at this version)")
