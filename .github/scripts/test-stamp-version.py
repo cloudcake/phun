@@ -17,9 +17,9 @@ from pathlib import Path
 SCRIPT = Path(__file__).resolve().parent / "stamp-version.py"
 
 
-def stamp(root: Path, tag: str) -> subprocess.CompletedProcess[str]:
+def stamp(root: Path, tag: str, *extra: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(SCRIPT), "--tag", tag, "--root", str(root)],
+        [sys.executable, str(SCRIPT), "--tag", tag, "--root", str(root), *extra],
         text=True,
         capture_output=True,
     )
@@ -156,6 +156,23 @@ class StampVersionTests(unittest.TestCase):
         changelog.write_text(listed)
         self.assertEqual(stamp(self.root, "v0.0.2").returncode, 0)
         self.assertEqual(changelog.read_text(), listed)
+
+    def test_no_changelog_flag_stamps_versions_but_leaves_the_changelog(self) -> None:
+        changelog = self.root / "CHANGELOG.md"
+        text = "# Changelog\n\n## Unreleased\n\n- Pending.\n"
+        changelog.write_text(text)
+        result = stamp(self.root, "v0.0.2", "--no-changelog")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(changelog.read_text(), text)
+        self.assertIn('version = "0.0.2"', (self.root / "Cargo.toml").read_text())
+
+    def test_manifests_only_leaves_source_files_and_data_alone(self) -> None:
+        source = self.root / "bin/phun/src/main.rs"
+        before = source.read_text()
+        result = stamp(self.root, "v0.0.2", "--manifests-only")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(source.read_text(), before)
+        self.assertIn('version = "0.0.2"', (self.root / "Cargo.toml").read_text())
 
     def test_rejects_non_semver(self) -> None:
         result = stamp(self.root, "latest")

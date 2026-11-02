@@ -373,6 +373,21 @@ def main(argv: list[str] | None = None) -> int:
         default=".",
         help="Path to the phun checkout (default: current directory)",
     )
+    parser.add_argument(
+        "--no-changelog",
+        action="store_true",
+        help="Only stamp version fields; leave CHANGELOG.md alone (used to move "
+        "the source on to the next development version after a release).",
+    )
+    parser.add_argument(
+        "--manifests-only",
+        action="store_true",
+        help="Stamp only the manifests and lockfiles (Cargo, tauri.conf.json, "
+        "package files) and skip the pass that rewrites version-looking constants "
+        "in source files. Required when running against a real repository: that "
+        "pass is meant for a throwaway build checkout and also rewrites test "
+        "fixtures and data files such as the PHP download catalog.",
+    )
     args = parser.parse_args(argv)
 
     root = Path(args.root).resolve()
@@ -434,6 +449,8 @@ def main(argv: list[str] | None = None) -> int:
         edited.append("apps/phun-gui/package-lock.json")
 
     for path in iter_files(root):
+        if args.manifests_only:
+            break
         rel = str(path.relative_to(root))
         if rel in edited:
             continue
@@ -458,7 +475,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
 
     changelog = root / "CHANGELOG.md"
-    if changelog.is_file():
+    if changelog.is_file() and not args.no_changelog:
         today = _dt.date.today().isoformat()
         if stamp_changelog(changelog, version, today):
             edited.append("CHANGELOG.md")
