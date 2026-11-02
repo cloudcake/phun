@@ -96,7 +96,7 @@ jobs:
       - name: Smoke test
         if: env.SELECTED == 'true'
         env:
-          PHUN_TLD: phun
+          PHUN_TLD: test
           RUST_TARGET: ${{ matrix.target }}
         run: |
           set -uo pipefail
