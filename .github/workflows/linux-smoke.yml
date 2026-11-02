@@ -1,0 +1,71 @@
+# On-demand Linux check, started from the Actions tab. Builds the private
+# cloudcake/phun source with the same read-only deploy key as release.yml, then
+# runs its scripts/linux-smoke.sh on the runner: apt install of the .deb with
+# its dependencies, daemon start, `phun status`, a DNS lookup through the
+# daemon's responder, an HTTP request through its proxy, GUI launch under
+# Xvfb, then removal of the package. Nothing is published and no source is
+# committed here. Evidence is uploaded as smoke-debian; results are also
+# published as notice annotations, which are public.
+#
+# Runs on this public repo so the Linux minutes are free.
+
+name: Linux smoke test
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or commit of cloudcake/phun to test
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: debian
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout private source
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.96.0
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ github.workspace }}
+          key: x86_64-unknown-linux-gnu
+
+      - name: Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/phun-gui/package-lock.json
+
+      - name: Build the .deb
+        run: ./scripts/build.sh --no-install
+
+      - name: Smoke test
+        run: bash scripts/linux-smoke.sh
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-debian
+          path: smoke/
+          if-no-files-found: ignore

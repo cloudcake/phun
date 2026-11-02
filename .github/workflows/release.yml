@@ -7,6 +7,10 @@
 # semver) is stamped into the phun checkout so installer names and the
 # in-app version match the release. The GUI should read that build
 # version (Tauri getVersion / AboutMetadata), not a hardcoded string.
+# Every installer is then smoke-tested on a fresh runner of its own platform
+# (scripts/{linux-smoke.sh,macos-smoke.sh,windows-smoke.ps1} from the private
+# source). The four smoke jobs run in parallel and the release is published
+# only if every one of them passes.
 # After the release is published, the sync job writes the bookkeeping back
 # to cloudcake/phun main: the changelog's Unreleased section becomes this
 # version and the manifests move to the next patch. That needs the deploy
@@ -483,9 +487,93 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  # Installs the exact installer the build produced on a clean runner of the
+  # same platform and checks it works. `release` needs every one of these, so
+  # a failure on any platform blocks publishing. fail-fast is off so all four
+  # report, not just the first to fail.
+  smoke:
+    name: smoke ${{ matrix.name }}
+    needs: [resolve, build]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: debian
+            os: ubuntu-latest
+            kind: linux
+          - name: macos-arm64
+            os: macos-latest
+            kind: macos
+          - name: macos-x64
+            os: macos-latest
+            kind: macos
+          - name: windows-x64
+            os: windows-latest
+            kind: windows
+    steps:
+      # Only the smoke scripts are needed, not a build. Checkout first: it
+      # cleans the workspace, which would delete the downloaded installer.
+      - name: Checkout smoke scripts
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun
+          ref: ${{ needs.resolve.outputs.sha }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          sparse-checkout: scripts
+          persist-credentials: false
+
+      - name: Download the installer
+        uses: actions/download-artifact@v4
+        with:
+          name: installers-${{ matrix.name }}
+          path: installer
+
+      - name: Smoke test the .deb
+        if: matrix.kind == 'linux'
+        run: |
+          set -euo pipefail
+          deb=$(find installer -type f -name '*.deb' -print -quit)
+          test -n "$deb"
+          bash scripts/linux-smoke.sh "$deb"
+
+      - name: Smoke test the .dmg
+        if: matrix.kind == 'macos'
+        run: |
+          set -euo pipefail
+          dmg=$(find installer -type f -name '*.dmg' -print -quit)
+          test -n "$dmg"
+          # The DMG carries an SLA; piping yes accepts it without a TTY.
+          mnt=$(mktemp -d)
+          staged="$RUNNER_TEMP/smoke-app"
+          rm -rf "$staged" && mkdir -p "$staged"
+          { yes || true; } | hdiutil attach -nobrowse -noautoopen -readonly -mountpoint "$mnt" "$dmg"
+          ditto "$mnt/Phun.app" "$staged/Phun.app"
+          hdiutil detach "$mnt" -force >/dev/null 2>&1 || true
+          lipo -archs "$staged/Phun.app/Contents/MacOS/phun-gui" || true
+          bash scripts/macos-smoke.sh "$staged/Phun.app"
+
+      - name: Smoke test the Windows installer
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        run: |
+          $setup = Get-ChildItem installer -File -Filter '*-setup.exe' | Select-Object -First 1
+          if (-not $setup) { throw 'no setup.exe in the downloaded installers' }
+          .\scripts\windows-smoke.ps1 -Installer $setup.FullName
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-${{ matrix.name }}
+          path: smoke/
+          if-no-files-found: ignore
+
   release:
     name: GitHub Release
-    needs: build
+    # Publishing is gated on every platform's smoke test, not only the builds.
+    needs: [build, smoke]
     runs-on: ubuntu-latest
     permissions:
       contents: write
