@@ -1,0 +1,73 @@
+# On-demand Windows check, started from the Actions tab. Builds the private
+# cloudcake/phun source with the same read-only deploy key as release.yml, then
+# runs its scripts/windows-smoke.ps1 on the runner: silent NSIS install, daemon
+# start, `phun status` over the named pipe, GUI launch, plus the Application
+# event log and window titles (a stray error dialog shows up there). Nothing is
+# published and no source is committed here. Evidence is uploaded as
+# smoke-windows; the run summary and failure annotations are public.
+#
+# Runs on this public repo so the Windows minutes are free.
+
+name: Windows smoke test
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or commit of cloudcake/phun to test
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: windows-x64
+    runs-on: windows-latest
+    # The installer build is 15-25 minutes; the smoke steps a few more.
+    timeout-minutes: 60
+    steps:
+      - name: Checkout private source
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.96.0
+          targets: x86_64-pc-windows-msvc
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ github.workspace }}
+          key: x86_64-pc-windows-msvc
+
+      - name: Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/phun-gui/package-lock.json
+
+      - name: Build the Windows installers
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall
+
+      - name: Smoke test
+        shell: pwsh
+        run: .\scripts\windows-smoke.ps1
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-windows
+          path: smoke/
+          if-no-files-found: ignore
