@@ -128,6 +128,23 @@ phun doctor fix              # check the setup and repair what it safely can
 
 Run `phun --help` for the full list.
 
+## Why Phun is closed source
+
+Phun holds more trust on your machine than most apps. It installs a
+certificate authority your browsers trust, a DNS resolver for `.test`, and a
+small privileged helper for the few steps that need your password. Keeping the
+source closed keeps that trust in one place:
+
+- **One origin for privileged code.** Every installer comes from this
+  repository's releases, built by a single pipeline from a single codebase, so
+  you always know where the code holding a certificate authority on your
+  machine came from.
+- **Free, without strings.** Phun costs nothing and needs no account. A closed
+  codebase is what lets a small team keep it that way, with our time going into
+  the app and your issues rather than into running a public project.
+- **Your feedback still shapes it.** Every issue filed here is read, and the
+  roadmap follows what people run into.
+
 ## Feedback
 
 Found a bug or have an idea? [Open an issue](https://github.com/cloudcake/phun/issues).
