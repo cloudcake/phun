@@ -24,14 +24,14 @@ virtual machine, and no password for everyday work.
 ## Download
 
 <!-- latest-release:start -->
-Latest release: **[v0.1.2](https://github.com/cloudcake/phun/releases/tag/v0.1.2)**
+Latest release: **[v0.2.0](https://github.com/cloudcake/phun/releases/tag/v0.2.0)**
 
 | System | Installer |
 | --- | --- |
-| macOS, Apple Silicon | [Phun_0.1.2_apple-silicon.dmg](https://github.com/cloudcake/phun/releases/download/v0.1.2/Phun_0.1.2_apple-silicon.dmg) |
-| macOS, Intel | [Phun_0.1.2_intel.dmg](https://github.com/cloudcake/phun/releases/download/v0.1.2/Phun_0.1.2_intel.dmg) |
-| Windows 10 and 11, x64 | [Phun_0.1.2_windows-x64-setup.exe](https://github.com/cloudcake/phun/releases/download/v0.1.2/Phun_0.1.2_windows-x64-setup.exe) |
-| Linux, x86_64 (Debian, Ubuntu) | [Phun_0.1.2_amd64.deb](https://github.com/cloudcake/phun/releases/download/v0.1.2/Phun_0.1.2_amd64.deb) |
+| macOS, Apple Silicon | [Phun_0.2.0_apple-silicon.dmg](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_apple-silicon.dmg) |
+| macOS, Intel | [Phun_0.2.0_intel.dmg](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_intel.dmg) |
+| Windows 10 and 11, x64 | [Phun_0.2.0_windows-x64-setup.exe](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_windows-x64-setup.exe) |
+| Linux, x86_64 (Debian, Ubuntu) | [Phun_0.2.0_amd64.deb](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb) |
 <!-- latest-release:end -->
 
 Phun checks for updates itself and installs them from the app.
