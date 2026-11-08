@@ -11,7 +11,7 @@
   &nbsp;&middot;&nbsp;
   <a href="#the-phun-command">Command line</a>
   &nbsp;&middot;&nbsp;
-  <a href="https://github.com/cloudcake/phun/issues">Issues</a>
+  <a href="https://github.com/cloudcake/phun/discussions">Discussions</a>
 </p>
 
 Phun runs your PHP applications on your own machine. Every folder you link is
@@ -141,15 +141,14 @@ source closed keeps that trust in one place:
   machine came from.
 - **Free, without strings.** Phun costs nothing and needs no account. A closed
   codebase is what lets a small team keep it that way, with our time going into
-  the app and your issues rather than into running a public project.
-- **Your feedback still shapes it.** Every issue filed here is read, and the
-  roadmap follows what people run into.
+  the app and your feedback rather than into running a public project.
+- **Your feedback still shapes it.** Every discussion started here is read,
+  and the roadmap follows what people run into.
 
 ## Feedback
 
-Found a bug or have an idea? [Open an issue](https://github.com/cloudcake/phun/issues).
+Found a bug or have an idea?
+[Start a discussion](https://github.com/cloudcake/phun/discussions).
 For a security problem, please use
 [private vulnerability reporting](https://github.com/cloudcake/phun/security/advisories/new)
 instead.
-
-<p align="center"><sub>Phun is made by Cloudcake.</sub></p>
