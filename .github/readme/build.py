@@ -2,7 +2,8 @@
 header per platform. The card per feature group and the tile per feature are
 kept for reuse elsewhere; the README no longer shows them.
 
-Run `python3 .github/readme/build.py` from anywhere. The look follows the Phun
+The README artwork workflow runs this and commits the images whenever a
+script here changes; `python3 .github/readme/build.py` runs it locally. The look follows the Phun
 app: its dark theme, the infrastructure canvas's dotted ground, rounded cards,
 thin orthogonal lines and the brand red. The drawing kit is in art.py, the
 feature tiles in tiles.py and the platform headers in platforms.py.
