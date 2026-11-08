@@ -26,67 +26,79 @@ virtual machine, and no password for everyday work.
 <!-- latest-release:start -->
 Latest release: **[v0.2.0](https://github.com/cloudcake/phun/releases/tag/v0.2.0)**
 
-| System | Installer |
-| --- | --- |
-| macOS, Apple Silicon | [Phun_0.2.0_apple-silicon.dmg](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_apple-silicon.dmg) |
-| macOS, Intel | [Phun_0.2.0_intel.dmg](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_intel.dmg) |
-| Windows 10 and 11, x64 | [Phun_0.2.0_windows-x64-setup.exe](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_windows-x64-setup.exe) |
-| Linux, x86_64 (Debian, Ubuntu) | [Phun_0.2.0_amd64.deb](https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb) |
+<a href="https://github.com/cloudcake/phun/releases/tag/v0.2.0"><img src=".github/readme/download/macos.svg?v=0.2.0" alt="Phun 0.2.0 for macOS" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_apple-silicon.dmg"><strong>Apple Silicon</strong></a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_intel.dmg"><strong>Intel</strong></a></p>
+
+<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_windows-x64-setup.exe"><img src=".github/readme/download/windows.svg?v=0.2.0" alt="Phun 0.2.0 for Windows" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_windows-x64-setup.exe"><strong>Download the installer</strong></a></p>
+
+<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><img src=".github/readme/download/linux.svg?v=0.2.0" alt="Phun 0.2.0 for Linux" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><strong>Download the .deb</strong></a></p>
+
 <!-- latest-release:end -->
 
 Phun checks for updates itself and installs them from the app.
 
 ## Features
 
-<img src=".github/readme/applications.svg" alt="Folders linked to .test addresses over HTTPS." width="100%">
+<img src=".github/readme/applications.svg" alt="Every application on .test: folders linked to .test addresses over HTTPS." width="100%">
 
-- Link a folder, or park a whole directory, and every project in it is served
-  at `name.test`. The web root is found for you.
-- HTTPS from Phun's own local certificate authority, trusted by your browsers.
-- Each application picks its PHP version; the rest keep theirs.
-- Create a new Laravel, WordPress, CodeIgniter, CakePHP, Slim or static
-  application from the app, or bring an existing project or a Git repository.
-- Share an application on a public URL through Cloudflare Tunnel, for
-  webhooks, demos and other devices.
-- No admin rights to hand? Every application is also reachable at
-  `http://localhost/~name.test`.
+<p align="center">
+<img src=".github/readme/features/link-and-park.svg" alt="Link a folder, or park them all. Link a folder, or park a whole directory, and every project in it is served at name.test. The web root is found for you." width="49%">
+<img src=".github/readme/features/https.svg" alt="Trusted HTTPS everywhere. Every application is served over HTTPS from Phun's own local certificate authority, trusted by your browsers." width="49%">
+<img src=".github/readme/features/php-per-application.svg" alt="PHP per application. Each application picks its own PHP version, and the rest keep theirs. Switch from the app or with phun use." width="49%">
+<img src=".github/readme/features/new-application.svg" alt="Start something new. Create a Laravel, WordPress, CodeIgniter, CakePHP, Slim, static or HTML application, or bring an existing project or a Git repository." width="49%">
+<img src=".github/readme/features/domains-and-proxies.svg" alt="Domains and proxies. Add subdomains and wildcards, proxy a .test name to a local port, or send one path such as /reverb to another server." width="49%">
+<img src=".github/readme/features/share.svg" alt="Share on a public URL. Share an application through Cloudflare Tunnel, for webhooks, demos and other devices." width="49%">
+<img src=".github/readme/features/no-admin.svg" alt="Works without admin rights. No admin rights to hand? Every application is also reachable at http://localhost/~name.test." width="49%">
+<img src=".github/readme/features/infrastructure.svg" alt="An infrastructure canvas. Each application's services drawn as a canvas. Add a database, cache or storage and Phun writes the settings into its .env." width="49%">
+</p>
 
-<img src=".github/readme/services.svg" alt="An application joined to PHP, databases, cache, mail, search and storage." width="100%">
+<img src=".github/readme/services.svg" alt="PHP and services, natively: an application joined to PHP, databases, cache, mail, search and storage." width="100%">
 
-- Several PHP versions side by side, each with its own settings and
-  extensions.
-- MySQL, MariaDB, PostgreSQL, MongoDB, Redis and Meilisearch as native
-  services, started with the app.
-- Every email your applications send is caught and readable in the Mail
-  viewer, rendered, as plain text or as raw source.
-- S3-compatible object storage on your machine, for buckets and uploads.
-- Queue workers, the scheduler and Reverb per Laravel application.
-- Composer, Node.js, Bun, NVM, the Laravel installer and WP-CLI, installed on
-  demand without a system package manager.
+<p align="center">
+<img src=".github/readme/features/php-versions.svg" alt="Every PHP version you need. Several PHP versions side by side, each with its own php.ini settings and extensions." width="49%">
+<img src=".github/readme/features/services.svg" alt="Native services. MySQL, MariaDB, PostgreSQL, MongoDB, Redis and Meilisearch as native services, started with the app. No Docker, no VM." width="49%">
+<img src=".github/readme/features/mail.svg" alt="Every email, caught. Every email your applications send is caught and readable in the Mail viewer: rendered, as plain text or as raw source." width="49%">
+<img src=".github/readme/features/object-storage.svg" alt="S3-compatible storage. Object storage on your machine, with public or private buckets and a browser for what is in them." width="49%">
+<img src=".github/readme/features/laravel-workers.svg" alt="Queues, scheduler and Reverb. Queue workers, as many as you need, the scheduler and Reverb, for each Laravel application." width="49%">
+<img src=".github/readme/features/developer-tools.svg" alt="Developer tools on demand. Composer, Node.js, Bun, NVM, the Laravel installer and WP-CLI, installed when you need them, without a system package manager." width="49%">
+</p>
 
-<img src=".github/readme/editor.svg" alt="The built-in editor with completion and git markers." width="100%">
+<img src=".github/readme/editor.svg" alt="A code editor that knows Laravel: completion, live checks, refactors, formatting and git." width="100%">
 
-- A code editor in the app, with highlighting for PHP, Blade, JavaScript,
-  TypeScript, Vue, HTML, CSS, JSON, YAML, Markdown and more.
-- Laravel-aware completion: your models' attributes and relations, routes,
-  views, config, translations and validation rules.
-- Problems as you type, checked by the application's own PHP.
-- Go to definition, find usages, rename across the project and move classes
-  between namespaces with their references updated.
-- Formatting with the project's own Pint or Prettier, respecting
-  `.editorconfig`.
-- Git changes in the gutter and the file tree, with a diff against the last
-  commit, and a live preview beside Markdown files.
+<p align="center">
+<img src=".github/readme/features/highlighting.svg" alt="A code editor in the app. Highlighting for PHP, Blade, JavaScript, TypeScript, Vue, HTML, CSS, JSON, YAML, Markdown, shell scripts and .env files." width="49%">
+<img src=".github/readme/features/completion.svg" alt="Completion that knows Laravel. Your models' attributes and relations, routes, views, config, translations, validation rules and Blade components." width="49%">
+<img src=".github/readme/features/problems.svg" alt="Problems as you type. PHP is checked by the application's own PHP as you type, with the message on hover and F2 to the next one." width="49%">
+<img src=".github/readme/features/navigation.svg" alt="Jump anywhere. Ctrl-click a class to open it, see every usage of a method, go to any file, and search everywhere with a double Shift." width="49%">
+<img src=".github/readme/features/refactoring.svg" alt="Refactor with a preview. Rename across the application, extract a variable, and move classes between namespaces with their references updated." width="49%">
+<img src=".github/readme/features/formatting.svg" alt="Formatting your way. Format with the project's own Pint or Prettier. Its .editorconfig, .prettierrc and pint.json always win." width="49%">
+<img src=".github/readme/features/git.svg" alt="Git, built in. Changed lines in the gutter, changed files in the tree, the branch in the status line and the diff in a tab." width="49%">
+<img src=".github/readme/features/markdown-preview.svg" alt="Markdown, previewed. Markdown files show their rendered preview beside them, updated as you type, with code blocks in colour." width="49%">
+</p>
 
-<img src=".github/readme/insight.svg" alt="A request chart and the latest requests with their status." width="100%">
+<img src=".github/readme/insight.svg" alt="See what your applications do: metrics, requests, logs, terminals, a database browser and audits." width="100%">
 
-- Metrics per application: requests, response times, errors, memory and CPU.
-- The latest requests with their status, timing and headers, and every
-  endpoint's hit count.
-- Logs, Artisan, Tinker and a console in a dock at the bottom of the window.
-- A database browser with a SQL editor, and for Laravel applications a schema
-  canvas that draws your models' relationships and can write new ones.
-- Built-in health checks with one-click fixes for anything that fails.
+<p align="center">
+<img src=".github/readme/features/metrics.svg" alt="Metrics per application. Requests, response times, errors, memory and CPU for every application, charted as they happen." width="49%">
+<img src=".github/readme/features/request-inspector.svg" alt="A request inspector. The newest requests with status, timing, query string and headers. Cookies and authorization headers are never kept." width="49%">
+<img src=".github/readme/features/terminal-dock.svg" alt="Logs and terminals in a dock. Logs, Artisan, Tinker and a console at the bottom of the window. Artisan offers your models, tables and routes as you type." width="49%">
+<img src=".github/readme/features/database-browser.svg" alt="A database browser. Browse any table in one grid, and write SQL that completes tables and columns. MySQL, MariaDB and PostgreSQL." width="49%">
+<img src=".github/readme/features/schema-canvas.svg" alt="Draw your schema. For Laravel: tables and model relationships as blueprints. Drag one model onto another to relate them, and review the code first." width="49%">
+<img src=".github/readme/features/dependency-audits.svg" alt="Dependency audits. Audit Composer and JavaScript dependencies, and make package managers wait before installing brand-new releases." width="49%">
+</p>
+
+<img src=".github/readme/around.svg" alt="Everything around it: a command palette, themes, an MCP server, the phun command, health checks and updates." width="100%">
+
+<p align="center">
+<img src=".github/readme/features/command-palette.svg" alt="A command palette. Every page, application, Artisan command and action, a few keystrokes away." width="49%">
+<img src=".github/readme/features/themes.svg" alt="Three themes. Daybreak, Nightfall and Tokyo Night, or follow the system. Your choice reaches every window and the editor." width="49%">
+<img src=".github/readme/features/mcp.svg" alt="An MCP server for AI agents. Turn it on and agents such as Claude Code can list sites, switch PHP, create databases and read caught mail." width="49%">
+<img src=".github/readme/features/cli.svg" alt="The phun command. Link, park, secure, share and switch PHP from your terminal. The app and the command share one daemon." width="49%">
+<img src=".github/readme/features/health-checks.svg" alt="Health checks with fixes. Built-in checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off." width="49%">
+<img src=".github/readme/features/updates.svg" alt="Updates itself. Phun checks for new versions and installs them from the app, with the release notes beside them." width="49%">
+</p>
 
 ## Install
 

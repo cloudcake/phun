@@ -516,7 +516,7 @@ jobs:
   # download links always lead to the newest build. Pre-releases leave it
   # alone. A failure here never fails the release; it only warns.
   readme:
-    name: Point the README at this release
+    name: Point the README and its download headers at this release
     needs: release
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -539,7 +539,18 @@ jobs:
           args=()
           for name in "${assets[@]}"; do args+=(--asset "$name"); done
           python3 .github/scripts/update-readme.py --tag "$TAG" --repo "$GITHUB_REPOSITORY" "${args[@]}" || warn "The README has no download block to update."
-          if git diff --quiet; then
+          # The platform headers carry the version, drawn from Lato and DejaVu Sans Mono.
+          if ! [[ "${TAG#[vV]}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::notice::$TAG is a pre-release; the README and its headers stay as they are."
+            exit 0
+          fi
+          if sudo apt-get install -y -qq fonts-lato fonts-dejavu-core >/dev/null && PHUN_VERSION="${TAG#[vV]}" python3 .github/readme/build.py platforms; then
+            git add .github/readme/download
+          else
+            echo "::warning title=Download headers not redrawn::The README links $TAG, but its platform headers still show the previous version."
+            git checkout -- .github/readme/download || true
+          fi
+          if git diff --quiet HEAD; then
             echo "::notice::The README already offers $TAG."
             exit 0
           fi
