@@ -3,8 +3,10 @@
 
 The Release workflow runs this after publishing. Everything between the
 `<!-- latest-release:start -->` and `<!-- latest-release:end -->` markers in
-README.md is replaced with the version and a direct link to each installer,
-so the README always offers the newest build. Pre-release tags (anything
+README.md is replaced with the version and, per platform, its header image
+and a direct link to each installer, so the README always offers the newest
+build. The headers carry the version too; the workflow redraws them with
+`.github/readme/build.py platforms` afterwards. Pre-release tags (anything
 that is not a plain X.Y.Z) leave the README alone.
 
     update-readme.py --tag v0.2.0 --repo cloudcake/phun \
@@ -17,14 +19,14 @@ import sys
 START = "<!-- latest-release:start -->"
 END = "<!-- latest-release:end -->"
 
-# Which system each installer is for, by the end of its file name, in the
-# order the table lists them.
-SYSTEMS = (
-    ("_apple-silicon.dmg", "macOS, Apple Silicon"),
-    ("_intel.dmg", "macOS, Intel"),
-    ("-setup.exe", "Windows 10 and 11, x64"),
-    ("_amd64.deb", "Linux, x86_64 (Debian, Ubuntu)"),
+# Each platform's header image and installers, by the end of the installer's
+# file name, in the order the README lists them.
+PLATFORMS = (
+    ("macos", "macOS", (("_apple-silicon.dmg", "Apple Silicon"), ("_intel.dmg", "Intel"))),
+    ("windows", "Windows", (("-setup.exe", "Download the installer"),)),
+    ("linux", "Linux", (("_amd64.deb", "Download the .deb"),)),
 )
+SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _ in files)
 
 
 def plain_version(tag):
@@ -36,17 +38,22 @@ def plain_version(tag):
 def block(tag, repo, assets):
     """The markdown that goes between the markers."""
     base = f"https://github.com/{repo}/releases"
-    lines = [
-        START,
-        f"Latest release: **[{tag}]({base}/tag/{tag})**",
-        "",
-        "| System | Installer |",
-        "| --- | --- |",
-    ]
-    for suffix, system in SYSTEMS:
-        for name in sorted(assets):
-            if name.endswith(suffix):
-                lines.append(f"| {system} | [{name}]({base}/download/{tag}/{name}) |")
+    version = plain_version(tag) or tag
+    lines = [START, f"Latest release: **[{tag}]({base}/tag/{tag})**", ""]
+    for stem, name, files in PLATFORMS:
+        links = []
+        for suffix, label in files:
+            for asset in sorted(assets):
+                if asset.endswith(suffix):
+                    links.append((label, f"{base}/download/{tag}/{asset}"))
+        if not links:
+            continue
+        target = links[0][1] if len(links) == 1 else f"{base}/tag/{tag}"
+        img = f'<img src=".github/readme/download/{stem}.svg?v={version}" alt="Phun {version} for {name}" width="100%">'
+        lines.append(f'<a href="{target}">{img}</a>')
+        joined = "&nbsp;&nbsp;&middot;&nbsp;&nbsp;".join(f'<a href="{url}"><strong>{label}</strong></a>' for label, url in links)
+        lines.append(f'<p align="center">{joined}</p>')
+        lines.append("")
     lines.append(END)
     return "\n".join(lines)
 
@@ -69,7 +76,7 @@ def main(argv=None):
     if plain_version(args.tag) is None:
         print(f"{args.tag} is a pre-release; the README keeps its current release.")
         return 0
-    if not any(name.endswith(s) for name in args.asset for s, _ in SYSTEMS):
+    if not any(name.endswith(s) for name in args.asset for s in SUFFIXES):
         print("no known installers were given; the README is left as it is.", file=sys.stderr)
         return 1
     with open(args.readme, encoding="utf-8") as fh:

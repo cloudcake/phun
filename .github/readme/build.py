@@ -1,146 +1,17 @@
-"""Build the README artwork: the banner and one card per feature group.
+"""Build the README artwork: the banner, one card per feature group, a tile
+per feature and a header per platform.
 
-Run `python3 .github/readme/build.py` from the repository root. Text is drawn
-as vector outlines from Lato and DejaVu Sans Mono (installed system fonts, see
-FONTS below), so every image looks the same wherever the README is viewed.
-The look follows the Phun app: its dark theme, the infrastructure canvas's
-dotted ground, rounded cards, thin orthogonal lines and the brand red.
+Run `python3 .github/readme/build.py` from anywhere. The look follows the Phun
+app: its dark theme, the infrastructure canvas's dotted ground, rounded cards,
+thin orthogonal lines and the brand red. The drawing kit is in art.py, the
+feature tiles in tiles.py and the platform headers in platforms.py.
 """
-import colorsys
 import os
 
-from ttf import Font, text_path, text_width
+from art import *  # noqa: F401,F403
+from art import begin
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FONTS = {
-    "black": "/usr/share/fonts/truetype/lato/Lato-Black.ttf",
-    "bold": "/usr/share/fonts/truetype/lato/Lato-Bold.ttf",
-    "semibold": "/usr/share/fonts/truetype/lato/Lato-Semibold.ttf",
-    "medium": "/usr/share/fonts/truetype/lato/Lato-Medium.ttf",
-    "mono": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
-}
-F = {name: Font(path) for name, path in FONTS.items()}
-
-
-def hsl(h, s, l):
-    r, g, b = colorsys.hls_to_rgb(h / 360, l / 100, s / 100)
-    return "#{:02x}{:02x}{:02x}".format(round(r * 255), round(g * 255), round(b * 255))
-
-
-BG = hsl(225, 21, 7.5)
-TILE = hsl(225, 21, 6)
-CARD = hsl(222, 18, 11)
-INSET = hsl(223, 19, 9)
-BORDER = hsl(222, 15, 17.5)
-LINE = hsl(222, 15, 26)
-ART = hsl(222, 12, 40)
-FG = hsl(220, 14, 96)
-SOFT = hsl(220, 10, 82)
-MUTED = hsl(220, 7, 58)
-DIM = hsl(222, 12, 24)
-RED = hsl(0, 65, 54)
-GREEN = hsl(142, 55, 46)
-AMBER = hsl(38, 70, 55)
-GOLD = hsl(42, 60, 62)
-BLUE = hsl(212, 60, 66)
-
-LOGO = "M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z"
-
-STYLE = """
-<style>
-  .pulse { animation: pulse 2.6s ease-in-out infinite; }
-  .pulse.b { animation-delay: .5s; }
-  .pulse.c { animation-delay: 1s; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
-  .flow { stroke-dasharray: 4 6; animation: flow 1.6s linear infinite; }
-  @keyframes flow { to { stroke-dashoffset: -20; } }
-  @media (prefers-reduced-motion: reduce) { .pulse, .flow { animation: none; } }
-</style>
-"""
-
-
-def text(font, s, x, baseline, size, fill, tracking=0.0, cls=""):
-    d, _ = text_path(F[font], s, x, baseline, size, tracking)
-    c = f' class="{cls}"' if cls else ""
-    return f'<path d="{d}" fill="{fill}"{c}/>'
-
-
-def width(font, s, size, tracking=0.0):
-    return text_width(F[font], s, size, tracking)
-
-
-def rect(x, y, w, h, r=12, fill=CARD, stroke=BORDER, sw=1, extra=""):
-    s = f' stroke="{stroke}" stroke-width="{sw}"' if stroke else ""
-    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" fill="{fill}"{s}{extra}/>'
-
-
-def dot(cx, cy, r, fill, cls=""):
-    c = f' class="{cls}"' if cls else ""
-    return f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{fill}"{c}/>'
-
-
-def line(points, stroke=LINE, sw=1.5, cls="", r=8):
-    """An orthogonal line with rounded corners, as on the infrastructure canvas."""
-    d = f"M{points[0][0]} {points[0][1]}"
-    for i in range(1, len(points)):
-        x, y = points[i]
-        if i < len(points) - 1:
-            px, py = points[i - 1]
-            nx, ny = points[i + 1]
-            ilen = abs(x - px) + abs(y - py)
-            olen = abs(nx - x) + abs(ny - y)
-            k = min(r, ilen / 2, olen / 2)
-            ax = x - (k if x > px else -k if x < px else 0)
-            ay = y - (k if y > py else -k if y < py else 0)
-            bx = x + (k if nx > x else -k if nx < x else 0)
-            by = y + (k if ny > y else -k if ny < y else 0)
-            d += f" L{ax} {ay} Q{x} {y} {bx} {by}"
-        else:
-            d += f" L{x} {y}"
-    c = f' class="{cls}"' if cls else ""
-    return f'<path d="{d}" fill="none" stroke="{stroke}" stroke-width="{sw}" stroke-linecap="round" stroke-linejoin="round"{c}/>'
-
-
-def padlock(x, y, fill=GREEN):
-    return (
-        f'<rect x="{x}" y="{y + 5}" width="8" height="6.5" rx="1.5" fill="{fill}"/>'
-        f'<path d="M{x + 1.9} {y + 5.2}V{y + 3}a2.1 2.1 0 0 1 4.2 0V{y + 5.2}" fill="none" stroke="{fill}" stroke-width="1.4"/>'
-    )
-
-
-def frame(w, h, body, fade_from=0.25, title="", desc=""):
-    """The dark rounded card with the dotted ground fading in from the left."""
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-labelledby="t d">
-<title id="t">{title}</title>
-<desc id="d">{desc}</desc>
-{STYLE}
-<defs>
-  <clipPath id="card"><rect width="{w}" height="{h}" rx="20"/></clipPath>
-  <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="#fff"/></pattern>
-  <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
-    <stop offset="{fade_from}" stop-color="#fff" stop-opacity=".05"/>
-    <stop offset="1" stop-color="#fff" stop-opacity=".16"/>
-  </linearGradient>
-  <mask id="dotmask"><rect width="{w}" height="{h}" fill="url(#fade)"/></mask>
-  <radialGradient id="glow"><stop offset="0" stop-color="{RED}" stop-opacity=".22"/><stop offset="1" stop-color="{RED}" stop-opacity="0"/></radialGradient>
-</defs>
-<g clip-path="url(#card)">
-  <rect width="{w}" height="{h}" fill="{BG}"/>
-  <rect width="{w}" height="{h}" fill="url(#dots)" mask="url(#dotmask)"/>
-  {body}
-</g>
-<rect x=".5" y=".5" width="{w - 1}" height="{h - 1}" rx="19.5" fill="none" stroke="{BORDER}"/>
-</svg>
-'''
-
-
-def pill(x, y, label, size=14):
-    w = width("semibold", label, size)
-    return w + 34, (
-        rect(x, y, w + 34, 30, r=9)
-        + dot(x + 14, y + 15, 3, RED)
-        + text("semibold", label, x + 24, y + 20, size, SOFT)
-    )
 
 
 def banner():
@@ -311,28 +182,80 @@ def insight_art():
     return "".join(out)
 
 
+def around_art():
+    out = [rect(700, 34, 516, 232)]
+    out.append(f'<circle cx="726" cy="62" r="7" fill="none" stroke="{ART}" stroke-width="1.6"/>')
+    out.append(f'<path d="M731 67l5 5" stroke="{ART}" stroke-width="1.8" stroke-linecap="round"/>')
+    out.append(text("mono", "blog", 748, 67.5, 14, FG))
+    out.append(f'<rect x="{748 + width("mono", "blog", 14) + 2:.1f}" y="53" width="1.5" height="18" fill="{RED}" class="blink"/>')
+    out.append(f'<path d="M700 88H1216" stroke="{BORDER}"/>')
+    items = (("blog.test", "Open in editor", "Enter"), ("blog.test", "Artisan", ""),
+             ("blog.test", "Tinker", ""), ("blog.test", "Console", ""))
+    for i, (scope, action, key) in enumerate(items):
+        y = 116 + i * 38
+        if i == 0:
+            out.append(rect(710, y - 21, 496, 32, r=8, fill=hsl(0, 40, 18), stroke=None))
+        out.append(text("mono", scope, 726, y, 12, MUTED))
+        out.append(text("medium", action, 846, y, 14, FG if i == 0 else SOFT))
+        if key:
+            kw = width("semibold", key, 11) + 14
+            out.append(rect(1196 - kw, y - 15, kw, 20, r=5, fill=INSET))
+            out.append(text("semibold", key, 1196 - kw + 7, y - 1, 11, SOFT))
+    return "".join(out)
+
+
 def write(name, svg):
-    path = os.path.join(HERE, name)
-    with open(path, "w") as fh:
+    out = os.path.join(HERE, name)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with open(out, "w") as fh:
         fh.write(svg)
     print(f"{name}: {len(svg) // 1024} KB")
 
 
+def drawn(fn, *args):
+    begin()
+    return fn(*args)
+
+
+def build_banner_and_sections():
+    write("banner.svg", drawn(banner))
+    sections = (
+        ("applications.svg", 1, "Every application on .test", [
+            "Link or park a folder and it is served at its own .test",
+            "address over trusted HTTPS, with the PHP version it needs.",
+        ], "applications_art", "Folders linked to .test addresses over HTTPS."),
+        ("services.svg", 2, "PHP and services, natively", [
+            "Several PHP versions side by side, with databases, cache,",
+            "search, mail and storage beside them. No Docker, no VM.",
+        ], "services_art", "An application joined to PHP, databases, cache, mail, search and storage."),
+        ("editor.svg", 3, "A code editor that knows Laravel", [
+            "Completion from your models and routes, live PHP checks,",
+            "refactors, formatting and git, built into the app.",
+        ], "editor_art", "The built-in editor with completion and git markers."),
+        ("insight.svg", 4, "See what your applications do", [
+            "Metrics, every request, logs, terminals, a database",
+            "browser and dependency audits, for each application.",
+        ], "insight_art", "A request chart and the latest requests with their status."),
+        ("around.svg", 5, "Everything around it", [
+            "A command palette, themes, an MCP server for AI agents,",
+            "the phun command, health checks and self-updates.",
+        ], "around_art", "The command palette over a list of Phun's actions."),
+    )
+    for name, number, title, lines, art_name, desc in sections:
+        begin()
+        write(name, feature(number, title, lines, globals()[art_name](), desc))
+
+
 if __name__ == "__main__":
-    write("banner.svg", banner())
-    write("applications.svg", feature(1, "Every application on .test", [
-        "Link or park a folder and it is served at its own .test",
-        "address over trusted HTTPS, with the PHP version it needs.",
-    ], applications_art(), "Folders linked to .test addresses over HTTPS."))
-    write("services.svg", feature(2, "PHP and services, natively", [
-        "Several PHP versions side by side, with databases, cache,",
-        "search, mail and storage beside them. No Docker, no VM.",
-    ], services_art(), "An application joined to PHP, databases, cache, mail, search and storage."))
-    write("editor.svg", feature(3, "A code editor that knows Laravel", [
-        "Completion from your models and routes, live PHP checks,",
-        "refactors, formatting and git, built into the app.",
-    ], editor_art(), "The built-in editor with completion and git markers."))
-    write("insight.svg", feature(4, "See what your applications do", [
-        "Metrics, every request, logs, terminals, captured mail",
-        "and a database browser, for each application.",
-    ], insight_art(), "A request chart and the latest requests with their status."))
+    import sys
+
+    import platforms
+    import tiles
+
+    only = sys.argv[1:] or ["sections", "tiles", "platforms"]
+    if "sections" in only:
+        build_banner_and_sections()
+    if "tiles" in only:
+        tiles.build_all(write)
+    if "platforms" in only:
+        platforms.build_all(write)

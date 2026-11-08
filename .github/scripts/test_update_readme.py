@@ -19,19 +19,29 @@ class UpdateReadme(unittest.TestCase):
         self.assertIsNone(mod.plain_version("v0.2.0-rc.1"))
         self.assertIsNone(mod.plain_version("latest"))
 
-    def test_block_lists_each_installer_in_order_with_direct_links(self):
+    def test_block_has_a_header_and_direct_links_per_platform_in_order(self):
         out = mod.rewrite(README, "v0.2.0", "cloudcake/phun", ASSETS)
         self.assertIn("Latest release: **[v0.2.0](https://github.com/cloudcake/phun/releases/tag/v0.2.0)**", out)
-        rows = [line for line in out.splitlines() if line.startswith("| ") and "download" in line]
-        self.assertEqual([r.split(" | ")[0] for r in rows], ["| macOS, Apple Silicon", "| macOS, Intel", "| Windows 10 and 11, x64", "| Linux, x86_64 (Debian, Ubuntu)"])
-        self.assertIn("(https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb)", out)
+        headers = [line for line in out.splitlines() if "<img " in line]
+        self.assertEqual(len(headers), 3)
+        for header, stem in zip(headers, ("macos", "windows", "linux")):
+            self.assertIn(f'src=".github/readme/download/{stem}.svg?v=0.2.0"', header)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/tag/v0.2.0"><img src=".github/readme/download/macos.svg', out)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><img src=".github/readme/download/linux.svg', out)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_apple-silicon.dmg"><strong>Apple Silicon</strong></a>', out)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_intel.dmg"><strong>Intel</strong></a>', out)
+        self.assertIn("Phun_0.2.0_windows-x64-setup.exe", out)
+        self.assertLess(out.index("macos.svg"), out.index("windows.svg"))
+        self.assertLess(out.index("windows.svg"), out.index("linux.svg"))
         self.assertTrue(out.startswith("# Phun\n\nIntro.\n\n<!-- latest-release:start -->"))
         self.assertTrue(out.endswith("<!-- latest-release:end -->\n\nMore.\n"))
         self.assertNotIn("old", out)
 
-    def test_leaves_out_a_system_without_an_installer(self):
+    def test_leaves_out_a_platform_without_an_installer(self):
         out = mod.rewrite(README, "v0.2.0", "cloudcake/phun", ["Phun_0.2.0_amd64.deb"])
-        self.assertNotIn("macOS", out)
+        self.assertNotIn("macos.svg", out)
+        self.assertNotIn("windows.svg", out)
+        self.assertIn("linux.svg?v=0.2.0", out)
 
     def test_no_markers_means_no_rewrite(self):
         self.assertIsNone(mod.rewrite("# Phun\n", "v0.2.0", "cloudcake/phun", ASSETS))
