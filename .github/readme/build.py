@@ -1,5 +1,6 @@
-"""Build the README artwork: the banner, one card per feature group, a tile
-per feature and a header per platform.
+"""Build the README artwork: the banner, the three feature lists, and a
+header per platform. The card per feature group and the tile per feature are
+kept for reuse elsewhere; the README no longer shows them.
 
 Run `python3 .github/readme/build.py` from anywhere. The look follows the Phun
 app: its dark theme, the infrastructure canvas's dotted ground, rounded cards,
@@ -249,13 +250,16 @@ def build_banner_and_sections():
 if __name__ == "__main__":
     import sys
 
+    import lists
     import platforms
     import tiles
 
-    only = sys.argv[1:] or ["sections", "tiles", "platforms"]
+    only = sys.argv[1:] or ["sections", "tiles", "platforms", "lists"]
     if "sections" in only:
         build_banner_and_sections()
     if "tiles" in only:
         tiles.build_all(write)
     if "platforms" in only:
         platforms.build_all(write)
+    if "lists" in only:
+        lists.build_all(write)
