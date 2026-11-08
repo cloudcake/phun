@@ -21,6 +21,20 @@ virtual machine, and no password for everyday work.
 
 ## Features
 
+<img src=".github/readme/lists/serve.svg" alt="Serve every application: link or park folders on .test over trusted HTTPS, PHP per application, new applications, domains and proxies, public shares, no admin rights needed, an infrastructure canvas, several PHP versions, native databases and caches, caught mail, S3-compatible storage, Laravel workers and developer tools." width="100%">
+
+<br>
+
+<img src=".github/readme/lists/editor.svg" alt="A code editor that knows Laravel: highlighting, Laravel-aware completion, live PHP checks, navigation, refactoring with a preview, formatting, git and Markdown previews." width="100%">
+
+<br>
+
+<img src=".github/readme/lists/insight.svg" alt="See what your applications do: metrics, a request inspector, logs and terminals, a database browser, a schema canvas, dependency audits, a command palette, themes, an MCP server, the phun command, health checks and updates." width="100%">
+
+<!--
+Earlier feature artwork, kept for reuse elsewhere: a card per feature group
+and a tile per feature. Rebuilt by .github/readme/build.py with the rest.
+
 <img src=".github/readme/applications.svg" alt="Every application on .test: folders linked to .test addresses over HTTPS." width="100%">
 
 <p align="center">
@@ -79,6 +93,7 @@ virtual machine, and no password for everyday work.
 <img src=".github/readme/features/health-checks.svg" alt="Health checks with fixes. Built-in checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off." width="49%">
 <img src=".github/readme/features/updates.svg" alt="Updates itself. Phun checks for new versions and installs them from the app, with the release notes beside them." width="49%">
 </p>
+-->
 
 ## Install
 

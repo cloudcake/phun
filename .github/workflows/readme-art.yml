@@ -1,0 +1,51 @@
+# Redraws the README artwork whenever its scripts change, and commits the
+# images to the same branch, so nobody runs build.py by hand. The download
+# headers are left to the release workflow, which stamps the version into
+# them. The commit touches only images, so it never starts this again.
+
+name: README artwork
+
+on:
+  push:
+    paths:
+      - ".github/readme/*.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: readme-art-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  draw:
+    name: Redraw the artwork
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Fonts
+        run: sudo apt-get install -y -qq fonts-lato fonts-dejavu-core >/dev/null
+
+      - name: Draw
+        run: python3 .github/readme/build.py sections tiles lists
+
+      - name: Commit the images
+        run: |
+          set -euo pipefail
+          git add .github/readme
+          if git diff --cached --quiet; then
+            echo "::notice::The artwork is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "README: redraw the artwork"
+          for attempt in 1 2 3; do
+            git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+          done
+          echo "::error::Could not push the redrawn artwork."
+          exit 1
