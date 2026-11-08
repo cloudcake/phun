@@ -1,6 +1,6 @@
 # Manual release only. Stephen starts this from the Actions tab.
 # It does not run on push, pull request, schedule, or tag.
-# Builds the private cloudcake/phun source with a read-only deploy key
+# Builds the private cloudcake/phun-source with a read-only deploy key
 # (secret PHUN_DEPLOY_KEY) and publishes the installers on this public repo.
 # The source is never committed here.
 # Before each OS build, the entered tag (leading 'v' stripped, must be
@@ -11,7 +11,7 @@
 # workflows run them on demand, so a runner that never starts cannot hold up
 # publishing.
 # After the release is published, the sync job writes the bookkeeping back
-# to cloudcake/phun main: the changelog's Unreleased section becomes this
+# to cloudcake/phun-source main: the changelog's Unreleased section becomes this
 # version and the manifests move to the next patch. That needs the deploy
 # key to have write access.
 
@@ -25,7 +25,7 @@ on:
         required: true
         type: string
       ref:
-        description: Branch, tag or commit of cloudcake/phun to build
+        description: Branch, tag or commit of cloudcake/phun-source to build
         required: true
         default: main
         type: string
@@ -45,7 +45,7 @@ jobs:
       - name: Checkout private source
         uses: actions/checkout@v7
         with:
-          repository: cloudcake/phun
+          repository: cloudcake/phun-source
           ref: ${{ inputs.ref }}
           ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
           persist-credentials: false
@@ -89,7 +89,7 @@ jobs:
       - name: Checkout private source
         uses: actions/checkout@v7
         with:
-          repository: cloudcake/phun
+          repository: cloudcake/phun-source
           ref: ${{ needs.resolve.outputs.sha }}
           ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
           persist-credentials: false
@@ -118,12 +118,12 @@ jobs:
           cache-dependency-path: apps/phun-gui/package-lock.json
 
       # The private checkout replaced this repo. Pull the stamp script
-      # from phun-releases into a side directory, then remove it so it
+      # from this repository into a side directory, then remove it so it
       # cannot leak into the bundle.
       - name: Checkout version stamp script
         uses: actions/checkout@v7
         with:
-          path: .phun-releases-tools
+          path: .release-tools
           ref: ${{ github.sha }}
           persist-credentials: false
 
@@ -139,10 +139,10 @@ jobs:
           else
             PY=python
           fi
-          "$PY" .phun-releases-tools/.github/scripts/stamp-version.py \
+          "$PY" .release-tools/.github/scripts/stamp-version.py \
             --tag "$TAG" \
             --root .
-          rm -rf .phun-releases-tools
+          rm -rf .release-tools
 
       - name: Build the .deb
         if: matrix.kind == 'linux'
@@ -512,6 +512,46 @@ jobs:
             gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes "$notes"
           fi
 
+  # Points this repository's README at the release just published, so its
+  # download links always lead to the newest build. Pre-releases leave it
+  # alone. A failure here never fails the release; it only warns.
+  readme:
+    name: Point the README at this release
+    needs: release
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Rewrite the download block
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -uo pipefail
+          warn() { echo "::warning title=README not updated::$1"; exit 0; }
+          mapfile -t assets < <(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name') || warn "Could not list the $TAG installers."
+          args=()
+          for name in "${assets[@]}"; do args+=(--asset "$name"); done
+          python3 .github/scripts/update-readme.py --tag "$TAG" --repo "$GITHUB_REPOSITORY" "${args[@]}" || warn "The README has no download block to update."
+          if git diff --quiet; then
+            echo "::notice::The README already offers $TAG."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "README: link the $TAG downloads" || warn "Could not commit."
+          for attempt in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main || { git rebase --abort; warn "main moved and the README change conflicts."; }
+          done
+          warn "Could not push the README to main."
+
   # Keeps the repository in step with what shipped. A failure here never
   # fails the release: the installers are already published, so it only
   # raises a warning telling Stephen to run `cargo xtask bump` by hand.
@@ -527,7 +567,7 @@ jobs:
       - name: Checkout the built commit
         uses: actions/checkout@v7
         with:
-          repository: cloudcake/phun
+          repository: cloudcake/phun-source
           ref: ${{ needs.resolve.outputs.sha }}
           ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
           fetch-depth: 0
@@ -535,7 +575,7 @@ jobs:
       - name: Checkout stamp script
         uses: actions/checkout@v7
         with:
-          path: .phun-releases-tools
+          path: .release-tools
           ref: ${{ github.sha }}
           persist-credentials: false
 
@@ -573,10 +613,10 @@ jobs:
             exit 0
           fi
 
-          stamp=.phun-releases-tools/.github/scripts/stamp-version.py
+          stamp=.release-tools/.github/scripts/stamp-version.py
           python3 "$stamp" --tag "v$version" --manifests-only --root . || warn "Could not release the changelog for $version."
           python3 "$stamp" --tag "v$next" --manifests-only --no-changelog --root . || warn "Could not bump the manifests to $next."
-          rm -rf .phun-releases-tools
+          rm -rf .release-tools
 
           if git diff --quiet; then
             echo "::notice::Nothing changed, nothing to commit."

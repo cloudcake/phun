@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stamp a release tag version into a cloudcake/phun checkout.
+"""Stamp a release tag version into a cloudcake/phun-source checkout.
 
 Used by the Release workflow after the private source is checked out and
 before any OS job builds. Strips a leading 'v' from the tag and requires
@@ -40,7 +40,7 @@ PATH_DEP_SECTIONS = {
 }
 SKIP_DIR_NAMES = {
     ".git",
-    ".phun-releases-tools",
+    ".release-tools",
     "node_modules",
     "target",
     "dist",

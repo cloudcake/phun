@@ -1,5 +1,5 @@
 # On-demand macOS check, started from the Actions tab. Builds the private
-# cloudcake/phun source with the same read-only deploy key as release.yml,
+# cloudcake/phun-source with the same read-only deploy key as release.yml,
 # then runs its scripts/macos-smoke.sh on the runner: install to
 # /Applications, launch, resolver install + a real DNS lookup, screenshot,
 # Dock Quit. Nothing is published and no source is committed here. The
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: Branch, tag or commit of cloudcake/phun to test
+        description: Branch, tag or commit of cloudcake/phun-source to test
         required: true
         default: main
         type: string
@@ -58,7 +58,7 @@ jobs:
         if: env.SELECTED == 'true'
         uses: actions/checkout@v7
         with:
-          repository: cloudcake/phun
+          repository: cloudcake/phun-source
           ref: ${{ inputs.ref }}
           ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
           persist-credentials: false

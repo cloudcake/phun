@@ -1,5 +1,5 @@
 # On-demand Linux check, started from the Actions tab. Builds the private
-# cloudcake/phun source with the same read-only deploy key as release.yml, then
+# cloudcake/phun-source with the same read-only deploy key as release.yml, then
 # runs its scripts/linux-smoke.sh on the runner: apt install of the .deb with
 # its dependencies, daemon start, `phun status`, a DNS lookup through the
 # daemon's responder, an HTTP request through its proxy, GUI launch under
@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: Branch, tag or commit of cloudcake/phun to test
+        description: Branch, tag or commit of cloudcake/phun-source to test
         required: true
         default: main
         type: string
@@ -32,7 +32,7 @@ jobs:
       - name: Checkout private source
         uses: actions/checkout@v7
         with:
-          repository: cloudcake/phun
+          repository: cloudcake/phun-source
           ref: ${{ inputs.ref }}
           ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
           persist-credentials: false
