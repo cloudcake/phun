@@ -141,6 +141,7 @@ jobs:
           fi
           "$PY" .release-tools/.github/scripts/stamp-version.py \
             --tag "$TAG" \
+            --manifests-only \
             --root .
           rm -rf .release-tools
 
@@ -524,6 +525,7 @@ jobs:
           set -euo pipefail
           python3 .release-tools/.github/scripts/stamp-version.py \
             --tag "$TAG" \
+            --manifests-only \
             --root .
           rm -rf .release-tools
 
