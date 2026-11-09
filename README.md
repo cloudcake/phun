@@ -12,11 +12,17 @@ virtual machine, and no password for everyday work.
 ## Download
 
 <!-- latest-release:start -->
-<a href="https://github.com/cloudcake/phun/releases/tag/v0.2.0"><img src=".github/readme/download/macos.svg?v=0.2.0" alt="Phun 0.2.0 for macOS" width="100%"></a>
+Latest release: **[v0.3.0](https://github.com/cloudcake/phun/releases/tag/v0.3.0)**
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_windows-x64-setup.exe"><img src=".github/readme/download/windows.svg?v=0.2.0" alt="Phun 0.2.0 for Windows" width="100%"></a>
+<a href="https://github.com/cloudcake/phun/releases/tag/v0.3.0"><img src=".github/readme/download/macos.svg?v=0.3.0" alt="Phun 0.3.0 for macOS" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_apple-silicon.dmg"><strong>Apple Silicon</strong></a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_intel.dmg"><strong>Intel</strong></a></p>
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><img src=".github/readme/download/linux.svg?v=0.2.0" alt="Phun 0.2.0 for Linux" width="100%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_windows-x64-setup.exe"><img src=".github/readme/download/windows.svg?v=0.3.0" alt="Phun 0.3.0 for Windows" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_windows-x64-setup.exe"><strong>Download the installer</strong></a></p>
+
+<a href="https://github.com/cloudcake/phun/releases/tag/v0.3.0"><img src=".github/readme/download/linux.svg?v=0.3.0" alt="Phun 0.3.0 for Linux" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_amd64.deb"><strong>Download the .deb</strong></a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_x86_64.pkg.tar.zst"><strong>Arch package</strong></a></p>
+
 <!-- latest-release:end -->
 
 ## Features
