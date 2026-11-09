@@ -141,6 +141,7 @@ jobs:
           fi
           "$PY" .release-tools/.github/scripts/stamp-version.py \
             --tag "$TAG" \
+            --manifests-only \
             --root .
           rm -rf .release-tools
 
@@ -154,7 +155,8 @@ jobs:
         if: matrix.kind == 'linux'
         run: |
           set -euo pipefail
-          deb=$(find target apps/phun-gui/src-tauri/target -path '*/bundle/deb/*.deb' 2>/dev/null | head -n 1)
+          deb=$(find target apps/phun-gui/src-tauri/target -path '*/bundle/deb/*.deb' 2>/dev/null | head -n 1 || true)
+          test -n "$deb" || { echo "no .deb under bundle/deb" >&2; exit 1; }
           dpkg-deb -c "$deb" | grep -E 'usr/lib/Phun/php-ext/xdebug/xdebug-[0-9.]+-linux-x86_64\.so$'
 
       - name: Build the .dmg
@@ -524,6 +526,7 @@ jobs:
           set -euo pipefail
           python3 .release-tools/.github/scripts/stamp-version.py \
             --tag "$TAG" \
+            --manifests-only \
             --root .
           rm -rf .release-tools
 

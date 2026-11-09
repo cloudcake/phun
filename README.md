@@ -2,18 +2,6 @@
   <img src=".github/readme/banner.svg" alt="Phun, your pocket-sized PHP playground, for macOS, Linux and Windows." width="100%">
 </p>
 
-<p align="center">
-  <a href="https://github.com/cloudcake/phun/releases/latest"><strong>Download</strong></a>
-  &nbsp;&middot;&nbsp;
-  <a href="#features">Features</a>
-  &nbsp;&middot;&nbsp;
-  <a href="#install">Install</a>
-  &nbsp;&middot;&nbsp;
-  <a href="#the-phun-command">Command line</a>
-  &nbsp;&middot;&nbsp;
-  <a href="https://github.com/cloudcake/phun/discussions">Discussions</a>
-</p>
-
 Phun runs your PHP applications on your own machine. Every folder you link is
 served at its own `.test` address over trusted HTTPS, with the PHP version it
 needs, and the databases, cache, search and mail it uses run beside it as
@@ -24,20 +12,18 @@ virtual machine, and no password for everyday work.
 ## Download
 
 <!-- latest-release:start -->
-Latest release: **[v0.2.0](https://github.com/cloudcake/phun/releases/tag/v0.2.0)**
+Latest release: **[v0.3.0](https://github.com/cloudcake/phun/releases/tag/v0.3.0)**
 
-<a href="https://github.com/cloudcake/phun/releases/tag/v0.2.0"><img src=".github/readme/download/macos.svg?v=0.2.0" alt="Phun 0.2.0 for macOS" width="100%"></a>
-<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_apple-silicon.dmg"><strong>Apple Silicon</strong></a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_intel.dmg"><strong>Intel</strong></a></p>
+<a href="https://github.com/cloudcake/phun/releases/tag/v0.3.0"><img src=".github/readme/download/macos.svg?v=0.3.0" alt="Phun 0.3.0 for macOS" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_apple-silicon.dmg"><strong>Apple Silicon</strong></a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_intel.dmg"><strong>Intel</strong></a></p>
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_windows-x64-setup.exe"><img src=".github/readme/download/windows.svg?v=0.2.0" alt="Phun 0.2.0 for Windows" width="100%"></a>
-<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_windows-x64-setup.exe"><strong>Download the installer</strong></a></p>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_windows-x64-setup.exe"><img src=".github/readme/download/windows.svg?v=0.3.0" alt="Phun 0.3.0 for Windows" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_windows-x64-setup.exe"><strong>Download the installer</strong></a></p>
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><img src=".github/readme/download/linux.svg?v=0.2.0" alt="Phun 0.2.0 for Linux" width="100%"></a>
-<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><strong>Download the .deb</strong></a></p>
+<a href="https://github.com/cloudcake/phun/releases/tag/v0.3.0"><img src=".github/readme/download/linux.svg?v=0.3.0" alt="Phun 0.3.0 for Linux" width="100%"></a>
+<p align="center"><a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_amd64.deb"><strong>Download the .deb</strong></a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_x86_64.pkg.tar.zst"><strong>Arch package</strong></a></p>
 
 <!-- latest-release:end -->
-
-Phun checks for updates itself and installs them from the app.
 
 ## Features
 
