@@ -70,8 +70,8 @@ PLATFORMS = (
      (("Apple Silicon", "Phun_{v}_apple-silicon.dmg"), ("Intel", "Phun_{v}_intel.dmg"))),
     ("windows", "Windows", "Windows 10 and 11, x64", windows,
      (("Installer", "Phun_{v}_windows-x64-setup.exe"),)),
-    ("linux", "Linux", "Debian and Ubuntu, x86_64", penguin,
-     (("Debian package", "Phun_{v}_amd64.deb"),)),
+    ("linux", "Linux", "Debian, Ubuntu and Arch, x86_64", penguin,
+     (("Debian package", "Phun_{v}_amd64.deb"), ("Arch package", "Phun_{v}_x86_64.pkg.tar.zst"))),
 )
 
 

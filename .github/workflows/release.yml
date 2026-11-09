@@ -470,9 +470,81 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  # The Arch package, built in the archlinux container by phun-source's
+  # scripts/build-arch.sh: it installs packaging/arch/PKGBUILD's dependencies,
+  # runs makepkg as a plain user (makepkg refuses root) and writes
+  # dist/Phun_<version>_x86_64.pkg.tar.zst, the name phun-update's pacman
+  # matcher selects. The package is then installed in the same container as a
+  # check. No Rust cache: the container's builder user and paths differ from
+  # the runner's, and a release is rare enough to build cold.
+  arch:
+    name: arch
+    needs: resolve
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      # git and ssh first: without them actions/checkout cannot use the
+      # deploy key. python runs the stamp script.
+      - name: Checkout tools
+        run: pacman -Syu --noconfirm --needed git openssh python
+
+      - name: Checkout private source
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun-source
+          ref: ${{ needs.resolve.outputs.sha }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Checkout version stamp script
+        uses: actions/checkout@v7
+        with:
+          path: .release-tools
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Stamp version from the release tag
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          python3 .release-tools/.github/scripts/stamp-version.py \
+            --tag "$TAG" \
+            --root .
+          rm -rf .release-tools
+
+      - name: Build the .pkg.tar.zst
+        env:
+          TAG: ${{ inputs.tag }}
+        run: bash scripts/build-arch.sh "$TAG"
+
+      - name: Install the package and check it
+        run: |
+          set -euo pipefail
+          pacman -U --noconfirm dist/Phun_*_x86_64.pkg.tar.zst
+          fmt=$(phund --pkg-format)
+          if [ "$fmt" != pacman ]; then
+            echo "phund --pkg-format printed '$fmt' (expected pacman)" >&2
+            exit 1
+          fi
+          phun --version
+          for f in /usr/bin/phun /usr/bin/phund /usr/bin/phun-helper /usr/bin/phun-gui \
+            /usr/lib/Phun/php-ext/pcov/SHA256SUMS /usr/lib/Phun/php-ext/xdebug/SHA256SUMS \
+            /usr/share/applications/phun-gui.desktop; do
+            test -e "$f" || { echo "missing $f" >&2; exit 1; }
+          done
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-arch
+          path: dist/*
+          if-no-files-found: error
+
   release:
     name: GitHub Release
-    needs: build
+    needs: [build, arch]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -483,6 +555,39 @@ jobs:
           pattern: installers-*
           path: release-assets
           merge-multiple: true
+
+      # SHA256SUMS and `<installer>.minisig` are what phun-update's
+      # select_asset looks for next to each installer. The signatures need
+      # the minisign secret key (secret PHUN_MINISIGN_KEY, its password in
+      # PHUN_MINISIGN_PASSWORD when it has one) whose public half is
+      # UPDATE_PUBLIC_KEY in crates/phun-update; without it the release
+      # ships unsigned, as before, and only warns.
+      - name: Checksums and update signatures
+        env:
+          MINISIGN_KEY: ${{ secrets.PHUN_MINISIGN_KEY }}
+          MINISIGN_PASSWORD: ${{ secrets.PHUN_MINISIGN_PASSWORD }}
+          UPDATE_PUBLIC_KEY: RWRXUQIpU8uZ3B6SV3yFsK3+aAWZX+efytjc8F+8PTuViL8/nNPsQxpi
+        run: |
+          set -euo pipefail
+          cd release-assets
+          shopt -s nullglob
+          installers=(*)
+          sha256sum -- "${installers[@]}" > SHA256SUMS
+          cat SHA256SUMS
+          if [ -z "$MINISIGN_KEY" ]; then
+            echo "::warning title=Installers not signed::PHUN_MINISIGN_KEY is not set, so the release has no .minisig files and phun update --yes cannot install it."
+            exit 0
+          fi
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq minisign >/dev/null
+          key=$(mktemp)
+          trap 'rm -f "$key"' EXIT
+          printf '%s\n' "$MINISIGN_KEY" > "$key"
+          for f in "${installers[@]}"; do
+            printf '%s\n' "$MINISIGN_PASSWORD" | minisign -S -s "$key" -m "$f" -x "$f.minisig" >/dev/null
+            minisign -V -q -P "$UPDATE_PUBLIC_KEY" -m "$f" -x "$f.minisig"
+          done
+          ls -la
 
       - name: Create or update the release
         env:
@@ -503,7 +608,11 @@ jobs:
           fi
           printf 'attaching:\n'
           printf '  %s\n' "${files[@]}"
-          notes="Phun ${TAG}. Mac builds are ad-hoc signed, not notarized; on first launch right-click Phun > Open, or run \`xattr -cr /Applications/Phun.app\`. Apple Silicon Macs use the apple-silicon dmg, Intel Macs the intel dmg. The Windows installer is unsigned, so SmartScreen may warn ('More info' > 'Run anyway'). Updater signing is off."
+          signing="Updater signing is off."
+          if [ -n "$(find release-assets -name '*.minisig' -print -quit)" ]; then
+            signing="Each installer has a minisign signature (.minisig) and SHA256SUMS lists their checksums."
+          fi
+          notes="Phun ${TAG}. Mac builds are ad-hoc signed, not notarized; on first launch right-click Phun > Open, or run \`xattr -cr /Applications/Phun.app\`. Apple Silicon Macs use the apple-silicon dmg, Intel Macs the intel dmg. The Windows installer is unsigned, so SmartScreen may warn ('More info' > 'Run anyway'). On Debian and Ubuntu install the .deb; on Arch run \`sudo pacman -U ./Phun_<version>_x86_64.pkg.tar.zst\`. ${signing}"
           if gh release view --repo "$GITHUB_REPOSITORY" "$TAG" >/dev/null 2>&1; then
             gh release upload --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --clobber
           elif gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then

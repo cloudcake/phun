@@ -8,7 +8,7 @@ spec = importlib.util.spec_from_file_location("update_readme", os.path.join(os.p
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 
-ASSETS = ["Phun_0.2.0_amd64.deb", "Phun_0.2.0_intel.dmg", "Phun_0.2.0_apple-silicon.dmg", "Phun_0.2.0_windows-x64-setup.exe"]
+ASSETS = ["Phun_0.2.0_amd64.deb", "Phun_0.2.0_x86_64.pkg.tar.zst", "Phun_0.2.0_intel.dmg", "Phun_0.2.0_apple-silicon.dmg", "Phun_0.2.0_windows-x64-setup.exe"]
 README = "# Phun\n\nIntro.\n\n<!-- latest-release:start -->\nold\n<!-- latest-release:end -->\n\nMore.\n"
 
 
@@ -27,7 +27,9 @@ class UpdateReadme(unittest.TestCase):
         for header, stem in zip(headers, ("macos", "windows", "linux")):
             self.assertIn(f'src=".github/readme/download/{stem}.svg?v=0.2.0"', header)
         self.assertIn('<a href="https://github.com/cloudcake/phun/releases/tag/v0.2.0"><img src=".github/readme/download/macos.svg', out)
-        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><img src=".github/readme/download/linux.svg', out)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/tag/v0.2.0"><img src=".github/readme/download/linux.svg', out)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><strong>Download the .deb</strong></a>', out)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_x86_64.pkg.tar.zst"><strong>Arch package</strong></a>', out)
         self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_apple-silicon.dmg"><strong>Apple Silicon</strong></a>', out)
         self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_intel.dmg"><strong>Intel</strong></a>', out)
         self.assertIn("Phun_0.2.0_windows-x64-setup.exe", out)
@@ -42,6 +44,8 @@ class UpdateReadme(unittest.TestCase):
         self.assertNotIn("macos.svg", out)
         self.assertNotIn("windows.svg", out)
         self.assertIn("linux.svg?v=0.2.0", out)
+        self.assertIn('<a href="https://github.com/cloudcake/phun/releases/download/v0.2.0/Phun_0.2.0_amd64.deb"><img src=".github/readme/download/linux.svg', out)
+        self.assertNotIn("Arch package", out)
 
     def test_no_markers_means_no_rewrite(self):
         self.assertIsNone(mod.rewrite("# Phun\n", "v0.2.0", "cloudcake/phun", ASSETS))
