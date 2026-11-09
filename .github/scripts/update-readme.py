@@ -4,8 +4,9 @@
 The Release workflow runs this after publishing. Everything between the
 `<!-- latest-release:start -->` and `<!-- latest-release:end -->` markers in
 README.md is replaced with the version and, per platform, its header image
-and a direct link to each installer, so the README always offers the newest
-build. The headers carry the version too; the workflow redraws them with
+and a button image per installer that links straight to it, so the README
+always offers the newest build. The images carry the version too; the
+workflow redraws them with
 `.github/readme/build.py platforms` afterwards. Pre-release tags (anything
 that is not a plain X.Y.Z) leave the README alone.
 
@@ -20,13 +21,15 @@ START = "<!-- latest-release:start -->"
 END = "<!-- latest-release:end -->"
 
 # Each platform's header image and installers, by the end of the installer's
-# file name, in the order the README lists them.
+# file name, in the order the README lists them. Each installer has its own
+# button image, `download/<platform>-<slug>.svg`, drawn by
+# .github/readme/platforms.py with the same slugs.
 PLATFORMS = (
-    ("macos", "macOS", (("_apple-silicon.dmg", "Apple Silicon"), ("_intel.dmg", "Intel"))),
-    ("windows", "Windows", (("-setup.exe", "Download the installer"),)),
-    ("linux", "Linux", (("_amd64.deb", "Download the .deb"), ("_x86_64.pkg.tar.zst", "Arch package"))),
+    ("macos", "macOS", (("_apple-silicon.dmg", "apple-silicon", "Apple Silicon"), ("_intel.dmg", "intel", "Intel"))),
+    ("windows", "Windows", (("-setup.exe", "installer", "Windows installer"),)),
+    ("linux", "Linux", (("_amd64.deb", "deb", "Debian and Ubuntu"), ("_x86_64.pkg.tar.zst", "arch", "Arch Linux"))),
 )
-SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _ in files)
+SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _, _ in files)
 
 
 def plain_version(tag):
@@ -41,18 +44,21 @@ def block(tag, repo, assets):
     version = plain_version(tag) or tag
     lines = [START, f"Latest release: **[{tag}]({base}/tag/{tag})**", ""]
     for stem, name, files in PLATFORMS:
-        links = []
-        for suffix, label in files:
+        buttons = []
+        for suffix, slug, label in files:
             for asset in sorted(assets):
                 if asset.endswith(suffix):
-                    links.append((label, f"{base}/download/{tag}/{asset}"))
-        if not links:
+                    buttons.append((slug, label, asset, f"{base}/download/{tag}/{asset}"))
+        if not buttons:
             continue
-        target = links[0][1] if len(links) == 1 else f"{base}/tag/{tag}"
+        target = buttons[0][3] if len(buttons) == 1 else f"{base}/tag/{tag}"
         img = f'<img src=".github/readme/download/{stem}.svg?v={version}" alt="Phun {version} for {name}" width="100%">'
         lines.append(f'<a href="{target}">{img}</a>')
-        joined = "&nbsp;&nbsp;&middot;&nbsp;&nbsp;".join(f'<a href="{url}"><strong>{label}</strong></a>' for label, url in links)
-        lines.append(f'<p align="center">{joined}</p>')
+        lines.append('<p align="center">')
+        for slug, label, asset, url in buttons:
+            src = f".github/readme/download/{stem}-{slug}.svg?v={version}"
+            lines.append(f'<a href="{url}"><img src="{src}" alt="Download {asset} ({label})" width="49%"></a>')
+        lines.append("</p>")
         lines.append("")
     lines.append(END)
     return "\n".join(lines)

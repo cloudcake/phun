@@ -1,8 +1,10 @@
-"""A header per platform for the README's Download section.
+"""The README's Download section: a header per platform, and a button per
+installer, each its own image so each links straight to its file.
 
-Each one carries the release's version and installer names, so the release
+They carry the release's version and installer names, so the release
 workflow rebuilds them (`build.py platforms`) right after it rewrites the
-README's download block. The version is read from that block.
+README's download block. The version is read from that block. The button
+names (`download/<platform>-<slug>.svg`) match update-readme.py's.
 """
 import os
 import re
@@ -67,11 +69,11 @@ def penguin():
 
 PLATFORMS = (
     ("macos", "macOS", "Apple Silicon and Intel", apple,
-     (("Apple Silicon", "Phun_{v}_apple-silicon.dmg"), ("Intel", "Phun_{v}_intel.dmg"))),
+     (("apple-silicon", "Apple Silicon", "Phun_{v}_apple-silicon.dmg"), ("intel", "Intel", "Phun_{v}_intel.dmg"))),
     ("windows", "Windows", "Windows 10 and 11, x64", windows,
-     (("Installer", "Phun_{v}_windows-x64-setup.exe"),)),
+     (("installer", "Windows installer", "Phun_{v}_windows-x64-setup.exe"),)),
     ("linux", "Linux", "Debian, Ubuntu and Arch, x86_64", penguin,
-     (("Debian package", "Phun_{v}_amd64.deb"), ("Arch package", "Phun_{v}_x86_64.pkg.tar.zst"))),
+     (("deb", "Debian and Ubuntu", "Phun_{v}_amd64.deb"), ("arch", "Arch Linux", "Phun_{v}_x86_64.pkg.tar.zst"))),
 )
 
 
@@ -87,18 +89,26 @@ def header(name, subtitle, icon, files, version):
     body.append(rect(220, 150, tw + 40, 26, r=8, fill=INSET))
     body.append(f'<circle cx="234" cy="163" r="3.5" fill="{RED}" class="pulse"/>')
     body.append(text("mono", tag, 244, 167.5, 13, SOFT))
-    rows = len(files)
-    top = 100 - (rows * 56 - 12) / 2
-    for i, (label, pattern) in enumerate(files):
-        fname = pattern.format(v=version)
-        y = top + i * 56
-        body.append(rect(692, y, 532, 44, r=11, fill=CARD))
-        body.append(rect(704, y + 8, 28, 28, r=8, fill=RED, stroke=None))
-        body.append(f'<g class="drop" style="animation-delay: {i * .3:.1f}s">{path(f"M718 {y + 14}v12m-5-5 5 5 5-5", "#fff", 2)}</g>')
-        body.append(text("mono", fname, 746, y + 27.5, 14, FG))
-        body.append(text("medium", label, 1206 - width("medium", label, 13), y + 27, 13, MUTED))
-    desc = f"Phun {version} for {name}: " + ", ".join(p.format(v=version) for _, p in files) + "."
+    desc = f"Phun {version} for {name}: " + ", ".join(p.format(v=version) for _, _, p in files) + "."
     return frame(W, H, "\n".join(body), title=f"Phun for {name}", desc=desc, css=CSS, fade_from=0.4, corner=(1280 - 22 - 78, 14))
+
+
+BW, BH = 632, 88
+
+
+def button(name, label, fname):
+    """One installer's download button. Each is its own image, so the README
+    can link each one straight to its file."""
+    begin()
+    body = [f'<circle cx="44" cy="44" r="60" fill="url(#glow)"/>']
+    body.append(rect(20, 20, 48, 48, r=12, fill=RED, stroke=None))
+    body.append(f'<g class="drop">{path("M44 32v22m-8-8 8 8 8-8", "#fff", 2.6)}</g>')
+    body.append(text("bold", label, 88, 42, 20, FG))
+    body.append(text("mono", fname, 88, 66, 14, MUTED))
+    chev = f"M{BW - 38} 36l8 8-8 8"
+    body.append(path(chev, SOFT, 2.2))
+    desc = f"Download {fname}, Phun for {name} ({label})."
+    return frame(BW, BH, "\n".join(body), title=f"Download {fname}", desc=desc, css=CSS, fade_from=0.5, r=16, mark=False)
 
 
 def current_version(readme=README):
@@ -113,3 +123,5 @@ def build_all(write, version=None):
     version = version or os.environ.get("PHUN_VERSION") or current_version()
     for stem, name, sub, icon, files in PLATFORMS:
         write(f"download/{stem}.svg", header(name, sub, icon, files, version))
+        for slug, label, pattern in files:
+            write(f"download/{stem}-{slug}.svg", button(name, label, pattern.format(v=version)))
