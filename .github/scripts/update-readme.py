@@ -31,6 +31,9 @@ PLATFORMS = (
 )
 # Two buttons to a row, filling the page's width.
 BUTTON_WIDTH = "49%"
+# Bump when the buttons are redrawn: GitHub caches the images by URL for
+# minutes, so a new drawing needs a new URL to show at once.
+BUTTON_REVISION = 2
 SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _, _ in files)
 
 
@@ -58,7 +61,7 @@ def block(tag, repo, assets):
         lines.append(f'<a href="{target}">{img}</a>')
         lines.append('<p align="center">')
         for slug, label, asset, url in buttons:
-            src = f".github/readme/download/{stem}-{slug}.svg?v={version}"
+            src = f".github/readme/download/{stem}-{slug}.svg?v={version}.{BUTTON_REVISION}"
             lines.append(f'<a href="{url}"><img src="{src}" alt="Download {asset} ({label})" width="{BUTTON_WIDTH}"></a>')
         lines.append("</p>")
         lines.append("")
