@@ -58,7 +58,16 @@ jobs:
 
       - name: Build the Windows installers
         shell: pwsh
-        run: powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall
+        run: |
+          powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall *>&1 | Tee-Object -FilePath build.log
+          exit $LASTEXITCODE
+
+      - name: Show why the build failed
+        if: failure()
+        shell: pwsh
+        run: |
+          $tail = (Get-Content build.log -Tail 25 -ErrorAction SilentlyContinue) -join '%0A'
+          Write-Host "::error title=End of the build output::$tail"
 
       - name: Smoke test
         shell: pwsh
