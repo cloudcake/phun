@@ -148,6 +148,15 @@ jobs:
         if: matrix.kind == 'linux'
         run: ./scripts/build.sh --no-install
 
+      # build.sh bundles one Xdebug per pinned PHP; a .deb without them
+      # cannot turn debugging or profiling on.
+      - name: Check the .deb carries Xdebug
+        if: matrix.kind == 'linux'
+        run: |
+          set -euo pipefail
+          deb=$(find target apps/phun-gui/src-tauri/target -path '*/bundle/deb/*.deb' 2>/dev/null | head -n 1)
+          dpkg-deb -c "$deb" | grep -E 'usr/lib/Phun/php-ext/xdebug/xdebug-[0-9.]+-linux-x86_64\.so$'
+
       - name: Build the .dmg
         if: matrix.kind == 'macos' && matrix.target != 'x86_64-apple-darwin'
         run: ./scripts/build.sh --no-install
@@ -158,6 +167,10 @@ jobs:
           set -euo pipefail
           # Tauri: tauri build --target x86_64-apple-darwin
           # phund (and the other workspace bins) likewise via --target.
+          # build.sh compiles the bundled Xdebug under Rosetta for x86_64.
+          if ! arch -x86_64 /usr/bin/true 2>/dev/null; then
+            sudo softwareupdate --install-rosetta --agree-to-license
+          fi
           ./scripts/build.sh --no-install --target x86_64-apple-darwin
 
       - name: Build the Windows installers
@@ -534,6 +547,9 @@ jobs:
             /usr/share/applications/phun-gui.desktop; do
             test -e "$f" || { echo "missing $f" >&2; exit 1; }
           done
+          # One Xdebug build per pinned PHP, each matching its SHA256SUMS line.
+          ls /usr/lib/Phun/php-ext/xdebug/xdebug-*-linux-x86_64.so
+          (cd /usr/lib/Phun/php-ext/xdebug && test -s SHA256SUMS && sha256sum -c SHA256SUMS)
 
       - name: Upload installers
         uses: actions/upload-artifact@v4
