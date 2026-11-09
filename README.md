@@ -16,19 +16,19 @@ Latest release: **[v0.3.0](https://github.com/cloudcake/phun/releases/tag/v0.3.0
 
 <a href="https://github.com/cloudcake/phun/releases/tag/v0.3.0"><img src=".github/readme/download/macos.svg?v=0.3.0" alt="Phun 0.3.0 for macOS" width="100%"></a>
 <p align="center">
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_apple-silicon.dmg"><img src=".github/readme/download/macos-apple-silicon.svg?v=0.3.0" alt="Download Phun_0.3.0_apple-silicon.dmg (Apple Silicon)" width="49%"></a>
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_intel.dmg"><img src=".github/readme/download/macos-intel.svg?v=0.3.0" alt="Download Phun_0.3.0_intel.dmg (Intel)" width="49%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_apple-silicon.dmg"><img src=".github/readme/download/macos-apple-silicon.svg?v=0.3.0" alt="Download Phun_0.3.0_apple-silicon.dmg (Apple Silicon)" width="41.6%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_intel.dmg"><img src=".github/readme/download/macos-intel.svg?v=0.3.0" alt="Download Phun_0.3.0_intel.dmg (Intel)" width="41.6%"></a>
 </p>
 
 <a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_windows-x64-setup.exe"><img src=".github/readme/download/windows.svg?v=0.3.0" alt="Phun 0.3.0 for Windows" width="100%"></a>
 <p align="center">
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_windows-x64-setup.exe"><img src=".github/readme/download/windows-installer.svg?v=0.3.0" alt="Download Phun_0.3.0_windows-x64-setup.exe (Windows installer)" width="49%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_windows-x64-setup.exe"><img src=".github/readme/download/windows-installer.svg?v=0.3.0" alt="Download Phun_0.3.0_windows-x64-setup.exe (Installer)" width="41.6%"></a>
 </p>
 
 <a href="https://github.com/cloudcake/phun/releases/tag/v0.3.0"><img src=".github/readme/download/linux.svg?v=0.3.0" alt="Phun 0.3.0 for Linux" width="100%"></a>
 <p align="center">
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_amd64.deb"><img src=".github/readme/download/linux-deb.svg?v=0.3.0" alt="Download Phun_0.3.0_amd64.deb (Debian and Ubuntu)" width="49%"></a>
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_x86_64.pkg.tar.zst"><img src=".github/readme/download/linux-arch.svg?v=0.3.0" alt="Download Phun_0.3.0_x86_64.pkg.tar.zst (Arch Linux)" width="49%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_amd64.deb"><img src=".github/readme/download/linux-deb.svg?v=0.3.0" alt="Download Phun_0.3.0_amd64.deb (Debian package)" width="41.6%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.0/Phun_0.3.0_x86_64.pkg.tar.zst"><img src=".github/readme/download/linux-arch.svg?v=0.3.0" alt="Download Phun_0.3.0_x86_64.pkg.tar.zst (Arch package)" width="41.6%"></a>
 </p>
 
 <!-- latest-release:end -->

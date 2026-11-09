@@ -26,9 +26,12 @@ END = "<!-- latest-release:end -->"
 # .github/readme/platforms.py with the same slugs.
 PLATFORMS = (
     ("macos", "macOS", (("_apple-silicon.dmg", "apple-silicon", "Apple Silicon"), ("_intel.dmg", "intel", "Intel"))),
-    ("windows", "Windows", (("-setup.exe", "installer", "Windows installer"),)),
-    ("linux", "Linux", (("_amd64.deb", "deb", "Debian and Ubuntu"), ("_x86_64.pkg.tar.zst", "arch", "Arch Linux"))),
+    ("windows", "Windows", (("-setup.exe", "installer", "Installer"),)),
+    ("linux", "Linux", (("_amd64.deb", "deb", "Debian package"), ("_x86_64.pkg.tar.zst", "arch", "Arch package"))),
 )
+# The buttons are as wide, against the page, as the file rows the 1280px
+# headers used to carry (532px): see BUTTON_WIDTH in platforms.py.
+BUTTON_WIDTH = "41.6%"
 SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _, _ in files)
 
 
@@ -57,7 +60,7 @@ def block(tag, repo, assets):
         lines.append('<p align="center">')
         for slug, label, asset, url in buttons:
             src = f".github/readme/download/{stem}-{slug}.svg?v={version}"
-            lines.append(f'<a href="{url}"><img src="{src}" alt="Download {asset} ({label})" width="49%"></a>')
+            lines.append(f'<a href="{url}"><img src="{src}" alt="Download {asset} ({label})" width="{BUTTON_WIDTH}"></a>')
         lines.append("</p>")
         lines.append("")
     lines.append(END)

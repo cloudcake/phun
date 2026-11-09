@@ -71,9 +71,9 @@ PLATFORMS = (
     ("macos", "macOS", "Apple Silicon and Intel", apple,
      (("apple-silicon", "Apple Silicon", "Phun_{v}_apple-silicon.dmg"), ("intel", "Intel", "Phun_{v}_intel.dmg"))),
     ("windows", "Windows", "Windows 10 and 11, x64", windows,
-     (("installer", "Windows installer", "Phun_{v}_windows-x64-setup.exe"),)),
+     (("installer", "Installer", "Phun_{v}_windows-x64-setup.exe"),)),
     ("linux", "Linux", "Debian, Ubuntu and Arch, x86_64", penguin,
-     (("deb", "Debian and Ubuntu", "Phun_{v}_amd64.deb"), ("arch", "Arch Linux", "Phun_{v}_x86_64.pkg.tar.zst"))),
+     (("deb", "Debian package", "Phun_{v}_amd64.deb"), ("arch", "Arch package", "Phun_{v}_x86_64.pkg.tar.zst"))),
 )
 
 
@@ -93,22 +93,23 @@ def header(name, subtitle, icon, files, version):
     return frame(W, H, "\n".join(body), title=f"Phun for {name}", desc=desc, css=CSS, fade_from=0.4, corner=(1280 - 22 - 78, 14))
 
 
-BW, BH = 632, 88
+# The size of the file rows the headers used to carry, so each button shows
+# at the same size: the README draws it at BW / W of the page's width.
+BW, BH = 532, 44
+BUTTON_WIDTH = f"{BW / W * 100:.1f}%"
 
 
 def button(name, label, fname):
-    """One installer's download button. Each is its own image, so the README
-    can link each one straight to its file."""
+    """One installer's download button, drawn like the header's old file
+    row. Each is its own image, so the README links each straight to its file."""
     begin()
-    body = [f'<circle cx="44" cy="44" r="60" fill="url(#glow)"/>']
-    body.append(rect(20, 20, 48, 48, r=12, fill=RED, stroke=None))
-    body.append(f'<g class="drop">{path("M44 32v22m-8-8 8 8 8-8", "#fff", 2.6)}</g>')
-    body.append(text("bold", label, 88, 42, 20, FG))
-    body.append(text("mono", fname, 88, 66, 14, MUTED))
-    chev = f"M{BW - 38} 36l8 8-8 8"
-    body.append(path(chev, SOFT, 2.2))
+    body = [rect(0, 0, BW, BH, r=11, fill=CARD, stroke=None)]
+    body.append(rect(12, 8, 28, 28, r=8, fill=RED, stroke=None))
+    body.append(f'<g class="drop">{path("M26 14v12m-5-5 5 5 5-5", "#fff", 2)}</g>')
+    body.append(text("mono", fname, 54, 27.5, 14, FG))
+    body.append(text("medium", label, BW - 18 - width("medium", label, 13), 27, 13, MUTED))
     desc = f"Download {fname}, Phun for {name} ({label})."
-    return frame(BW, BH, "\n".join(body), title=f"Download {fname}", desc=desc, css=CSS, fade_from=0.5, r=16, mark=False)
+    return frame(BW, BH, "\n".join(body), title=f"Download {fname}", desc=desc, css=CSS, r=11, mark=False)
 
 
 def current_version(readme=README):
