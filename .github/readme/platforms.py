@@ -93,23 +93,21 @@ def header(name, subtitle, icon, files, version):
     return frame(W, H, "\n".join(body), title=f"Phun for {name}", desc=desc, css=CSS, fade_from=0.4, corner=(1280 - 22 - 78, 14))
 
 
-# The size of the file rows the headers used to carry, so each button shows
-# at the same size: the README draws it at BW / W of the page's width.
-BW, BH = 532, 44
-BUTTON_WIDTH = f"{BW / W * 100:.1f}%"
+# The README shows two buttons to a row, each 49% of the page's width.
+BW, BH = 640, 72
 
 
 def button(name, label, fname):
-    """One installer's download button, drawn like the header's old file
-    row. Each is its own image, so the README links each straight to its file."""
+    """One installer's download button. Each is its own image, so the README
+    links each straight to its file."""
     begin()
-    body = [rect(0, 0, BW, BH, r=11, fill=CARD, stroke=None)]
-    body.append(rect(12, 8, 28, 28, r=8, fill=RED, stroke=None))
-    body.append(f'<g class="drop">{path("M26 14v12m-5-5 5 5 5-5", "#fff", 2)}</g>')
-    body.append(text("mono", fname, 54, 27.5, 14, FG))
-    body.append(text("medium", label, BW - 18 - width("medium", label, 13), 27, 13, MUTED))
+    body = [rect(0, 0, BW, BH, r=14, fill=CARD, stroke=None)]
+    body.append(rect(14, 14, 44, 44, r=11, fill=RED, stroke=None))
+    body.append(f'<g class="drop">{path("M36 26v18m-7-7 7 7 7-7", "#fff", 2.8)}</g>')
+    body.append(text("mono", fname, 76, 43.5, 21, FG))
+    body.append(text("medium", label, BW - 22 - width("medium", label, 18), 43, 18, MUTED))
     desc = f"Download {fname}, Phun for {name} ({label})."
-    return frame(BW, BH, "\n".join(body), title=f"Download {fname}", desc=desc, css=CSS, r=11, mark=False)
+    return frame(BW, BH, "\n".join(body), title=f"Download {fname}", desc=desc, css=CSS, r=14, mark=False)
 
 
 def current_version(readme=README):

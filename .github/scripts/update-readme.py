@@ -29,9 +29,8 @@ PLATFORMS = (
     ("windows", "Windows", (("-setup.exe", "installer", "Installer"),)),
     ("linux", "Linux", (("_amd64.deb", "deb", "Debian package"), ("_x86_64.pkg.tar.zst", "arch", "Arch package"))),
 )
-# The buttons are as wide, against the page, as the file rows the 1280px
-# headers used to carry (532px): see BUTTON_WIDTH in platforms.py.
-BUTTON_WIDTH = "41.6%"
+# Two buttons to a row, filling the page's width.
+BUTTON_WIDTH = "49%"
 SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _, _ in files)
 
 
