@@ -7,6 +7,15 @@
 # committed here. Evidence is uploaded as smoke-debian; results are also
 # published as notice annotations, which are public.
 #
+# The arch job runs the same script against the Arch package: it builds the
+# .pkg.tar.zst with scripts/build-arch.sh in the archlinux container, then
+# runs the checks as a plain user with passwordless sudo, so pacman resolves
+# the package's dependencies the way it does for a user. Evidence is uploaded
+# as smoke-arch. A container has no systemd: neither systemd-resolved nor
+# NetworkManager runs, so the .test resolver install is not exercised, and
+# Docker lets any user bind port 80, so a passing proxy check does not prove
+# the setcap in phun.install. Those need a real Arch machine.
+#
 # Runs on this public repo so the Linux minutes are free.
 
 name: Linux smoke test
@@ -67,5 +76,51 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: smoke-debian
+          path: smoke/
+          if-no-files-found: ignore
+
+  arch:
+    name: arch
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    container:
+      image: archlinux:base-devel
+      # WebKitGTK needs more shared memory than Docker's 64 MB default.
+      options: --shm-size=1g
+    steps:
+      # git and ssh first: without them actions/checkout cannot use the
+      # deploy key.
+      - name: Checkout tools
+        run: pacman -Syu --noconfirm --needed git openssh sudo python
+
+      - name: Checkout private source
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun-source
+          ref: ${{ inputs.ref }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          persist-credentials: false
+
+      - name: Build the .pkg.tar.zst
+        run: bash scripts/build-arch.sh
+
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          useradd -m smoke
+          echo 'smoke ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/smoke
+          chown -R smoke: "$GITHUB_WORKSPACE"
+          chmod a+w "$GITHUB_STEP_SUMMARY"
+          pkg=$(ls dist/Phun_*_x86_64.pkg.tar.zst)
+          runuser -u smoke -- env \
+            GITHUB_ACTIONS="$GITHUB_ACTIONS" \
+            GITHUB_STEP_SUMMARY="$GITHUB_STEP_SUMMARY" \
+            bash scripts/linux-smoke.sh "$pkg"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-arch
           path: smoke/
           if-no-files-found: ignore

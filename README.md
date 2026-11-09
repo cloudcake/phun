@@ -132,6 +132,21 @@ Use the Apple Silicon build on M-series Macs and the Intel build on older ones.
 sudo apt install ./Phun_<version>_amd64.deb
 ```
 
+On Arch Linux and its derivatives, install the `.pkg.tar.zst`:
+
+```sh
+sudo pacman -U ./Phun_<version>_x86_64.pkg.tar.zst
+```
+
+On Linux, `.test` names go through systemd-resolved, or NetworkManager with
+dnsmasq. A base Arch install often has neither; Phun then opens applications at
+`http://localhost/~<name>`. To use `.test` names there, enable systemd-resolved:
+
+```sh
+sudo systemctl enable --now systemd-resolved
+sudo ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+```
+
 **Windows.** Run the installer. It is not yet signed, so SmartScreen may warn:
 choose More info, then Run anyway.
 

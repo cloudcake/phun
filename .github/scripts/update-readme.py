@@ -24,7 +24,7 @@ END = "<!-- latest-release:end -->"
 PLATFORMS = (
     ("macos", "macOS", (("_apple-silicon.dmg", "Apple Silicon"), ("_intel.dmg", "Intel"))),
     ("windows", "Windows", (("-setup.exe", "Download the installer"),)),
-    ("linux", "Linux", (("_amd64.deb", "Download the .deb"),)),
+    ("linux", "Linux", (("_amd64.deb", "Download the .deb"), ("_x86_64.pkg.tar.zst", "Arch package"))),
 )
 SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _ in files)
 
