@@ -89,9 +89,14 @@ jobs:
         if: env.SELECTED == 'true' && (matrix.arch == 'arm64')
         run: ./scripts/build.sh --no-install
 
+      # build.sh compiles the bundled Xdebug under Rosetta for x86_64.
       - name: Build the Intel .app
         if: env.SELECTED == 'true' && (matrix.arch == 'intel')
-        run: ./scripts/build.sh --no-install --target x86_64-apple-darwin
+        run: |
+          if ! arch -x86_64 /usr/bin/true 2>/dev/null; then
+            sudo softwareupdate --install-rosetta --agree-to-license
+          fi
+          ./scripts/build.sh --no-install --target x86_64-apple-darwin
 
       - name: Smoke test
         if: env.SELECTED == 'true'
