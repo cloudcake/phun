@@ -12,17 +12,17 @@ virtual machine, and no password for everyday work.
 ## Download
 
 <!-- latest-release:start -->
-Latest release: **[v0.3.2](https://github.com/cloudcake/phun/releases/tag/v0.3.2)**
+Latest release: **[v0.3.3](https://github.com/cloudcake/phun/releases/tag/v0.3.3)**
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.2/Phun_0.3.2_apple-silicon.dmg"><img src=".github/readme/download/macos-apple-silicon.svg?v=0.3.2.7" alt="Download Phun 0.3.2 for macOS, Apple Silicon: Phun_0.3.2_apple-silicon.dmg" width="100%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.3/Phun_0.3.3_apple-silicon.dmg"><img src=".github/readme/download/macos-apple-silicon.svg?v=0.3.3.7" alt="Download Phun 0.3.3 for macOS, Apple Silicon: Phun_0.3.3_apple-silicon.dmg" width="100%"></a>
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.2/Phun_0.3.2_intel.dmg"><img src=".github/readme/download/macos-intel.svg?v=0.3.2.7" alt="Download Phun 0.3.2 for macOS, Intel: Phun_0.3.2_intel.dmg" width="100%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.3/Phun_0.3.3_intel.dmg"><img src=".github/readme/download/macos-intel.svg?v=0.3.3.7" alt="Download Phun 0.3.3 for macOS, Intel: Phun_0.3.3_intel.dmg" width="100%"></a>
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.2/Phun_0.3.2_windows-x64-setup.exe"><img src=".github/readme/download/windows-installer.svg?v=0.3.2.7" alt="Download Phun 0.3.2 for Windows, Installer: Phun_0.3.2_windows-x64-setup.exe" width="100%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.3/Phun_0.3.3_windows-x64-setup.exe"><img src=".github/readme/download/windows-installer.svg?v=0.3.3.7" alt="Download Phun 0.3.3 for Windows, Installer: Phun_0.3.3_windows-x64-setup.exe" width="100%"></a>
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.2/Phun_0.3.2_amd64.deb"><img src=".github/readme/download/linux-deb.svg?v=0.3.2.7" alt="Download Phun 0.3.2 for Linux, Debian package: Phun_0.3.2_amd64.deb" width="100%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.3/Phun_0.3.3_amd64.deb"><img src=".github/readme/download/linux-deb.svg?v=0.3.3.7" alt="Download Phun 0.3.3 for Linux, Debian package: Phun_0.3.3_amd64.deb" width="100%"></a>
 
-<a href="https://github.com/cloudcake/phun/releases/download/v0.3.2/Phun_0.3.2_x86_64.pkg.tar.zst"><img src=".github/readme/download/linux-arch.svg?v=0.3.2.7" alt="Download Phun 0.3.2 for Linux, Arch package: Phun_0.3.2_x86_64.pkg.tar.zst" width="100%"></a>
+<a href="https://github.com/cloudcake/phun/releases/download/v0.3.3/Phun_0.3.3_x86_64.pkg.tar.zst"><img src=".github/readme/download/linux-arch.svg?v=0.3.3.7" alt="Download Phun 0.3.3 for Linux, Arch package: Phun_0.3.3_x86_64.pkg.tar.zst" width="100%"></a>
 
 <!-- latest-release:end -->
 
