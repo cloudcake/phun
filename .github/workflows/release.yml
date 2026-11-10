@@ -654,13 +654,20 @@ jobs:
           python3 .release-tools/.github/scripts/release-notes.py \
             --changelog .phun-source/CHANGELOG.md --tag "$TAG" "${signed[@]}" > release-notes.md
           cat release-notes.md
+          # A tag that is not a plain X.Y.Z (v0.3.5-beta.1) is a pre-release:
+          # GitHub never makes it "latest", so stable installs and the
+          # /releases/latest check skip it, and only Phun's Beta updates see it.
+          kind=(--prerelease=false)
+          if ! [[ "${TAG#[vV]}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            kind=(--prerelease --latest=false)
+          fi
           if gh release view --repo "$GITHUB_REPOSITORY" "$TAG" >/dev/null 2>&1; then
             gh release upload --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --clobber
-            gh release edit --repo "$GITHUB_REPOSITORY" "$TAG" --notes-file release-notes.md
+            gh release edit --repo "$GITHUB_REPOSITORY" "$TAG" --notes-file release-notes.md "${kind[@]}"
           elif gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
-            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --title "$TAG" --notes-file release-notes.md
+            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --title "$TAG" --notes-file release-notes.md "${kind[@]}"
           else
-            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes-file release-notes.md
+            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes-file release-notes.md "${kind[@]}"
           fi
 
   # Points this repository's README at the release just published, so its
