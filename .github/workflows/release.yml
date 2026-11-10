@@ -563,11 +563,31 @@ jobs:
 
   release:
     name: GitHub Release
-    needs: [build, arch]
+    needs: [resolve, build, arch]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - name: Checkout the release notes script
+        uses: actions/checkout@v7
+        with:
+          path: .release-tools
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+
+      # The notes open with this version's changes from the changelog.
+      - name: Checkout the built commit's changelog
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun-source
+          ref: ${{ needs.resolve.outputs.sha }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          path: .phun-source
+          persist-credentials: false
+          sparse-checkout: CHANGELOG.md
+          sparse-checkout-cone-mode: false
+
       - name: Download installers
         uses: actions/download-artifact@v4
         with:
@@ -627,17 +647,20 @@ jobs:
           fi
           printf 'attaching:\n'
           printf '  %s\n' "${files[@]}"
-          signing="Updater signing is off."
+          signed=()
           if [ -n "$(find release-assets -name '*.minisig' -print -quit)" ]; then
-            signing="Each installer has a minisign signature (.minisig) and SHA256SUMS lists their checksums."
+            signed=(--signed)
           fi
-          notes="Phun ${TAG}. Mac builds are ad-hoc signed, not notarized; on first launch right-click Phun > Open, or run \`xattr -cr /Applications/Phun.app\`. Apple Silicon Macs use the apple-silicon dmg, Intel Macs the intel dmg. The Windows installer is unsigned, so SmartScreen may warn ('More info' > 'Run anyway'). On Debian and Ubuntu install the .deb; on Arch run \`sudo pacman -U ./Phun_<version>_x86_64.pkg.tar.zst\`. ${signing}"
+          python3 .release-tools/.github/scripts/release-notes.py \
+            --changelog .phun-source/CHANGELOG.md --tag "$TAG" "${signed[@]}" > release-notes.md
+          cat release-notes.md
           if gh release view --repo "$GITHUB_REPOSITORY" "$TAG" >/dev/null 2>&1; then
             gh release upload --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --clobber
+            gh release edit --repo "$GITHUB_REPOSITORY" "$TAG" --notes-file release-notes.md
           elif gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
-            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --title "$TAG" --notes "$notes"
+            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --title "$TAG" --notes-file release-notes.md
           else
-            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes "$notes"
+            gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes-file release-notes.md
           fi
 
   # Points this repository's README at the release just published, so its

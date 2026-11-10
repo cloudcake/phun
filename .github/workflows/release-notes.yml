@@ -1,0 +1,62 @@
+# Rewrite published releases' notes from phun-source's changelog: each
+# release's own section, then the install notes. The Release workflow writes
+# them this way for new releases; run this for releases published before it
+# did, or after correcting the changelog.
+
+name: Release notes
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Release tags, space separated (e.g. v0.3.0 v0.3.1 v0.3.2)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  notes:
+    name: Rewrite release notes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the release notes script
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+
+      - name: Checkout the changelog
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun-source
+          ref: main
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          path: .phun-source
+          persist-credentials: false
+          sparse-checkout: CHANGELOG.md
+          sparse-checkout-cone-mode: false
+
+      - name: Rewrite each release's notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAGS: ${{ inputs.tags }}
+        run: |
+          set -euo pipefail
+          for tag in $TAGS; do
+            if ! [[ "$tag" =~ ^[A-Za-z0-9._+-]+$ ]]; then
+              echo "::error::'$tag' is not a release tag"
+              exit 1
+            fi
+            signed=()
+            if gh release view "$tag" --json assets --jq '.assets[].name' | grep -q '\.minisig$'; then
+              signed=(--signed)
+            fi
+            python3 .github/scripts/release-notes.py \
+              --changelog .phun-source/CHANGELOG.md --tag "$tag" "${signed[@]}" > "notes-$tag.md"
+            echo "== $tag"
+            cat "notes-$tag.md"
+            gh release edit "$tag" --notes-file "notes-$tag.md"
+          done
