@@ -3,11 +3,11 @@
 
 The Release workflow runs this after publishing. Everything between the
 `<!-- latest-release:start -->` and `<!-- latest-release:end -->` markers in
-README.md is replaced with the version and, per platform, its header image
-and a button image per installer that links straight to it, so the README
-always offers the newest build. The images carry the version too; the
-workflow redraws them with
-`.github/readme/build.py platforms` afterwards. Pre-release tags (anything
+README.md is replaced with the version and a card image per installer (its
+platform's header with a full-length download button) that links straight
+to it, so the README always offers the newest build. The cards carry the
+version too; the workflow redraws them with `.github/readme/build.py
+platforms` afterwards. Pre-release tags (anything
 that is not a plain X.Y.Z) leave the README alone.
 
     update-readme.py --tag v0.2.0 --repo cloudcake/phun \
@@ -20,20 +20,18 @@ import sys
 START = "<!-- latest-release:start -->"
 END = "<!-- latest-release:end -->"
 
-# Each platform's header image and installers, by the end of the installer's
-# file name, in the order the README lists them. Each installer has its own
-# button image, `download/<platform>-<slug>.svg`, drawn by
-# .github/readme/platforms.py with the same slugs.
+# Each platform's installers, by the end of the installer's file name, in the
+# order the README lists them. Each has its own card image,
+# `download/<platform>-<slug>.svg`, drawn by .github/readme/platforms.py with
+# the same slugs.
 PLATFORMS = (
     ("macos", "macOS", (("_apple-silicon.dmg", "apple-silicon", "Apple Silicon"), ("_intel.dmg", "intel", "Intel"))),
     ("windows", "Windows", (("-setup.exe", "installer", "Installer"),)),
     ("linux", "Linux", (("_amd64.deb", "deb", "Debian package"), ("_x86_64.pkg.tar.zst", "arch", "Arch package"))),
 )
-# Two buttons to a row, filling the page's width.
-BUTTON_WIDTH = "49%"
-# Bump when the buttons are redrawn: GitHub caches the images by URL for
+# Bump when the cards are redrawn: GitHub caches the images by URL for
 # minutes, so a new drawing needs a new URL to show at once.
-BUTTON_REVISION = 2
+ART_REVISION = 3
 SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _, _ in files)
 
 
@@ -49,22 +47,13 @@ def block(tag, repo, assets):
     version = plain_version(tag) or tag
     lines = [START, f"Latest release: **[{tag}]({base}/tag/{tag})**", ""]
     for stem, name, files in PLATFORMS:
-        buttons = []
         for suffix, slug, label in files:
             for asset in sorted(assets):
                 if asset.endswith(suffix):
-                    buttons.append((slug, label, asset, f"{base}/download/{tag}/{asset}"))
-        if not buttons:
-            continue
-        target = buttons[0][3] if len(buttons) == 1 else f"{base}/tag/{tag}"
-        img = f'<img src=".github/readme/download/{stem}.svg?v={version}" alt="Phun {version} for {name}" width="100%">'
-        lines.append(f'<a href="{target}">{img}</a>')
-        lines.append('<p align="center">')
-        for slug, label, asset, url in buttons:
-            src = f".github/readme/download/{stem}-{slug}.svg?v={version}.{BUTTON_REVISION}"
-            lines.append(f'<a href="{url}"><img src="{src}" alt="Download {asset} ({label})" width="{BUTTON_WIDTH}"></a>')
-        lines.append("</p>")
-        lines.append("")
+                    url = f"{base}/download/{tag}/{asset}"
+                    src = f".github/readme/download/{stem}-{slug}.svg?v={version}.{ART_REVISION}"
+                    lines.append(f'<a href="{url}"><img src="{src}" alt="Download Phun {version} for {name}, {label}: {asset}" width="100%"></a>')
+                    lines.append("")
     lines.append(END)
     return "\n".join(lines)
 
