@@ -4,9 +4,9 @@
 The Release workflow runs this after publishing. Everything between the
 `<!-- latest-release:start -->` and `<!-- latest-release:end -->` markers in
 README.md is replaced with the version and a card image per installer (its
-platform's header with a full-length download button) that links straight
-to it, so the README always offers the newest build. The cards carry the
-version too; the workflow redraws them with `.github/readme/build.py
+platform's icon, name and version with a full-length download button) that
+links straight to it, so the README always offers the newest build. The
+cards carry the version too; the workflow redraws them with `.github/readme/build.py
 platforms` afterwards. Pre-release tags (anything
 that is not a plain X.Y.Z) leave the README alone.
 
@@ -29,9 +29,9 @@ PLATFORMS = (
     ("windows", "Windows", (("-setup.exe", "installer", "Installer"),)),
     ("linux", "Linux", (("_amd64.deb", "deb", "Debian package"), ("_x86_64.pkg.tar.zst", "arch", "Arch package"))),
 )
-# Bump when the cards are redrawn: GitHub caches the images by URL for
+# Bump when the images are redrawn: GitHub caches the images by URL for
 # minutes, so a new drawing needs a new URL to show at once.
-ART_REVISION = 3
+ART_REVISION = 5
 SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _, _ in files)
 
 

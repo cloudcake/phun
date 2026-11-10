@@ -1,6 +1,6 @@
-"""The README's Download section: a card per installer, its platform's
-header with a full-length download button, each its own image so each links
-straight to its file.
+"""The README's Download section: a compact card per installer, its
+platform's icon, name, subtitle and version with a full-length download
+button, each its own image so each links straight to its file.
 
 They carry the release's version and installer names, so the release
 workflow rebuilds them (`build.py platforms`) right after it rewrites the
@@ -10,7 +10,7 @@ names (`download/<platform>-<slug>.svg`) match update-readme.py's.
 import os
 import re
 
-from art import AMBER, BG, BLUE, BORDER, CARD, DIM, FG, GOLD, INSET, MUTED, RED, SOFT, TILE, begin, frame, hsl, path, rect, text, width
+from art import AMBER, BG, BLUE, BORDER, CARD, DIM, FG, GOLD, INSET, MUTED, RED, SOFT, TILE as TILE_BG, begin, frame, hsl, path, rect, text, width
 
 W = 1280
 README = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "README.md")
@@ -84,32 +84,36 @@ PLATFORMS = (
     )),
 )
 
-# The card: the platform's header on top, its download button full length
-# along the bottom.
-H = 300
-BX, BY, BW, BH = 56, 200, W - 112, 64
+# A compact card: the platform's icon, name, subtitle and version on top, its
+# download button full length along the bottom.
+H = 204
+TILE_X, TILE_Y, TILE = 32, 24, 80
+BX, BY, BH = 32, 124, 56
+BW = W - 2 * BX
 
 
 def card(name, subtitle, icon, label, fname, version):
     """One installer's card. Each is its own image, so the README links each
     straight to its file."""
     begin()
-    body = [f'<circle cx="120" cy="100" r="120" fill="url(#glow)"/>']
-    body.append(rect(56, 36, 128, 128, r=29, fill=TILE, stroke=BORDER, sw=1.5))
-    body.append(f'<g transform="translate(70 50)">{icon()}</g>')
-    body.append(text("black", name, 220, 98, 46, FG, tracking=-0.5))
-    body.append(text("semibold", subtitle, 220, 134, 20, MUTED))
+    body = [f'<circle cx="{TILE_X + TILE / 2}" cy="{TILE_Y + TILE / 2}" r="90" fill="url(#glow)"/>']
+    body.append(rect(TILE_X, TILE_Y, TILE, TILE, r=20, fill=TILE_BG, stroke=BORDER, sw=1.5))
+    body.append(f'<g transform="translate({TILE_X + 10} {TILE_Y + 10}) scale(.6)">{icon()}</g>')
+    nx = TILE_X + TILE + 24
+    body.append(text("black", name, nx, TILE_Y + 38, 34, FG, tracking=-0.4))
     tag = f"v{version}"
+    px = nx + width("black", name, 34, tracking=-0.4) + 16
     tw = width("mono", tag, 13)
-    body.append(rect(220, 150, tw + 40, 26, r=8, fill=INSET))
-    body.append(f'<circle cx="234" cy="163" r="3.5" fill="{RED}" class="pulse"/>')
-    body.append(text("mono", tag, 244, 167.5, 13, SOFT))
+    body.append(rect(px, TILE_Y + 14, tw + 40, 26, r=8, fill=INSET))
+    body.append(f'<circle cx="{px + 14}" cy="{TILE_Y + 27}" r="3.5" fill="{RED}" class="pulse"/>')
+    body.append(text("mono", tag, px + 24, TILE_Y + 31.5, 13, SOFT))
+    body.append(text("semibold", subtitle, nx, TILE_Y + 68, 18, MUTED))
     cy = BY + BH / 2
     body.append(rect(BX, BY, BW, BH, r=14, fill=RED, stroke=None))
-    body.append(f'<g class="drop">{path(f"M{BX + 36} {cy - 11}v20m-8-8 8 8 8-8", "#fff", 2.8)}</g>')
-    body.append(text("bold", label, BX + 68, cy + 8, 22, "#fff"))
-    fw = width("mono", fname, 16)
-    body.append(f'<g opacity=".8">{text("mono", fname, BX + BW - 28 - fw, cy + 6, 16, "#fff")}</g>')
+    body.append(f'<g class="drop">{path(f"M{BX + 34} {cy - 10}v18m-7-7 7 7 7-7", "#fff", 2.6)}</g>')
+    body.append(text("bold", label, BX + 62, cy + 7.5, 21, "#fff"))
+    fw = width("mono", fname, 15)
+    body.append(f'<g opacity=".8">{text("mono", fname, BX + BW - 26 - fw, cy + 5.5, 15, "#fff")}</g>')
     desc = f"Phun {version} for {name}, {subtitle}: {label.lower()}, {fname}."
     return frame(W, H, "\n".join(body), title=f"Phun for {name}: {fname}", desc=desc, css=CSS, fade_from=0.4, corner=(1280 - 22 - 78, 14))
 
