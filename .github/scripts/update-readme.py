@@ -31,7 +31,7 @@ PLATFORMS = (
 )
 # Bump when the images are redrawn: GitHub caches the images by URL for
 # minutes, so a new drawing needs a new URL to show at once.
-ART_REVISION = 5
+ART_REVISION = 6
 SUFFIXES = tuple(suffix for _, _, files in PLATFORMS for suffix, _, _ in files)
 
 

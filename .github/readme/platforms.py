@@ -109,11 +109,13 @@ def card(name, subtitle, icon, label, fname, version):
     body.append(text("mono", tag, px + 24, TILE_Y + 31.5, 13, SOFT))
     body.append(text("semibold", subtitle, nx, TILE_Y + 68, 18, MUTED))
     cy = BY + BH / 2
-    body.append(rect(BX, BY, BW, BH, r=14, fill=RED, stroke=None))
-    body.append(f'<g class="drop">{path(f"M{BX + 34} {cy - 10}v18m-7-7 7 7 7-7", "#fff", 2.6)}</g>')
-    body.append(text("bold", label, BX + 62, cy + 7.5, 21, "#fff"))
+    # A faint red tint with a faint red border, so the button reads as one
+    # without shouting.
+    body.append(f'<rect x="{BX + .5}" y="{BY + .5}" width="{BW - 1}" height="{BH - 1}" rx="14" fill="{RED}" fill-opacity=".08" stroke="{RED}" stroke-opacity=".38"/>')
+    body.append(f'<g class="drop">{path(f"M{BX + 34} {cy - 10}v18m-7-7 7 7 7-7", RED, 2.6)}</g>')
+    body.append(text("bold", label, BX + 62, cy + 7.5, 21, FG))
     fw = width("mono", fname, 15)
-    body.append(f'<g opacity=".8">{text("mono", fname, BX + BW - 26 - fw, cy + 5.5, 15, "#fff")}</g>')
+    body.append(text("mono", fname, BX + BW - 26 - fw, cy + 5.5, 15, MUTED))
     desc = f"Phun {version} for {name}, {subtitle}: {label.lower()}, {fname}."
     return frame(W, H, "\n".join(body), title=f"Phun for {name}: {fname}", desc=desc, css=CSS, fade_from=0.4, corner=(1280 - 22 - 78, 14))
 
