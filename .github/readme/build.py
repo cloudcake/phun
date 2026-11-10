@@ -27,7 +27,7 @@ def app_icon(x, y, size):
         '<rect width="256" height="256" rx="58" fill="#131417"/>'
         '<rect width="256" height="256" rx="58" fill="url(#icon-glow)"/>'
         '<rect x="0.75" y="0.75" width="254.5" height="254.5" rx="57.25" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1.5"/>'
-        f'<path d="{LOGO}" transform="translate(-21 0)" fill="url(#icon-mark)" fill-rule="evenodd"/></g>'
+        f'<path d="{LOGO}" transform="translate(-15 4)" fill="url(#icon-mark)" fill-rule="evenodd"/></g>'
     )
 
 
