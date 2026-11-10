@@ -16,13 +16,27 @@ from art import begin
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+def app_icon(x, y, size):
+    """The app icon: the white P on a dark gray tile lit red from the corner."""
+    return (
+        '<defs><radialGradient id="icon-glow" cx="0.72" cy="0.78" r="0.7">'
+        '<stop offset="0" stop-color="#d63d3d" stop-opacity="0.55"/><stop offset="1" stop-color="#d63d3d" stop-opacity="0"/>'
+        '</radialGradient><linearGradient id="icon-mark" x1="0" y1="0" x2="0" y2="1">'
+        '<stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9dbe0"/></linearGradient></defs>'
+        f'<g transform="translate({x:g} {y:g}) scale({size / 256:.5f})">'
+        '<rect width="256" height="256" rx="58" fill="#131417"/>'
+        '<rect width="256" height="256" rx="58" fill="url(#icon-glow)"/>'
+        '<rect x="0.75" y="0.75" width="254.5" height="254.5" rx="57.25" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1.5"/>'
+        f'<path d="{LOGO}" transform="translate(-21 0)" fill="url(#icon-mark)" fill-rule="evenodd"/></g>'
+    )
+
+
 def banner():
     W, H = 1280, 400
     body = [f'<circle cx="140" cy="200" r="150" fill="url(#glow)"/>']
     tx, tile = 236, 128
     ty = 136
-    body.append(rect(72, ty, tile, tile, r=29, fill=TILE, stroke=BORDER, sw=1.5))
-    body.append(f'<path d="{LOGO}" transform="translate(72 {ty}) scale({tile / 256}) translate(-21 0)" fill="{FG}" fill-rule="evenodd"/>')
+    body.append(app_icon(72, ty, tile))
     body.append(text("black", "Phun", tx, 196, 78, FG, tracking=-1))
     body.append(text("semibold", "Your pocket-sized PHP playground.", tx, 238, 26, SOFT))
     body.append(text("medium", "For macOS, Linux and Windows.", tx, 270, 19, MUTED))

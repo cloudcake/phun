@@ -94,7 +94,7 @@ and a tile per feature. Rebuilt by .github/readme/build.py with the rest.
 
 <p align="center">
 <img src=".github/readme/features/command-palette.svg" alt="A command palette. Every page, application, Artisan command and action, a few keystrokes away." width="49%">
-<img src=".github/readme/features/themes.svg" alt="Three themes. Daybreak, Nightfall and Tokyo Night, or follow the system. Your choice reaches every window and the editor." width="49%">
+<img src=".github/readme/features/themes.svg" alt="Two themes. Daybreak and Nightfall, or follow the system. Your choice reaches every window and the editor." width="49%">
 <img src=".github/readme/features/mcp.svg" alt="An MCP server for AI agents. Turn it on and agents such as Claude Code can list sites, switch PHP, create databases and read caught mail." width="49%">
 <img src=".github/readme/features/cli.svg" alt="The phun command. Link, park, secure, share and switch PHP from your terminal. The app and the command share one daemon." width="49%">
 <img src=".github/readme/features/health-checks.svg" alt="Health checks with fixes. Built-in checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off." width="49%">

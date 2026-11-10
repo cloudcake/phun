@@ -906,11 +906,10 @@ def themes():
     o = []
     looks = (
         ("Daybreak", hsl(220, 14, 97), hsl(220, 12, 92), hsl(220, 10, 82), RED),
-        ("Nightfall", BG, hsl(225, 21, 5.5), hsl(222, 12, 22), RED),
-        ("Tokyo Night", "#1a1b26", "#16161e", "#2a2e45", "#7aa2f7"),
+        ("Nightfall", hsl(225, 7, 8), hsl(225, 7, 6), hsl(225, 6, 22), RED),
     )
     for i, (name, bg, side, bars, accent) in enumerate(looks):
-        x = 36 + i * 198
+        x = 135 + i * 198
         o.append(f'<rect x="{x}" y="34" width="172" height="126" rx="10" fill="{bg}" stroke="{BORDER}"/>')
         o.append(f'<path d="M{x + 10} 34h36v126h-36a10 10 0 0 1-10-10v-106a10 10 0 0 1 10-10z" fill="{side}"/>')
         for k in range(4):
@@ -920,7 +919,7 @@ def themes():
             o.append(bar(x + 58, 70 + k * 12, w, 5, bars))
         o.append(f'<rect x="{x + 58}" y="112" width="48" height="16" rx="5" fill="{accent}"/>')
         o.append(text("semibold", name, x + 86 - width("semibold", name, 12.5) / 2, 186, 12.5, SOFT))
-        o.append(f'<rect x="{x - 5}" y="29" width="182" height="136" rx="14" fill="none" stroke="{RED}" stroke-width="2" class="cyc" style="{cyc(i, 3, 7.5)}"/>')
+        o.append(f'<rect x="{x - 5}" y="29" width="182" height="136" rx="14" fill="none" stroke="{RED}" stroke-width="2" class="cyc" style="{cyc(i, 2, 7.5)}"/>')
     return "".join(o)
 
 
@@ -1069,8 +1068,8 @@ TILES = (
 
     ("command-palette", 4, "A command palette",
      "Every page, application, Artisan command and action, a few keystrokes away.", palette, 4),
-    ("themes", 4, "Three themes",
-     "Daybreak, Nightfall and Tokyo Night, or follow the system. Your choice reaches every window and the editor.", themes, 3),
+    ("themes", 4, "Two themes",
+     "Daybreak and Nightfall, or follow the system. Your choice reaches every window and the editor.", themes, 2),
     ("mcp", 4, "An MCP server for AI agents",
      "Turn it on and agents such as Claude Code can list sites, switch PHP, create databases and read caught mail.", mcp, 4),
     ("cli", 4, "The phun command",
