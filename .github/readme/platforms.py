@@ -69,18 +69,19 @@ def penguin():
 
 
 # Per platform: its icon, and per installer a card of its own with the
+# variant shown beside the platform's name (none when there is only one), the
 # installer's subtitle and the label of its full-length download button.
 PLATFORMS = (
     ("macos", "macOS", apple, (
-        ("apple-silicon", "Apple Silicon Macs", "Download for Apple Silicon", "Phun_{v}_apple-silicon.dmg"),
-        ("intel", "Intel Macs", "Download for Intel", "Phun_{v}_intel.dmg"),
+        ("apple-silicon", "Apple Silicon", "Apple Silicon Macs", "Download for Apple Silicon", "Phun_{v}_apple-silicon.dmg"),
+        ("intel", "Intel", "Intel Macs", "Download for Intel", "Phun_{v}_intel.dmg"),
     )),
     ("windows", "Windows", windows, (
-        ("installer", "Windows 10 and 11, x64", "Download the installer", "Phun_{v}_windows-x64-setup.exe"),
+        ("installer", "", "Windows 10 and 11, x64", "Download the installer", "Phun_{v}_windows-x64-setup.exe"),
     )),
     ("linux", "Linux", penguin, (
-        ("deb", "Debian and Ubuntu, x86_64", "Download the Debian package", "Phun_{v}_amd64.deb"),
-        ("arch", "Arch Linux, x86_64", "Download the Arch package", "Phun_{v}_x86_64.pkg.tar.zst"),
+        ("deb", "Debian", "Debian and Ubuntu, x86_64", "Download the Debian package", "Phun_{v}_amd64.deb"),
+        ("arch", "Arch", "Arch Linux, x86_64", "Download the Arch package", "Phun_{v}_x86_64.pkg.tar.zst"),
     )),
 )
 
@@ -92,17 +93,23 @@ BX, BY, BH = 32, 124, 56
 BW = W - 2 * BX
 
 
-def card(name, subtitle, icon, label, fname, version):
+def card(name, subtitle, icon, label, fname, version, variant=""):
     """One installer's card. Each is its own image, so the README links each
-    straight to its file."""
+    straight to its file. The variant follows the name in a lighter weight,
+    so two cards for one platform don't read as duplicates."""
     begin()
     body = [f'<circle cx="{TILE_X + TILE / 2}" cy="{TILE_Y + TILE / 2}" r="90" fill="url(#glow)"/>']
     body.append(rect(TILE_X, TILE_Y, TILE, TILE, r=20, fill=TILE_BG, stroke=BORDER, sw=1.5))
     body.append(f'<g transform="translate({TILE_X + 10} {TILE_Y + 10}) scale(.6)">{icon()}</g>')
     nx = TILE_X + TILE + 24
     body.append(text("black", name, nx, TILE_Y + 38, 34, FG, tracking=-0.4))
+    end = nx + width("black", name, 34, tracking=-0.4)
+    if variant:
+        vx = end + width("medium", " ", 34)
+        body.append(text("medium", variant, vx, TILE_Y + 38, 34, FG, tracking=-0.4))
+        end = vx + width("medium", variant, 34, tracking=-0.4)
     tag = f"v{version}"
-    px = nx + width("black", name, 34, tracking=-0.4) + 16
+    px = end + 16
     tw = width("mono", tag, 13)
     body.append(rect(px, TILE_Y + 14, tw + 40, 26, r=8, fill=INSET))
     body.append(f'<circle cx="{px + 14}" cy="{TILE_Y + 27}" r="3.5" fill="{RED}" class="pulse"/>')
@@ -131,5 +138,5 @@ def current_version(readme=README):
 def build_all(write, version=None):
     version = version or os.environ.get("PHUN_VERSION") or current_version()
     for stem, name, icon, files in PLATFORMS:
-        for slug, subtitle, label, pattern in files:
-            write(f"download/{stem}-{slug}.svg", card(name, subtitle, icon, label, pattern.format(v=version), version))
+        for slug, variant, subtitle, label, pattern in files:
+            write(f"download/{stem}-{slug}.svg", card(name, subtitle, icon, label, pattern.format(v=version), version, variant))
