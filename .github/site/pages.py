@@ -24,9 +24,11 @@ INTRO = (
 
 NAV = (
     ("Get started", ("install", "first-launch")),
-    ("Applications", ("applications", "php", "services")),
-    ("Working in Phun", ("editor", "terminals", "technical-debt")),
-    ("Phun itself", ("updates", "collaboration", "cli")),
+    ("Applications", ("applications", "frameworks", "php", "sharing", "laravel-cloud")),
+    ("Services", ("services", "databases", "mail-storage")),
+    ("Working in Phun", ("editor", "debugging", "terminals", "technical-debt")),
+    ("Insight", ("metrics", "security", "diagnostics")),
+    ("Phun itself", ("palette", "ai-agents", "updates", "collaboration", "cli")),
 )
 
 HOME_FEATURES = (
@@ -147,28 +149,34 @@ def applications():
 <h2 id="create">Start something new</h2>
 <p>Create makes an application and serves it: Laravel, WordPress, Symfony, CodeIgniter, CakePHP, Slim, a static site or plain HTML. <strong>Existing project</strong> brings in a folder on this computer, a Git repository, or a Laravel Cloud application. A cloned Laravel application gets Composer, its <code>.env</code>, its key, its public storage link and its JavaScript dependencies.</p>
 {sh("phun new laravel blog", "phun new symfony shop --webapp")}
-<p><strong>Groups</strong> keep the Overview tidy: put applications in a group, order the groups, and add a group folder that is served like a parked one.</p>
 
 <h2 id="page">An application's page</h2>
 <p>Click an application to open its page. The header has <strong>Open</strong> (the code editor, the browser, the folder), the terminals and <strong>Share</strong>. The tabs:</p>
 <ul>
-<li><strong>Metrics</strong>: requests, response times, errors, memory and CPU, the latest requests and the endpoints hit.</li>
+<li><strong>Metrics</strong>: requests, response times, errors, memory and CPU, the latest requests and the endpoints hit; see <a href="metrics.html">Metrics and requests</a>.</li>
 <li><strong>Infrastructure</strong>: the canvas of its services; see <a href="services.html">Services</a>.</li>
-<li><strong>Security</strong>: dependency audits and Composer packages.</li>
+<li><strong>Security</strong>: dependency audits and Composer packages; see <a href="security.html">Security and packages</a>.</li>
 <li><strong>Technical Debt</strong>: see <a href="technical-debt.html">Technical Debt</a>.</li>
-<li><strong>Sharing</strong>: a public URL through Cloudflare.</li>
-<li><strong>Settings</strong>: General, PHP, HTTPS and the Environment editor.</li>
+<li><strong>Sharing</strong>: a public URL through Cloudflare; see <a href="sharing.html">Sharing and the network</a>.</li>
+<li><strong>Settings</strong>: General, PHP, HTTPS and the Environment editor; see <a href="frameworks.html#environment">The environment</a>.</li>
 </ul>
 <p>Every application shows its framework and the libraries it uses, with their versions. When its setup is wrong, such as an <code>APP_URL</code> that is not the address Phun serves it on or an empty <code>APP_KEY</code>, the page lists it with a one-click fix.</p>
 
 <h2 id="https">HTTPS and domains</h2>
-<p>Every application is served over HTTPS with a certificate from Phun's local certificate authority, trusted by your browsers. Add subdomains and wildcards, proxy a <code>.test</code> name to a local port, or send one path, such as <code>/reverb</code>, to another server:</p>
+<p>Every application is served over HTTPS with a certificate from Phun's local certificate authority, trusted by your browsers; there is nothing to switch on. Add subdomains and wildcards, proxy a <code>.test</code> name to a local port, or send one path, such as <code>/reverb</code>, to another server:</p>
 {sh("phun domain add blog api.blog.test", "phun proxy add reverb http://localhost:8080")}
 <p>An HTML application is served straight from its folder, with no PHP version needed. Hidden files such as <code>.env</code> and <code>.git</code> are never served from any application.</p>
 
 <h2 id="share">Share on a public URL</h2>
-<p>Share gives an application a public HTTPS address through a Cloudflare Quick Tunnel, for webhooks, demos and other devices. It can ask visitors for a password and close itself after an hour, a day or a week, and the Sharing tab lists who reached it. While it is shared, a QR code opens it on your phone.</p>
-{sh("phun share blog")}
+<p>Share gives an application a public HTTPS address through Cloudflare; see <a href="sharing.html">Sharing and the network</a> for passwords, time limits, your own hostname and other devices.</p>
+
+<h2 id="groups">Groups and packages</h2>
+<p><strong>Groups</strong> keep the Overview tidy: put applications in a group, order the groups, and add a group folder, served like a parked one. A <strong>package</strong> is a Composer package or repository your applications use, listed under a group (Create › Package). It opens in the code editor with its own dock badge and is never served.</p>
+{sh("phun group create Clients", "phun group assign blog Clients")}
+
+<h2 id="instances">More than one instance</h2>
+<p>An application can run extra instances behind a load balancer, for scaling locally, and choose which one runs the scheduler.</p>
+{sh("phun instance add blog", "phun instance list blog", "phun instance schedule blog <instance> on")}
 '''
 
 
@@ -228,22 +236,15 @@ def services():
 </ul>
 {sh("phun services", "phun service install redis <version>", "phun service set-port mysql 3307")}
 
-{{{{figure:mail}}}}
-<h2 id="mail">Mail</h2>
-<p>Every email your applications send is caught and readable in the Mail viewer ({k("Ctrl", "5")}): rendered, as plain text or as the raw source. Nothing leaves your machine.</p>
-
-<h2 id="storage">S3-compatible storage</h2>
-<p>Object storage on your machine, with public or private buckets and a browser for what is in them. Added to a Laravel application from the canvas, Phun creates its bucket and fills in its settings, so the <code>s3</code> disk works as it would against S3.</p>
-
-<h2 id="data">Databases, browsed</h2>
-<p>A database card opens the database browser: one grid for any table, and SQL that completes tables and columns, for MySQL, MariaDB and PostgreSQL. For Laravel, <strong>Open Schema</strong> draws the tables and model relationships as blueprints; drag one model onto another to relate them, and review the change to each model before it is written.</p>
+<h2 id="more">Mail, storage and databases</h2>
+<p>Caught mail and S3-compatible storage have their own page, <a href="mail-storage.html">Mail and storage</a>, and the database browser and schema canvas are in <a href="databases.html">Databases</a>.</p>
 
 <h2 id="tools">Developer tools</h2>
 <p>Composer, Node.js, Bun, the Laravel installer, WP-CLI and Chrome for Testing install when you need them, without a system package manager.</p>
 {sh("phun tools", "phun install tool node")}
 
 <h2 id="cloud">Laravel Cloud</h2>
-<p>From a Laravel application's Infrastructure › Laravel Cloud, sign in with an API token, link it to a Cloud application, see what Cloud is missing compared with Phun, create it after confirming what Cloud bills for, and deploy. Phun keeps no copy of your token.</p>
+<p>A Laravel application can link to Laravel Cloud from Infrastructure › Laravel Cloud; see <a href="laravel-cloud.html">Laravel Cloud</a>.</p>
 '''
 
 
@@ -279,8 +280,7 @@ def editor():
 <p>A test file shows a run marker beside every Pest test, <code>describe</code> group and PHPUnit method. Run one, or debug it; results arrive in a panel under the editor as each test finishes, and a failure shows on the line where it stopped. {k("Ctrl", "Shift", "F10")} runs the test at the cursor.</p>
 
 <h2 id="debugging">Debugging</h2>
-{{{{figure:debugging}}}}
-<p>The bug button turns Xdebug on for the application. Click beside a line number to set a breakpoint, load the page, and it stops there. The panel under the editor steps over ({k("F8")}), into ({k("F7")}) and out ({k("Shift", "F8")}), continues on {k("F9")}, shows the stack and opens arrays and objects in the variables.</p>
+<p>The bug button turns Xdebug on, and a click beside a line number sets a breakpoint; see <a href="debugging.html">Debugging and profiling</a>.</p>
 
 <h2 id="settings">Settings and shortcuts</h2>
 <p>{k("Ctrl", ",")} ({k("Cmd", ",")} on macOS) opens the editor settings: General, Formatting, Icons and Shortcuts. Every editor shortcut can be rebound.</p>
@@ -447,6 +447,274 @@ def cli():
 '''
 
 
+# ── More pages ───────────────────────────────────────────────────────────
+def frameworks():
+    return f'''
+{{{{figure:framework-stack}}}}
+<h2 id="stack">Your stack, recognised</h2>
+<p>Every application shows its framework and the libraries it uses, with their versions: Laravel, Livewire, Filament, Vue, React, Svelte, Alpine.js, Inertia, Tailwind and Vite, plus Symfony, CodeIgniter, CakePHP, Slim, Drupal, Magento, Yii and WordPress. Versions come from what is installed, else from the version your project asks for.</p>
+
+<h2 id="laravel">Laravel</h2>
+{{{{figure:laravel-workers}}}}
+<ul>
+<li><strong>Queue workers</strong>, as many as you need, each with its own name, queues, connection, settings and log.</li>
+<li><strong>The scheduler</strong> and <strong>Reverb</strong>, each with its own log.</li>
+<li><strong>Artisan</strong> and <strong>Tinker</strong> in the dock; see <a href="terminals.html">Terminals and the dock</a>.</li>
+<li><strong>Setup checks</strong> with a one-click fix: an <code>APP_URL</code> that is not the address Phun serves the application on, an empty <code>APP_KEY</code>, a missing public storage link, and a cache, session, queue or database pointing at a Phun service that is stopped or not installed.</li>
+</ul>
+{sh("phun queue enable blog --processes 2", "phun schedule enable blog", "phun reverb enable blog", "phun artisan blog migrate      # key-generate, storage-link, migrate or optimize-clear", "phun filament optimize blog")}
+
+<h2 id="symfony">Symfony</h2>
+<p>Phun writes a Symfony application's settings to <code>.env.local</code> and leaves <code>.env</code> for the defaults you commit; services added on the canvas write one DSN each. <code>bin/console</code> sits where Artisan does, with the command list and forms. Messenger workers consume the transports you choose (<code>async</code> by default) with process, time, memory and message limits, and Symfony's own log has its tab.</p>
+{sh("phun new symfony shop --webapp", "phun messenger enable shop", "phun console shop cache:clear")}
+
+<h2 id="wordpress">WordPress</h2>
+<p>Create a WordPress site from Create, or <code>phun new wordpress</code>. Services are written into <code>wp-config.php</code>: MySQL or MariaDB, and Redis for the Redis Object Cache plugin. Turn on one-click admin sign-in under the application's Settings › HTTPS, or from the terminal:</p>
+{sh("phun wordpress auto-login site on", "phun wordpress login-url site   # a one-time admin sign-in link", "phun wordpress users site")}
+
+<h2 id="others">CodeIgniter, Drupal, Magento and more</h2>
+<p>CodeIgniter gets its databases, Redis, Memcached and mail in its own <code>.env</code> settings. WordPress, CodeIgniter (with <code>codeigniter4/tasks</code>), Drupal (with Drush) and Magento get scheduled tasks from Infrastructure › Processes, which run the application's own cron command every minute, with its output in the application's logs and a notification when a run fails.</p>
+
+<h2 id="html">HTML applications</h2>
+<p>Create › HTML app makes a folder with an <code>index.html</code>, served as it is, from a plain page or a single-page app with a few client-side routes. Phun answers any path that is not a file with <code>index.html</code>, so reloading <code>/about</code> still works. No PHP version has to be installed and no PHP process starts; a request that needs PHP, such as a <code>.php</code> script or a POST, still goes to PHP.</p>
+
+<h2 id="environment">The environment</h2>
+<p>An application's Settings › Environment edits its <code>.env</code>; Phun hides values until you reveal them. <strong>Profiles</strong> are the <code>.env.&lt;name&gt;</code> files beside it (<code>.env.testing</code>, <code>.env.example</code> and so on): compare one with the current <code>.env</code> key by key and use it in its place, keeping the old one as <code>.env.backup</code> and clearing Laravel's cached config. <strong>Save current as</strong> writes a new profile.</p>
+{sh("phun env blog MAIL_FROM_ADDRESS=hello@blog.test", "phun dotenv blog")}
+
+<h2 id="npm">JavaScript</h2>
+<p><code>phun js-install blog</code> installs an application's JavaScript dependencies with its own package manager, and <code>phun npm enable blog dev</code> keeps an npm script running beside it.</p>
+'''
+
+
+def sharing():
+    return f'''
+{{{{figure:share}}}}
+<h2 id="quick">Share on a public URL</h2>
+<p>An application's <strong>Sharing</strong> tab gives it a public HTTPS address on <code>trycloudflare.com</code> through a Cloudflare Quick Tunnel, for webhooks, demos and other devices, with no account needed. The address changes every time you start one, and anyone with it can reach the application while it is shared and Phun is running. It is for development, not production. Phun fetches <code>cloudflared</code> when it is missing.</p>
+<ul>
+<li><strong>A password and a time limit.</strong> A share can ask visitors for a password and close itself after an hour, a day or a week. People on your own machine are never asked.</li>
+<li><strong>Who reached it.</strong> The Sharing tab lists visitors with their address, country, path and status.</li>
+<li><strong>On your phone.</strong> A QR code opens the share with your phone's camera on any network, with nothing to install or trust. Pages opened through the share reload by themselves when the application's files change.</li>
+</ul>
+{sh("phun share blog", "phun share-access blog   # a password and time limit for the next share", "phun tunnel status", "phun tunnel stop blog")}
+
+<h2 id="named">Your own hostname</h2>
+<p>With a Cloudflare account, a named tunnel puts an application on a hostname of your own that stays the same:</p>
+{sh("phun tunnel login", "phun tunnel create phun", "phun tunnel route phun blog.example.com", "phun tunnel set-host blog blog.example.com", "phun tunnel publish     # every application with a hostname goes online")}
+
+<h2 id="domains">Domains and proxies</h2>
+{{{{figure:domains-and-proxies}}}}
+<p>Add subdomains and wildcards, proxy a <code>.test</code> name to a local port, or send one path, such as <code>/reverb</code>, to another server. Routing rules send unmatched URLs under a prefix to a file, such as <code>/api</code> to <code>api/index.php</code>.</p>
+{sh("phun domain add blog api.blog.test", "phun proxy add vite http://localhost:5173", "phun route add blog /api api/index.php")}
+
+<h2 id="lan">Other devices on your network</h2>
+<p>Let phones, tablets and other computers on your network reach your <code>.test</code> applications, and make a one-time command that sets another device up to use them:</p>
+{sh("phun lan enable", "phun remote-setup")}
+<p>On macOS this needs <code>sudo phun elevate lan</code> once.</p>
+
+<h2 id="no-admin">Without admin rights</h2>
+<p>Every application is also reachable at <code>http://localhost/~name.test</code>, with no resolver or certificate needed.</p>
+'''
+
+
+def laravel_cloud():
+    return f'''
+{{{{figure:laravel-cloud}}}}
+<h2 id="link">Link an application</h2>
+<p>From a Laravel application's Infrastructure › Laravel Cloud, sign in with a Laravel Cloud API token and link the application to a Cloud application and environment. Phun installs the Laravel Cloud CLI as a tool and keeps no copy of your token.</p>
+
+<h2 id="compare">See what Cloud is missing</h2>
+<p>Phun compares the application's local infrastructure with the Cloud environment: database, cache, bucket, WebSockets, queue workers, scheduler, cron and PHP version. Create what Cloud is missing there, after confirming what Cloud bills for.</p>
+
+<h2 id="deploy">Deploy</h2>
+<p>Deploy from the same panel and follow the deployment's progress in Phun.</p>
+
+<h2 id="bring-home">Bring a Cloud application home</h2>
+<p>Create › Existing project › Laravel Cloud clones a Cloud application's repository and sets up the same infrastructure locally.</p>
+<p>Laravel Cloud is offered only on Laravel applications.</p>
+'''
+
+
+def databases():
+    return f'''
+{{{{figure:database-browser}}}}
+<h2 id="add">Add a database</h2>
+<p>On an application's Infrastructure canvas, <strong>Database</strong> asks which engine: MySQL, MariaDB, PostgreSQL, SQLite or MongoDB. Phun installs and starts it, writes the connection into the application's settings and creates the database. A second engine gets its own prefixed block (<code>DB_PGSQL_HOST</code> and so on, <code>MONGODB_URI</code>, or <code>DB_SQLITE_DATABASE</code>), so it never shares <code>DB_HOST</code> with the first, and its card shows the connection name to use in <code>config/database.php</code>. A Laravel application on SQLite keeps its database at <code>database/database.sqlite</code>.</p>
+
+<h2 id="browse">Browse and query</h2>
+<p>A database card opens the database browser. One grid shows a page of the picked table or what the last statement returned, and the SQL box starts with a query for that table and completes tables and columns. For MySQL, MariaDB and PostgreSQL.</p>
+
+<h2 id="schema">Draw your schema</h2>
+{{{{figure:schema-canvas}}}}
+<p>For a Laravel application the database card offers <strong>Open Schema</strong>. It reads every table, column and foreign key and the relationships the models declare, and draws them as blueprints: drag to pan, {k("Ctrl")} and the wheel to zoom. Draw a relationship by dragging one model onto another, change or remove one from its line, or accept one a foreign key suggests. Changes show as a diff of each model file and are written only when you apply them.</p>
+
+<h2 id="cli">From the terminal</h2>
+{sh("phun db list mysql", "phun db create mysql blog", "phun db provision blog          # the database blog's .env names", "phun db backup mysql blog blog.sql", "phun db restore mysql blog blog.sql", "phun db query mysql blog 'select count(*) from users'")}
+'''
+
+
+def mail_storage():
+    return f'''
+{{{{figure:mail}}}}
+<h2 id="mail">Every email, caught</h2>
+<p>Phun catches every email your applications send, so nothing reaches a real inbox. The Mail viewer ({k("Ctrl", "5")}, or Services › Mail) reads each message rendered, as its plain-text part, or as the raw source exactly as the application sent it, with a Copy button. New mail can arrive as a desktop notification.</p>
+<p>Applications are wired to it when you add mail on the Infrastructure canvas.</p>
+{sh("phun mail list", "phun mail show <id>", "phun mail clear", "phun mail port 2525")}
+
+<h2 id="storage">S3-compatible storage</h2>
+{{{{figure:object-storage}}}}
+<p>Phun serves object storage on <code>http://127.0.0.1:19000</code>, with buckets and files kept in Phun's data folder. Add <strong>Object storage</strong> to a Laravel application from its Infrastructure canvas and Phun creates its bucket and fills in its settings, so the <code>s3</code> disk works as it would against S3: uploads, downloads, listing, copying, deleting, multipart uploads and temporary URLs.</p>
+<p>The bucket browser on the Services page creates and deletes buckets, makes them public or private, and opens, reveals or deletes files. The port can be changed in Settings, and the server turned off.</p>
+{sh("phun storage buckets", "phun storage create-bucket uploads --private", "phun storage access uploads public", "phun storage install-driver blog   # Laravel's S3 driver")}
+'''
+
+
+def debugging():
+    return f'''
+{{{{figure:debugging}}}}
+<h2 id="xdebug">Step through a request</h2>
+<p>Xdebug comes with Phun, so there is nothing to install. In the code editor, the bug button turns it on for the application. Click beside a line number to set a breakpoint, load the page, and it stops there with the line highlighted. The panel under the editor steps over ({k("F8")}), into ({k("F7")}) and out ({k("Shift", "F8")}), continues on {k("F9")} ({k("Cmd", "Alt", "R")} on macOS), shows the stack and opens arrays and objects in the variables.</p>
+<p>Breakpoints are remembered, and breakpoints in a listed package count too, so you can stop inside a package an application uses.</p>
+{sh("phun debug blog on     # Xdebug on port 9003", "phun debugging         # what is being debugged")}
+
+<h2 id="tests">Debug a test</h2>
+<p>A test file's run markers can debug a single Pest test or PHPUnit method, stopping at your breakpoints. {k("Ctrl", "Shift", "F9")} debugs the test at the cursor ({k("Ctrl", "Shift", "D")} on macOS).</p>
+
+<h2 id="profile">Profile a request</h2>
+<p>A logged request on the Metrics tab has a <strong>Profile</strong> button. Phun sends it again with Xdebug tracing it and shows where the time went as a flame graph, with the application's code, packages and PHP's own functions in their own colours; click a call to look inside it. Every database query the request ran is listed, and a query run three times or more from one line is marked as a likely N+1, with its line, or the Blade view it came from, a click away in the editor.</p>
+{sh("phun profile blog on   # trace requests that carry the XDEBUG_TRACE cookie")}
+
+<h2 id="exceptions">Exceptions</h2>
+<p>Every file and line in a stack trace in an application's log opens the editor at that line, and the Logs panel's <strong>Exceptions</strong> button lists each exception once with how often it was thrown and when last.</p>
+'''
+
+
+def metrics():
+    return f'''
+{{{{figure:metrics}}}}
+<h2 id="charts">Metrics</h2>
+<p>An application's <strong>Metrics</strong> tab charts its requests, response times, errors, memory and CPU as they happen.</p>
+{sh("phun metrics blog     # request counts per minute, last 24 hours", "phun activity         # requests each application served, by status")}
+
+<h2 id="requests">The request inspector</h2>
+{{{{figure:request-inspector}}}}
+<p>The newest two hundred requests, with their status, timing, query string and a few headers, a filter, an errors-only switch and Clear. Cookies, authorization headers and bodies are never kept. A request opens with a click, {k("Enter")} or {k("Space")}, and can be:</p>
+<ul>
+<li><strong>Replayed</strong>, signed out and without a body, since Phun keeps neither.</li>
+<li><strong>Copied</strong> as a <code>curl</code> command.</li>
+<li><strong>Shown with its log lines</strong>, what the application wrote while it ran.</li>
+<li><strong>Profiled</strong>; see <a href="debugging.html#profile">Profile a request</a>.</li>
+</ul>
+{sh("phun requests blog")}
+
+<h2 id="endpoints">Endpoints</h2>
+<p>A table of the endpoints the application has served: the method, the path and how many times it was hit, with its errors, average response time and when it was last hit. Sort by any heading, filter by path, and clear the counts. Query strings are left out, so <code>/search?q=a</code> and <code>/search?q=b</code> are one endpoint.</p>
+{sh("phun endpoints blog", "phun endpoints blog --clear")}
+'''
+
+
+def security():
+    return f'''
+{{{{figure:dependency-audits}}}}
+<h2 id="audit">Dependency audits</h2>
+<p>An application's <strong>Security</strong> tab audits its Composer and JavaScript dependencies: how far behind each package is, and the known advisories against it, with a card per package manager.</p>
+{sh("phun security scan blog")}
+
+<h2 id="wait">Wait before installing</h2>
+<p>Brand-new releases are where supply-chain attacks land. <strong>Wait before installing</strong> makes package managers hold off on releases younger than the days you choose. For Composer it uses Composer's own cooldown setting, <code>config.policy.cooldown</code> in <code>composer.json</code> (Composer 2.11 and newer), so it works for any Composer application.</p>
+{sh("phun security wait blog on --days 7")}
+
+<h2 id="packages">Composer packages</h2>
+<p>The Security tab lists every package <code>composer.json</code> requires, with its constraint, its installed and newest versions and its advisories, and a button to update it, upgrade it to a new major or remove it. Add packages from the same card. Every change runs Phun's Composer on the application's PHP.</p>
+{sh("phun packages list blog", "phun packages require blog spatie/laravel-data", "phun packages update blog laravel/framework")}
+
+<h2 id="update-all">Update all, and go back</h2>
+<p><strong>Update all</strong> updates every Composer and JavaScript package within the versions your project allows (no new major versions), still waiting out new releases if Wait before installing is on, and lists what moved. The lock files are saved first: <strong>Restore previous versions</strong> puts them back and reinstalls.</p>
+{sh("phun security update blog", "phun security restore blog")}
+'''
+
+
+def diagnostics():
+    return f'''
+{{{{figure:health-checks}}}}
+<h2 id="checks">Health checks</h2>
+<p><strong>Diagnostics</strong>, on the Overview ({k("Ctrl", "3")}), runs Phun's checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off. The palette can run the safe fixes too.</p>
+{sh("phun status       # the daemon, ports, DNS, certificates and PHP at a glance", "phun doctor", "phun doctor fix")}
+
+<h2 id="report">A problem report</h2>
+{{{{figure:diagnostics-report}}}}
+<p>Diagnostics › Report gathers what a bug report needs in one file: versions, services, Phun's processes, a <code>.test</code> lookup, health checks and recent logs. Passwords, tokens, keys, email addresses, share links, card or ID numbers and your user name are removed before you see it. Copy it, or Save file puts it in Downloads. Copy diagnostics on the daemon panel is redacted the same way. Problems and ideas are welcome in <a href="https://github.com/cloudcake/phun/discussions">Discussions</a>.</p>
+
+<h2 id="daemon">When the daemon will not start</h2>
+<p>Phun checks, stops what is left and starts it directly. Copy diagnostics lists every start attempt with its time, so a report shows what was tried. After an in-app update, the daemon's panel can also go back to the version you had; see <a href="updates.html#rollback">Going back</a>.</p>
+{sh("phun ping", "phun restart daemon")}
+
+<h2 id="notifications">Notifications</h2>
+{{{{figure:notifications}}}}
+<p>What happens in the background arrives as a desktop notification, even with the window closed:</p>
+<ul>
+<li>Queued jobs finishing or failing, Messenger messages handled or given up on, and scheduled tasks failing.</li>
+<li>Caught mail, and errors in an application's log.</li>
+<li>A service or worker stopping, installs and new applications finishing or failing, and shares ending.</li>
+<li>A new Phun release.</li>
+</ul>
+<p>Settings › Notifications turns each kind on or off and has <strong>Do not disturb</strong>. A burst of one kind becomes one notification. Scheduled tasks that succeed start switched off, since a task that runs every minute would notify every minute.</p>
+{sh("phun events      # the recent background events")}
+'''
+
+
+def palette():
+    return f'''
+{{{{figure:command-palette}}}}
+<h2 id="palette">The command palette</h2>
+<p>{k("Ctrl", "K")} ({k("Cmd", "K")} on macOS), or <strong>Search commands</strong> in every page header, opens a search box for the whole app:</p>
+<ul>
+<li>Type an application's name to open it, its Artisan, Console, Tinker or Logs, its tabs, or copy its local URL.</li>
+<li>Start, stop or restart any service; install, update or remove developer tools; make a PHP version the default or restart its pools.</li>
+<li>Create or clone an application, run the diagnostics or their safe fixes, jump to any Settings section, and open Updates.</li>
+<li><strong>Run again</strong> lists the Artisan commands you ran recently in each application, and <strong>Recent</strong> what you used last.</li>
+</ul>
+<p>Matching is forgiving: "tnkr" finds Tinker.</p>
+
+<h2 id="keys">Key binds</h2>
+{{{{figure:key-binds}}}}
+<p>Settings › Key binds gives any action in the command palette a key of your own, plus the dock's actions for the application you are on. Press a key cap to record. Phun asks before taking a key another action has, refuses keys that typing needs, and can clear or reset each one. {k("Ctrl", "/")} shows every shortcut.</p>
+<div class="table-wrap"><table><thead><tr><th>Keys</th><th>What they do</th></tr></thead><tbody>
+<tr><td>{k("Ctrl", "K")}</td><td>The command palette</td></tr>
+<tr><td>{k("Ctrl", "1")} to {k("Ctrl", "4")}</td><td>Overview, Services, Diagnostics, Settings</td></tr>
+<tr><td>{k("Ctrl", "5")}</td><td>Mail</td></tr>
+<tr><td>{k("Ctrl", ",")}</td><td>Settings</td></tr>
+<tr><td>{k("Ctrl", "Shift", "L")}</td><td>Switch between light and dark</td></tr>
+<tr><td>{k("Ctrl", "Shift", "R")}</td><td>Restart the daemon</td></tr>
+<tr><td>{k("`")}</td><td>Open or close the Console for the application you are on</td></tr>
+<tr><td>{k("Shift", "`")}</td><td>Its next open terminal</td></tr>
+<tr><td>{k("Ctrl", "/")}</td><td>Every shortcut</td></tr>
+</tbody></table></div>
+<p>On macOS, {k("Cmd")} takes the place of {k("Ctrl")}.</p>
+
+<h2 id="themes">Themes</h2>
+{{{{figure:themes}}}}
+<p>Daybreak and Nightfall, or follow the system, under Settings › Appearance. The choice reaches every window, the terminals and the editor. When your system asks for reduced motion, nothing in Phun slides, pulses or spins.</p>
+'''
+
+
+def ai_agents():
+    return f'''
+{{{{figure:mcp}}}}
+<h2 id="mcp">An MCP server for AI agents</h2>
+<p>Phun can serve its tools to AI coding agents on your machine over MCP, the Model Context Protocol, so agents such as Claude Code can list your applications, switch PHP, create databases and read caught mail.</p>
+<ol class="steps">
+<li><b>Turn it on</b><p>Settings › AI agents › <strong>Enable Phun's MCP server</strong>, or <code>phun settings mcp on</code>.</p></li>
+<li><b>Register Phun with your agent</b><p>The same section registers Phun with your agent. For Claude Code by hand:</p>
+{sh("claude mcp add --scope user phun -- phun mcp")}</li>
+</ol>
+
+<h2 id="cli">The command line, for agents and scripts</h2>
+<p>Every <code>phun</code> command takes <code>--json</code>, and <code>phun request '&lt;json&gt;'</code> sends any request to the daemon and prints its JSON reply. <code>phun editor</code> reads, writes, searches, formats and refactors an application's files the way the app's code editor does; see <a href="cli.html#code">the command reference</a>.</p>
+'''
+
+
 PAGES = {
     "install": dict(title="Install", icon="developer-tools", summary="Download Phun for macOS, Windows or Linux and get it running.",
                     lede="Phun is one desktop app for macOS, Linux and Windows, with a small background service and the <code>phun</code> command.", body=install),
@@ -464,6 +732,28 @@ PAGES = {
                       lede="Artisan, a console, Tinker and every log, in a dock at the bottom of the window, a key away.", body=terminals),
     "technical-debt": dict(title="Technical Debt", icon="technical-debt", summary="The work your team put off, the code smells and the deprecated PHP, with fixes.",
                            lede="The work your team put off and noted in the code, beside the code smells and deprecated PHP Phun finds, with a fix where one is safe.", body=technical_debt),
+    "frameworks": dict(title="Frameworks", icon="framework-stack", summary="Laravel, Symfony, WordPress, CodeIgniter and HTML applications, and their settings.",
+                       lede="Phun knows each framework: its workers, its console, where it reads its settings, and the libraries it uses.", body=frameworks),
+    "sharing": dict(title="Sharing and the network", icon="share", summary="A public URL, your own hostname, domains, proxies and other devices.",
+                    lede="Share an application on a public URL, give it a hostname of your own, or open it on the devices around you.", body=sharing),
+    "laravel-cloud": dict(title="Laravel Cloud", icon="laravel-cloud", summary="Link, compare, create and deploy, or bring a Cloud application home.",
+                          lede="Link a Laravel application to Laravel Cloud, create what Cloud is missing and deploy, or bring a Cloud application home with the same infrastructure.", body=laravel_cloud),
+    "databases": dict(title="Databases", icon="database-browser", summary="MySQL, MariaDB, PostgreSQL, SQLite and MongoDB, browsed and drawn.",
+                      lede="Add a database in a click, browse any table, write SQL that completes, and draw a Laravel schema.", body=databases),
+    "mail-storage": dict(title="Mail and storage", icon="mail", summary="Every email caught, and S3-compatible storage on your machine.",
+                         lede="Every email your applications send, caught and readable, and S3-compatible object storage beside them.", body=mail_storage),
+    "debugging": dict(title="Debugging and profiling", icon="debugging", summary="Xdebug breakpoints in the editor, and a flame graph of any request.",
+                      lede="Set a breakpoint, load the page and step through it, or profile a request to see where the time went.", body=debugging),
+    "metrics": dict(title="Metrics and requests", icon="metrics", summary="Charts, the request inspector, replays and endpoints.",
+                    lede="See what each application does: its requests, response times, errors, memory and CPU, and every recent request.", body=metrics),
+    "security": dict(title="Security and packages", icon="dependency-audits", summary="Dependency audits, a wait before new releases, and Composer packages.",
+                     lede="Audit an application's dependencies, wait out brand-new releases, and manage its Composer packages.", body=security),
+    "diagnostics": dict(title="Diagnostics and notifications", icon="health-checks", summary="Health checks with fixes, a redacted report, and desktop notifications.",
+                        lede="Health checks with a fix for each, a problem report with the secrets taken out, and notifications for what happens in the background.", body=diagnostics),
+    "palette": dict(title="Palette, keys and themes", icon="command-palette", summary="The command palette, key binds of your own, and Daybreak and Nightfall.",
+                    lede="Every page, application and action a few keystrokes away, on keys of your own, in the theme you like.", body=palette),
+    "ai-agents": dict(title="AI agents", icon="mcp", summary="An MCP server so agents such as Claude Code can work with Phun.",
+                      lede="Let AI coding agents on your machine manage Phun over MCP.", body=ai_agents),
     "updates": dict(title="Updates and rollback", icon="updates", summary="Update Phun from the app, try betas, and go back if a version gives you trouble.",
                     lede="Phun checks for new versions and installs them from the app, with the release notes beside them.", body=updates),
     "collaboration": dict(title="Collaboration", icon="share", next=True, summary="Invite teammates into your Phun, end-to-end encrypted.",
