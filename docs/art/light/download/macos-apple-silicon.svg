@@ -52,9 +52,7 @@
   <mask id="dotmask"><rect width="1280" height="204" fill="url(#fade)"/></mask>
   <radialGradient id="glow"><stop offset="0" stop-color="#d63d3d" stop-opacity=".22"/><stop offset="1" stop-color="#d63d3d" stop-opacity="0"/></radialGradient>
 </defs>
-<g clip-path="url(#card)">
-  <rect width="1280" height="204" fill="#f6f7f9"/>
-  <rect width="1280" height="204" fill="url(#dots)" mask="url(#dotmask)"/>
+<g>
   <rect x="32" y="24" width="80" height="80" rx="20" fill="#f0f2f4" stroke="#d9dce2" stroke-width="1.5"/>
 <g transform="translate(42 34) scale(.6)"><circle cx="50" cy="56" r="40" fill="url(#glow)" class="pulse"/><path d="M50 30C40 24 20 24 15 42C10 60 20 82 32 90C38 95 44 94 50 91C56 94 62 95 68 90C74 85 80 76 84 66C72 62 68 46 80 38C74 28 60 24 50 30Z" fill="#dcdfe5" stroke="#363a45" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><g class="sway"><path d="M52 22C52 12 58 6 66 4C66 14 60 20 52 22Z" fill="#d3dfd8" stroke="#358d55" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
 <g fill="#111318" transform="translate(136 62) scale(0.01700)"><use href="#k108" x="0"/><use href="#k45" x="1678"/><use href="#k49" x="2690"/><use href="#k27" x="3639"/><use href="#k34" x="5245"/></g>
@@ -69,5 +67,4 @@
 <g fill="#616875" transform="translate(969.139 157.5) scale(0.00732)"><use href="#o51" x="0"/><use href="#o75" x="1233"/><use href="#o88" x="2466"/><use href="#o81" x="3699"/><use href="#o66" x="4932"/><use href="#o19" x="6165"/><use href="#o17" x="7398"/><use href="#o23" x="8631"/><use href="#o17" x="9864"/><use href="#o21" x="11097"/><use href="#o66" x="12330"/><use href="#o68" x="13563"/><use href="#o83" x="14796"/><use href="#o83" x="16029"/><use href="#o79" x="17262"/><use href="#o72" x="18495"/><use href="#o16" x="19728"/><use href="#o86" x="20961"/><use href="#o76" x="22194"/><use href="#o79" x="23427"/><use href="#o76" x="24660"/><use href="#o70" x="25893"/><use href="#o82" x="27126"/><use href="#o81" x="28359"/><use href="#o17" x="29592"/><use href="#o71" x="30825"/><use href="#o80" x="32058"/><use href="#o74" x="33291"/></g>
   <g opacity=".42"><path d="M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z" transform="translate(1180 14) scale(0.06250) translate(-21 0)" fill="#616875" fill-rule="evenodd"/><g fill="#616875" transform="translate(1202 26.5) scale(0.00600)"><use href="#b114" x="0"/><use href="#b95" x="1136"/><use href="#b134" x="2264"/><use href="#b109" x="3392"/></g></g>
 </g>
-<rect x=".5" y=".5" width="1279" height="203" rx="19.5" fill="none" stroke="#d9dce2"/>
 </svg>

@@ -95,6 +95,27 @@ def daybreak(svg):
                   svg)
 
 
+# The README palette's blue-black neutrals and their Nightfall counterparts,
+# after the app's dark tokens (225 7% 6.5% and the grays above it), so the
+# drawings sit on the site's own gray. Text and accents stay as drawn.
+DARK = {
+    "#0f1117": _hex(225, 7, 6.5),    # BG
+    "#0c0e13": _hex(225, 7, 5.5),    # TILE
+    "#171a21": _hex(225, 7, 10.5),   # CARD
+    "#13151b": _hex(225, 7, 8.5),    # INSET
+    "#262a33": _hex(225, 6, 17),     # BORDER
+    "#363a45": _hex(225, 6, 25),     # LINE
+    "#5a6172": _hex(225, 5, 40),     # ART
+    "#383e4c": _hex(225, 6, 25),     # DIM
+    "#2d3139": _hex(225, 6, 20),     # FAINT
+}
+
+
+def nightfall(svg):
+    return re.sub(r'(fill|stroke|stop-color)="(#[0-9a-fA-F]{6})"',
+                  lambda m: f'{m.group(1)}="{DARK.get(m.group(2).lower(), m.group(2))}"', svg)
+
+
 def bare(svg):
     """The drawing without its card: no ground, no dots, no red glow and no
     frame, so it sits on the page's own art panel in either theme."""
@@ -126,7 +147,7 @@ ART_DONE = {}
 
 
 def write_art(name, svg):
-    for theme, body in (("dark", svg), ("light", daybreak(svg))):
+    for theme, body in (("dark", nightfall(svg)), ("light", daybreak(svg))):
         path = os.path.join(OUT, "art", theme, name + ".svg")
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as fh:
@@ -168,8 +189,7 @@ def downloads():
         out.append(f'<p class="latest">Latest release: <a href="{esc(latest.group(2))}"><strong>{esc(latest.group(1))}</strong></a></p>')
     cards = re.findall(r'<a href="([^"]+)"><img src="\.github/readme/download/([a-z0-9-]+)\.svg(?:\?v=([^"]*))?" alt="([^"]*)"', block.group(1))
     for url, stem, ver, alt in cards:
-        svg = re.sub(r'<circle [^>]*fill="url\(#glow\)"/>\s*', "", read(f"download/{stem}.svg"))
-        write_art(f"download/{stem}", svg)
+        write_art(f"download/{stem}", bare(read(f"download/{stem}.svg")).replace('<g clip-path="url(#card)">', "<g>", 1))
         q = f"?v={esc(ver)}" if ver else ""
         out.append(
             f'<a class="download-card" href="{esc(url)}">'

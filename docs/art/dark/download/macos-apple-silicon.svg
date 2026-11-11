@@ -52,14 +52,12 @@
   <mask id="dotmask"><rect width="1280" height="204" fill="url(#fade)"/></mask>
   <radialGradient id="glow"><stop offset="0" stop-color="#d63d3d" stop-opacity=".22"/><stop offset="1" stop-color="#d63d3d" stop-opacity="0"/></radialGradient>
 </defs>
-<g clip-path="url(#card)">
-  <rect width="1280" height="204" fill="#0f1117"/>
-  <rect width="1280" height="204" fill="url(#dots)" mask="url(#dotmask)"/>
-  <rect x="32" y="24" width="80" height="80" rx="20" fill="#0c0e13" stroke="#262a33" stroke-width="1.5"/>
+<g>
+  <rect x="32" y="24" width="80" height="80" rx="20" fill="#0d0e0f" stroke="#292a2e" stroke-width="1.5"/>
 <g transform="translate(42 34) scale(.6)"><circle cx="50" cy="56" r="40" fill="url(#glow)" class="pulse"/><path d="M50 30C40 24 20 24 15 42C10 60 20 82 32 90C38 95 44 94 50 91C56 94 62 95 68 90C74 85 80 76 84 66C72 62 68 46 80 38C74 28 60 24 50 30Z" fill="#1b1f27" stroke="#cdd0d6" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><g class="sway"><path d="M52 22C52 12 58 6 66 4C66 14 60 20 52 22Z" fill="#1d3526" stroke="#4ebc76" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
 <g fill="#f3f4f6" transform="translate(136 62) scale(0.01700)"><use href="#k108" x="0"/><use href="#k45" x="1678"/><use href="#k49" x="2690"/><use href="#k27" x="3639"/><use href="#k34" x="5245"/></g>
 <g fill="#f3f4f6" transform="translate(252.584 62) scale(0.01700)"><use href="#m3" x="0"/><use href="#m114" x="1339"/><use href="#m114" x="2441"/><use href="#m1140" x="3542"/><use href="#m59" x="3997"/><use href="#m34" x="5514"/><use href="#m98" x="6578"/><use href="#m1140" x="7042"/><use href="#m98" x="7496"/><use href="#m49" x="7960"/><use href="#m111" x="8893"/><use href="#m109" x="10008"/></g>
-<rect x="457.737" y="38" width="86.96" height="26" rx="8" fill="#13151b" stroke="#262a33" stroke-width="1"/>
+<rect x="457.737" y="38" width="86.96" height="26" rx="8" fill="#141517" stroke="#292a2e" stroke-width="1"/>
 <circle cx="471.7370000000001" cy="51" r="3.5" fill="#d63d3d" class="pulse"/>
 <g fill="#cdd0d6" transform="translate(481.737 55.5) scale(0.00635)"><use href="#o89" x="0"/><use href="#o19" x="1233"/><use href="#o17" x="2466"/><use href="#o23" x="3699"/><use href="#o17" x="4932"/><use href="#o21" x="6165"/></g>
 <g fill="#8c919b" transform="translate(136 92) scale(0.00900)"><use href="#s3" x="0"/><use href="#s114" x="1373"/><use href="#s114" x="2502"/><use href="#s1140" x="3631"/><use href="#s59" x="4116"/><use href="#s34" x="5676"/><use href="#s98" x="6767"/><use href="#s1140" x="7262"/><use href="#s98" x="7747"/><use href="#s49" x="8242"/><use href="#s111" x="9202"/><use href="#s109" x="10344"/><use href="#s24" x="11964"/><use href="#s45" x="13838"/><use href="#s49" x="14843"/><use href="#s118" x="15803"/></g>
@@ -69,5 +67,4 @@
 <g fill="#8c919b" transform="translate(969.139 157.5) scale(0.00732)"><use href="#o51" x="0"/><use href="#o75" x="1233"/><use href="#o88" x="2466"/><use href="#o81" x="3699"/><use href="#o66" x="4932"/><use href="#o19" x="6165"/><use href="#o17" x="7398"/><use href="#o23" x="8631"/><use href="#o17" x="9864"/><use href="#o21" x="11097"/><use href="#o66" x="12330"/><use href="#o68" x="13563"/><use href="#o83" x="14796"/><use href="#o83" x="16029"/><use href="#o79" x="17262"/><use href="#o72" x="18495"/><use href="#o16" x="19728"/><use href="#o86" x="20961"/><use href="#o76" x="22194"/><use href="#o79" x="23427"/><use href="#o76" x="24660"/><use href="#o70" x="25893"/><use href="#o82" x="27126"/><use href="#o81" x="28359"/><use href="#o17" x="29592"/><use href="#o71" x="30825"/><use href="#o80" x="32058"/><use href="#o74" x="33291"/></g>
   <g opacity=".42"><path d="M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z" transform="translate(1180 14) scale(0.06250) translate(-21 0)" fill="#8c919b" fill-rule="evenodd"/><g fill="#8c919b" transform="translate(1202 26.5) scale(0.00600)"><use href="#b114" x="0"/><use href="#b95" x="1136"/><use href="#b134" x="2264"/><use href="#b109" x="3392"/></g></g>
 </g>
-<rect x=".5" y=".5" width="1279" height="203" rx="19.5" fill="none" stroke="#262a33"/>
 </svg>

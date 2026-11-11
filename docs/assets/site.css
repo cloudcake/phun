@@ -345,9 +345,20 @@ kbd {
 .note .label { display: block; margin-bottom: 2px; color: var(--fg); font-weight: 700; font-size: 14px; }
 .badge { display: inline-block; vertical-align: middle; margin-left: 8px; padding: 3px 9px; border-radius: 999px; font: 700 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--red-ink); border: 1px solid var(--red-ink); }
 
-.download-card { display: block; margin: 12px 0; border-radius: 20px; transition: transform .15s ease; }
-.download-card:hover { transform: translateY(-2px); }
-.download-card img { width: 100%; height: auto; border-radius: 20px; }
+.download-card {
+  position: relative; isolation: isolate; display: block; margin: 12px 0; overflow: hidden;
+  border: 1px solid var(--border); border-radius: 20px; background: var(--card);
+  transition: border-color .15s ease, transform .15s ease;
+}
+.download-card::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.5px);
+  background-size: 20px 20px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 30%, rgba(0,0,0,.7) 100%);
+  mask-image: linear-gradient(90deg, transparent 30%, rgba(0,0,0,.7) 100%);
+}
+.download-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.download-card img { width: 100%; height: auto; }
 .doc .latest { margin: 0 0 6px; }
 .downloads { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 18px 0; }
 .download {

@@ -52,9 +52,7 @@
   <mask id="dotmask"><rect width="1280" height="204" fill="url(#fade)"/></mask>
   <radialGradient id="glow"><stop offset="0" stop-color="#d63d3d" stop-opacity=".22"/><stop offset="1" stop-color="#d63d3d" stop-opacity="0"/></radialGradient>
 </defs>
-<g clip-path="url(#card)">
-  <rect width="1280" height="204" fill="#f6f7f9"/>
-  <rect width="1280" height="204" fill="url(#dots)" mask="url(#dotmask)"/>
+<g>
   <rect x="32" y="24" width="80" height="80" rx="20" fill="#f0f2f4" stroke="#d9dce2" stroke-width="1.5"/>
 <g transform="translate(42 34) scale(.6)"><rect x="14" y="14" width="34" height="34" rx="4" fill="#1c5dc4" class="pane" style="animation-delay: 0.0s"/><rect x="54" y="14" width="34" height="34" rx="4" fill="#1c5dc4" class="pane" style="animation-delay: 0.5s"/><rect x="14" y="54" width="34" height="34" rx="4" fill="#1c5dc4" class="pane" style="animation-delay: 1.0s"/><rect x="54" y="54" width="34" height="34" rx="4" fill="#1c5dc4" class="pane" style="animation-delay: 1.5s"/></g>
 <g fill="#111318" transform="translate(136 62) scale(0.01700)"><use href="#k41" x="0"/><use href="#k98" x="2106"/><use href="#k109" x="2617"/><use href="#k55" x="3733"/><use href="#k111" x="4859"/><use href="#k137" x="5997"/><use href="#k118" x="7610"/></g>
@@ -68,5 +66,4 @@
 <g fill="#616875" transform="translate(933.016 157.5) scale(0.00732)"><use href="#o51" x="0"/><use href="#o75" x="1233"/><use href="#o88" x="2466"/><use href="#o81" x="3699"/><use href="#o66" x="4932"/><use href="#o19" x="6165"/><use href="#o17" x="7398"/><use href="#o23" x="8631"/><use href="#o17" x="9864"/><use href="#o21" x="11097"/><use href="#o66" x="12330"/><use href="#o90" x="13563"/><use href="#o76" x="14796"/><use href="#o81" x="16029"/><use href="#o71" x="17262"/><use href="#o82" x="18495"/><use href="#o90" x="19728"/><use href="#o86" x="20961"/><use href="#o16" x="22194"/><use href="#o91" x="23427"/><use href="#o25" x="24660"/><use href="#o23" x="25893"/><use href="#o16" x="27126"/><use href="#o86" x="28359"/><use href="#o72" x="29592"/><use href="#o87" x="30825"/><use href="#o88" x="32058"/><use href="#o83" x="33291"/><use href="#o17" x="34524"/><use href="#o72" x="35757"/><use href="#o91" x="36990"/><use href="#o72" x="38223"/></g>
   <g opacity=".42"><path d="M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z" transform="translate(1180 14) scale(0.06250) translate(-21 0)" fill="#616875" fill-rule="evenodd"/><g fill="#616875" transform="translate(1202 26.5) scale(0.00600)"><use href="#b114" x="0"/><use href="#b95" x="1136"/><use href="#b134" x="2264"/><use href="#b109" x="3392"/></g></g>
 </g>
-<rect x=".5" y=".5" width="1279" height="203" rx="19.5" fill="none" stroke="#d9dce2"/>
 </svg>

@@ -52,14 +52,12 @@
   <mask id="dotmask"><rect width="1280" height="204" fill="url(#fade)"/></mask>
   <radialGradient id="glow"><stop offset="0" stop-color="#d63d3d" stop-opacity=".22"/><stop offset="1" stop-color="#d63d3d" stop-opacity="0"/></radialGradient>
 </defs>
-<g clip-path="url(#card)">
-  <rect width="1280" height="204" fill="#0f1117"/>
-  <rect width="1280" height="204" fill="url(#dots)" mask="url(#dotmask)"/>
-  <rect x="32" y="24" width="80" height="80" rx="20" fill="#0c0e13" stroke="#262a33" stroke-width="1.5"/>
+<g>
+  <rect x="32" y="24" width="80" height="80" rx="20" fill="#0d0e0f" stroke="#292a2e" stroke-width="1.5"/>
 <g transform="translate(42 34) scale(.6)"><g class="waddle"><path d="M50 8C34 8 27 22 27 38C27 46 22 54 19 64C15 77 22 92 50 92C78 92 85 77 81 64C78 54 73 46 73 38C73 22 66 8 50 8Z" fill="#15171c" stroke="#cdd0d6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 34C38 34 33 50 33 64C33 80 40 88 50 88C60 88 67 80 67 64C67 50 62 34 50 34Z" fill="#e8eaed"/><g class="lid"><ellipse cx="43" cy="24" rx="5" ry="6.5" fill="#fff"/><ellipse cx="57" cy="24" rx="5" ry="6.5" fill="#fff"/><circle cx="44.5" cy="25.5" r="2.4" fill="#15171c"/><circle cx="55.5" cy="25.5" r="2.4" fill="#15171c"/></g><path d="M42 33C46 29 54 29 58 33C55 38 45 38 42 33Z" fill="#d8b564"/><path d="M28 90C30 84 42 84 44 92C38 96 30 96 28 90ZM56 92C58 84 70 84 72 90C70 96 62 96 56 92Z" fill="#dda23c"/></g></g>
 <g fill="#f3f4f6" transform="translate(136 62) scale(0.01700)"><use href="#k21" x="0"/><use href="#k98" x="1026"/><use href="#k109" x="1537"/><use href="#k134" x="2653"/><use href="#k138" x="3770"/></g>
 <g fill="#f3f4f6" transform="translate(227.169 62) scale(0.01700)"><use href="#m3" x="0"/><use href="#m117" x="1339"/><use href="#m49" x="2049"/><use href="#m95" x="2982"/></g>
-<rect x="312.893" y="38" width="86.96" height="26" rx="8" fill="#13151b" stroke="#262a33" stroke-width="1"/>
+<rect x="312.893" y="38" width="86.96" height="26" rx="8" fill="#141517" stroke="#292a2e" stroke-width="1"/>
 <circle cx="326.89300000000003" cy="51" r="3.5" fill="#d63d3d" class="pulse"/>
 <g fill="#cdd0d6" transform="translate(336.893 55.5) scale(0.00635)"><use href="#o89" x="0"/><use href="#o19" x="1233"/><use href="#o17" x="2466"/><use href="#o23" x="3699"/><use href="#o17" x="4932"/><use href="#o21" x="6165"/></g>
 <g fill="#8c919b" transform="translate(136 92) scale(0.00900)"><use href="#s3" x="0"/><use href="#s117" x="1373"/><use href="#s49" x="2111"/><use href="#s95" x="3071"/><use href="#s21" x="4691"/><use href="#s98" x="5724"/><use href="#s109" x="6219"/><use href="#s134" x="7341"/><use href="#s138" x="8463"/><use href="#s311" x="9484"/><use href="#s138" x="10443"/><use href="#s1142" x="11464"/><use href="#s1141" x="12624"/><use href="#s333" x="13784"/><use href="#s1141" x="14710"/><use href="#s403" x="15870"/></g>
@@ -69,5 +67,4 @@
 <g fill="#8c919b" transform="translate(960.108 157.5) scale(0.00732)"><use href="#o51" x="0"/><use href="#o75" x="1233"/><use href="#o88" x="2466"/><use href="#o81" x="3699"/><use href="#o66" x="4932"/><use href="#o19" x="6165"/><use href="#o17" x="7398"/><use href="#o23" x="8631"/><use href="#o17" x="9864"/><use href="#o21" x="11097"/><use href="#o66" x="12330"/><use href="#o91" x="13563"/><use href="#o27" x="14796"/><use href="#o25" x="16029"/><use href="#o66" x="17262"/><use href="#o25" x="18495"/><use href="#o23" x="19728"/><use href="#o17" x="20961"/><use href="#o83" x="22194"/><use href="#o78" x="23427"/><use href="#o74" x="24660"/><use href="#o17" x="25893"/><use href="#o87" x="27126"/><use href="#o68" x="28359"/><use href="#o85" x="29592"/><use href="#o17" x="30825"/><use href="#o93" x="32058"/><use href="#o86" x="33291"/><use href="#o87" x="34524"/></g>
   <g opacity=".42"><path d="M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z" transform="translate(1180 14) scale(0.06250) translate(-21 0)" fill="#8c919b" fill-rule="evenodd"/><g fill="#8c919b" transform="translate(1202 26.5) scale(0.00600)"><use href="#b114" x="0"/><use href="#b95" x="1136"/><use href="#b134" x="2264"/><use href="#b109" x="3392"/></g></g>
 </g>
-<rect x=".5" y=".5" width="1279" height="203" rx="19.5" fill="none" stroke="#262a33"/>
 </svg>
