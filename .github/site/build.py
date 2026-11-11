@@ -256,7 +256,6 @@ def shell(title, description, body, root, current="", docs_menu=False):
 <a href="{RELEASES}">Releases</a>
 <a href="{DISCUSSIONS}">Discussions</a>
 <a href="{GITHUB}">GitHub</a>
-<span>Free, by Cloudcake</span>
 </div></footer>
 <script src="{root}assets/site.js" defer></script>
 </body>
