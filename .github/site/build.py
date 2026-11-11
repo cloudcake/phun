@@ -8,8 +8,8 @@ reference is read from the README's tables.
 
     python3 .github/site/build.py
 
-The Pages workflow runs this and publishes docs/; the output is also checked
-in so a change can be reviewed. Page text lives in pages.py.
+GitHub Pages serves docs/ from main, so the output is checked in. The README
+artwork workflow runs this after redrawing, and whenever .github/site changes. Page text lives in pages.py.
 """
 import colorsys
 import html

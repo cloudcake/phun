@@ -1,6 +1,6 @@
 # Redraws the README artwork whenever its scripts change, and commits the
 # images (and the documentation site in docs/, which reuses them) to the same
-# branch, so nobody runs build.py by hand. The download
+# branch, so nobody runs build.py by hand. GitHub Pages serves docs/ from main. The download
 # headers are left to the release workflow, which stamps the version into
 # them. The commit touches only images, so it never starts this again.
 
@@ -10,6 +10,7 @@ on:
   push:
     paths:
       - ".github/readme/*.py"
+      - ".github/site/**"
   workflow_dispatch:
 
 permissions:
