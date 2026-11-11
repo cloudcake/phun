@@ -1064,7 +1064,7 @@ TILES = (
     ("schema-canvas", 3, "Draw your schema",
      "For Laravel: tables and model relationships as blueprints. Drag one model onto another to relate them, and review the code first.", schema, 4),
     ("dependency-audits", 3, "Dependency audits",
-     "Audit Composer and JavaScript dependencies, and make package managers wait before installing brand-new releases.", audits, 4),
+     "Audit Composer and JavaScript dependencies, update them all within your constraints, and make package managers wait before installing brand-new releases.", audits, 4),
 
     ("command-palette", 4, "A command palette",
      "Every page, application, Artisan command and action, a few keystrokes away.", palette, 4),

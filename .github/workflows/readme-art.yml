@@ -30,7 +30,7 @@ jobs:
         run: sudo apt-get install -y -qq fonts-lato fonts-dejavu-core >/dev/null
 
       - name: Draw
-        run: python3 .github/readme/build.py sections tiles lists
+        run: python3 .github/readme/build.py sections tiles lists banners
 
       - name: Commit the images
         run: |
