@@ -153,6 +153,32 @@ def hero_art():
     write_art("hero", crop(bare(read("banner.svg")), 812, 40, 424, 316))
 
 
+def downloads():
+    """The README's download cards for the latest release, kept in step with
+    it: the release workflow rewrites the README's download block and redraws
+    the cards, then rebuilds this site. Each card gets a Daybreak twin."""
+    with open(os.path.join(REPO, "README.md"), encoding="utf-8") as fh:
+        readme = fh.read()
+    block = re.search(r"<!-- latest-release:start -->(.*?)<!-- latest-release:end -->", readme, re.S)
+    if not block:
+        return f'<p><a href="{RELEASES}">Download the latest release from GitHub.</a></p>'
+    latest = re.search(r"\*\*\[(.*?)\]\((.*?)\)\*\*", block.group(1))
+    out = []
+    if latest:
+        out.append(f'<p class="latest">Latest release: <a href="{esc(latest.group(2))}"><strong>{esc(latest.group(1))}</strong></a></p>')
+    cards = re.findall(r'<a href="([^"]+)"><img src="\.github/readme/download/([a-z0-9-]+)\.svg(?:\?v=([^"]*))?" alt="([^"]*)"', block.group(1))
+    for url, stem, ver, alt in cards:
+        svg = re.sub(r'<circle [^>]*fill="url\(#glow\)"/>\s*', "", read(f"download/{stem}.svg"))
+        write_art(f"download/{stem}", svg)
+        q = f"?v={esc(ver)}" if ver else ""
+        out.append(
+            f'<a class="download-card" href="{esc(url)}">'
+            f'<img class="art-dark" src="art/dark/download/{stem}.svg{q}" alt="{esc(html.unescape(alt))}" width="1280" height="204" decoding="async">'
+            f'<img class="art-light" src="art/light/download/{stem}.svg{q}" alt="" aria-hidden="true" width="1280" height="204" decoding="async"></a>'
+        )
+    return "".join(out)
+
+
 # ── Markup helpers ───────────────────────────────────────────────────────
 def esc(s):
     return html.escape(s, quote=True)
@@ -245,7 +271,7 @@ def shell(title, description, body, root, current="", docs_menu=False):
 <header class="topbar"><div class="topbar-inner">
 {menu}<a class="brand" href="{root}index.html" aria-label="Phun home">{mark_svg()}<span>Phun</span></a>
 <a class="navlink" href="{root}install.html"{docs_current}>Docs</a>
-<a class="navlink wide" href="{RELEASES}">Download</a>
+<a class="navlink wide" href="{root}install.html#download">Download</a>
 <a class="iconbtn" href="{GITHUB}" aria-label="Phun on GitHub" data-tip="Phun on GitHub">{GITHUB_ICON}</a>
 <button class="iconbtn theme-toggle" type="button" aria-label="Switch theme" data-tip="Switch theme">{SUN}{MOON}</button>
 </div></header>
@@ -293,7 +319,7 @@ def home():
 <p class="tagline settle d2">Your pocket-sized PHP playground.</p>
 <p class="platforms settle d3">For macOS, Linux and Windows.</p>
 <div class="pills settle d4">{pills}</div>
-<div class="actions settle d5"><a class="btn primary" href="{RELEASES}">{DOWNLOAD_ICON}Download</a>
+<div class="actions settle d5"><a class="btn primary" href="install.html#download">{DOWNLOAD_ICON}Download</a>
 <a class="btn" href="install.html">{BOOK_ICON}Read the docs</a></div>
 </div>
 <div class="hero-art">{art_img("hero", "A browser on blog.test over HTTPS, joined to PHP, MySQL and caught mail.")}</div>
@@ -339,6 +365,7 @@ def doc(slug):
         q = pages.page(order[i + 1])
         next_link = f'<a class="next" href="{order[i + 1]}.html"><small>Next</small><b>{esc(q["title"])}</b></a>'
     content = p["body"]()
+    content = content.replace("{{downloads}}", downloads())
     content = re.sub(r"\{\{figure:([a-z-]+)(?:\|(.*?))?\}\}", lambda m: figure(m.group(1), m.group(2)), content)
     badge = '<span class="badge">Next release</span>' if p.get("next") else ""
     body = f'''<div class="docs">

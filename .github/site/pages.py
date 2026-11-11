@@ -61,17 +61,12 @@ def next_note(text):
 # ── Get started ──────────────────────────────────────────────────────────
 def install():
     return f'''
-<p>Every release is on GitHub. Pick the file for your system from the latest release:</p>
-<div class="downloads">
-<a class="download" href="{RELEASES}"><b>macOS, Apple Silicon</b><span>M-series Macs</span><code>Phun_&lt;version&gt;_apple-silicon.dmg</code></a>
-<a class="download" href="{RELEASES}"><b>macOS, Intel</b><span>Older Macs</span><code>Phun_&lt;version&gt;_intel.dmg</code></a>
-<a class="download" href="{RELEASES}"><b>Windows</b><span>Windows 10 and 11, x64</span><code>Phun_&lt;version&gt;_windows-x64-setup.exe</code></a>
-<a class="download" href="{RELEASES}"><b>Debian and Ubuntu</b><span>And their derivatives</span><code>Phun_&lt;version&gt;_amd64.deb</code></a>
-<a class="download" href="{RELEASES}"><b>Arch Linux</b><span>And its derivatives</span><code>Phun_&lt;version&gt;_x86_64.pkg.tar.zst</code></a>
-</div>
+<h2 id="download">Download</h2>
+{{{{downloads}}}}
+<p>Use the Apple Silicon build on M-series Macs and the Intel build on older ones. Every release, older ones included, is on <a href="https://github.com/cloudcake/phun/releases">GitHub</a>.</p>
 
 <h2 id="macos">macOS</h2>
-<p>Open the <code>.dmg</code> and drag Phun to Applications. Use the Apple Silicon build on M-series Macs and the Intel build on older ones.</p>
+<p>Open the <code>.dmg</code> and drag Phun to Applications.</p>
 <p>Builds are not notarised yet, so on first launch right-click Phun and choose <strong>Open</strong>, or run:</p>
 {sh("xattr -cr /Applications/Phun.app")}
 <p>Phun's background service runs as a login item. If macOS asks, allow Phun under <strong>Login Items</strong> in System Settings and the app connects by itself.</p>

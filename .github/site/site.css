@@ -345,6 +345,10 @@ kbd {
 .note .label { display: block; margin-bottom: 2px; color: var(--fg); font-weight: 700; font-size: 14px; }
 .badge { display: inline-block; vertical-align: middle; margin-left: 8px; padding: 3px 9px; border-radius: 999px; font: 700 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--red-ink); border: 1px solid var(--red-ink); }
 
+.download-card { display: block; margin: 12px 0; border-radius: 20px; transition: transform .15s ease; }
+.download-card:hover { transform: translateY(-2px); }
+.download-card img { width: 100%; height: auto; border-radius: 20px; }
+.doc .latest { margin: 0 0 6px; }
 .downloads { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 18px 0; }
 .download {
   display: flex; flex-direction: column; gap: 2px; padding: 16px; border-radius: 14px;

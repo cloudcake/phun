@@ -670,8 +670,9 @@ jobs:
             gh release create --repo "$GITHUB_REPOSITORY" "$TAG" "${files[@]}" --target "${GITHUB_REF_NAME}" --title "$TAG" --notes-file release-notes.md "${kind[@]}"
           fi
 
-  # Points this repository's README at the release just published, so its
-  # download links always lead to the newest build. Pre-releases leave it
+  # Points this repository's README, and the documentation site's download
+  # cards, at the release just published, so their links always lead to the
+  # newest build. Pre-releases leave it
   # alone. A failure here never fails the release; it only warns.
   readme:
     name: Point the README and its download headers at this release
@@ -708,13 +709,21 @@ jobs:
             echo "::warning title=Download headers not redrawn::The README links $TAG, but its platform headers still show the previous version."
             git checkout -- .github/readme/download || true
           fi
+          # The documentation site shows the same download cards and links.
+          if python3 .github/site/build.py; then
+            git add docs
+          else
+            echo "::warning title=Docs not updated::The README links $TAG, but the documentation's downloads still show the previous version."
+            git checkout -- docs || true
+          fi
           if git diff --quiet HEAD; then
             echo "::notice::The README already offers $TAG."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "README: link the $TAG downloads" || warn "Could not commit."
+          git add -A docs .github/readme/download
+          git commit -am "README and docs: link the $TAG downloads" || warn "Could not commit."
           for attempt in 1 2 3; do
             git push origin HEAD:main && exit 0
             git pull --rebase origin main || { git rebase --abort; warn "main moved and the README change conflicts."; }
