@@ -9,6 +9,10 @@ native processes. It is one desktop app for macOS, Linux and Windows, with a
 small background service and a `phun` command for the terminal. No Docker, no
 virtual machine, and no password for everyday work.
 
+**[Read the documentation](https://cloudcake.github.io/phun/)**: installing,
+first launch, applications, PHP, services, the editor, terminals, Technical
+Debt, updates and the `phun` command, step by step.
+
 ## Download
 
 <!-- latest-release:start -->
@@ -227,6 +231,8 @@ choose More info, then Run anyway.
 The first launch walks you through installing a PHP version and trusting
 Phun's certificate authority. That step asks for your password once; nothing
 after it does.
+[First launch](https://cloudcake.github.io/phun/first-launch.html) in the
+documentation goes through each step.
 
 ## The phun command
 

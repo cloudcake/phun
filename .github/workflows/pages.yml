@@ -1,0 +1,56 @@
+# Publishes the documentation site (docs/) to GitHub Pages at
+# https://cloudcake.github.io/phun/. It builds the site afresh from
+# .github/site and the README artwork, so the published pages always match
+# them, even when the artwork was redrawn by the README artwork workflow
+# (whose commits do not start other workflows).
+#
+# Needs Settings › Pages › Source set to "GitHub Actions".
+
+name: Documentation site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/site/**"
+      - ".github/readme/**"
+      - "README.md"
+      - "docs/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build the site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build
+        run: python3 .github/site/build.py
+
+      - name: Upload
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+  deploy:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5

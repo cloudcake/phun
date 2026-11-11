@@ -1,5 +1,6 @@
 # Redraws the README artwork whenever its scripts change, and commits the
-# images to the same branch, so nobody runs build.py by hand. The download
+# images (and the documentation site in docs/, which reuses them) to the same
+# branch, so nobody runs build.py by hand. The download
 # headers are left to the release workflow, which stamps the version into
 # them. The commit touches only images, so it never starts this again.
 
@@ -32,10 +33,13 @@ jobs:
       - name: Draw
         run: python3 .github/readme/build.py sections tiles lists banners
 
+      - name: Rebuild the documentation's drawings
+        run: python3 .github/site/build.py
+
       - name: Commit the images
         run: |
           set -euo pipefail
-          git add .github/readme
+          git add .github/readme docs
           if git diff --cached --quiet; then
             echo "::notice::The artwork is already up to date."
             exit 0

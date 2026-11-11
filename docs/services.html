@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services and infrastructure · Phun</title>
+<meta name="description" content="Databases, cache, search, mail and storage on the infrastructure canvas.">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1012" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Services and infrastructure · Phun">
+<meta property="og:description" content="Databases, cache, search, mail and storage on the infrastructure canvas.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<script>(function(){try{var t=localStorage.getItem('phun-docs-theme');}catch(e){}if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}var r=document.documentElement;r.setAttribute('data-theme',t);r.classList.add('js');})();</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><div class="topbar-inner">
+<button class="iconbtn menu-toggle" type="button" aria-label="Contents" aria-expanded="false" aria-controls="sidebar" data-tip="Contents"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><a class="brand" href="index.html" aria-label="Phun home"><svg viewBox="0 0 256 256" aria-hidden="true"><rect width="256" height="256" rx="58" fill="#131417"/><rect x="0.75" y="0.75" width="254.5" height="254.5" rx="57.25" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1.5"/><path d="M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z" transform="translate(-15 4)" fill="#fff" fill-rule="evenodd"/></svg><span>Phun</span></a>
+<a class="navlink" href="install.html" aria-current="page">Docs</a>
+<a class="navlink wide" href="https://github.com/cloudcake/phun/releases/latest">Download</a>
+<a class="iconbtn" href="https://github.com/cloudcake/phun" aria-label="Phun on GitHub" data-tip="Phun on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a>
+<button class="iconbtn theme-toggle" type="button" aria-label="Switch theme" data-tip="Switch theme"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<div class="docs">
+<nav class="sidebar" id="sidebar" aria-label="Documentation"><p class="group">Get started</p><a href="install.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5"/></svg>Install</a><a href="first-launch.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></svg>First launch</a><p class="group">Applications</p><a href="applications.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2"/><path d="M17 16v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2"/></svg>Linking and parking</a><a href="php.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l-8 4l8 4l8 -4l-8 -4"/><path d="M4 12l8 4l8 -4"/><path d="M4 16l8 4l8 -4"/></svg>PHP versions</a><a href="services.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 19a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M18 5a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M10 5a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M6 12a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M18 19a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M14 12a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M22 12a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M6 12h4"/><path d="M14 12h4"/><path d="M15 7l-2 3"/><path d="M9 7l2 3"/><path d="M11 14l-2 3"/><path d="M13 14l2 3"/></svg>Services and infrastructure</a><p class="group">Working in Phun</p><a href="editor.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8l-4 4l4 4"/><path d="M17 8l4 4l-4 4"/><path d="M14 4l-4 16"/></svg>The code editor</a><a href="terminals.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l3 3l-3 3"/><path d="M13 15l3 0"/><path d="M3 6a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -12"/></svg>Terminals and the dock</a><a href="technical-debt.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/><path d="M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2"/><path d="M9 12l.01 0"/><path d="M13 12l2 0"/><path d="M9 16l.01 0"/><path d="M13 16l2 0"/></svg>Technical Debt</a><p class="group">Phun itself</p><a href="updates.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>Updates and rollback</a><a href="collaboration.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.94 13.045a9 9 0 1 0 -8.953 7.955"/><path d="M3.6 9h16.8"/><path d="M3.6 15h9.4"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a16.991 16.991 0 0 1 2.529 10.294"/><path d="M16 22l5 -5"/><path d="M21 21.5v-4.5h-4.5"/></svg>Collaboration</a><a href="cli.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7l5 5l-5 5"/><path d="M13 17l6 0"/></svg>The phun command</a></nav><div class="scrim"></div>
+<main class="doc" id="main">
+<div class="doc-head"><span class="tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 19a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M18 5a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M10 5a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M6 12a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M18 19a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M14 12a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M22 12a2 2 0 1 0 -4 0a2 2 0 0 0 4 0"/><path d="M6 12h4"/><path d="M14 12h4"/><path d="M15 7l-2 3"/><path d="M9 7l2 3"/><path d="M11 14l-2 3"/><path d="M13 14l2 3"/></svg></span><h1>Services and infrastructure</h1></div>
+<p class="lede">Databases, cache, search, mail and storage run beside your applications as native processes, and the infrastructure canvas wires them in.</p>
+
+<figure><div class="art-panel"><img class="art-dark" src="art/dark/infrastructure.svg" alt="An infrastructure canvas. Each application&#x27;s services drawn as a canvas. Add a database, cache or storage and Phun writes the settings into its .env." loading="lazy" decoding="async"><img class="art-light" src="art/light/infrastructure.svg" alt="" aria-hidden="true" loading="lazy" decoding="async"></div></figure>
+<h2 id="canvas">The infrastructure canvas</h2>
+<p>An application's <strong>Infrastructure</strong> tab draws its services as a canvas: PHP, its databases, cache, mail, search, storage and processes, joined to the application.</p>
+<p>Add a database and Phun asks which engine: MySQL, MariaDB, PostgreSQL, SQLite or MongoDB. <strong>Add MySQL</strong> (or whichever you pick) installs and starts it, writes the settings and creates the database; <strong>Install only</strong> leaves your settings alone. An application can use more than one database; each gets a card with the connection name to use.</p>
+<p>Phun only offers the services an application can use, and writes them where its framework reads them:</p>
+<ul>
+<li><strong>Laravel</strong>: <code>.env</code>.</li>
+<li><strong>Symfony</strong>: <code>.env.local</code>, one DSN each, such as <code>DATABASE_URL</code> and <code>MAILER_DSN</code>.</li>
+<li><strong>CodeIgniter</strong>: its own <code>.env</code> settings for databases, Redis, Memcached and mail.</li>
+<li><strong>WordPress</strong>: <code>wp-config.php</code>, MySQL or MariaDB, and Redis for the Redis Object Cache plugin.</li>
+</ul>
+<p>An HTML application gets no services. One Phun cannot wire yet, such as CakePHP, Slim or plain PHP, is told so instead of being offered settings it would ignore.</p>
+<p>A shared service's card on the canvas offers what belongs to the application: its logs, the database browser, <strong>Global Config</strong> and Remove. Starting, stopping, ports and versions live on the Services page, since they affect every application.</p>
+
+<h2 id="processes">Processes</h2>
+<p>For Laravel, the canvas runs queue workers (as many as you need, each with its own queues and log), the scheduler and Reverb. Symfony gets Messenger workers. WordPress, CodeIgniter, Drupal and Magento get scheduled tasks, which run the application's own cron command every minute.</p>
+<pre><code>phun queue enable blog
+phun schedule enable blog
+phun messenger enable shop</code></pre>
+
+<h2 id="services-page">The Services page</h2>
+<p>Services, on the Overview, lists every service Phun can run, installed or not, with Install or Update in its row. They run natively, started with Phun: no Docker, no virtual machine.</p>
+<ul>
+<li><strong>Databases</strong>: MySQL, MariaDB, PostgreSQL and MongoDB.</li>
+<li><strong>Cache</strong>: Redis and Memcached.</li>
+<li><strong>Search</strong>: Meilisearch, Typesense and OpenSearch.</li>
+<li><strong>Live updates</strong>: Mercure.</li>
+</ul>
+<pre><code>phun services
+phun service install redis &lt;version&gt;
+phun service set-port mysql 3307</code></pre>
+
+<figure><div class="art-panel"><img class="art-dark" src="art/dark/mail.svg" alt="Every email, caught. Every email your applications send is caught and readable in the Mail viewer: rendered, as plain text or as raw source." loading="lazy" decoding="async"><img class="art-light" src="art/light/mail.svg" alt="" aria-hidden="true" loading="lazy" decoding="async"></div></figure>
+<h2 id="mail">Mail</h2>
+<p>Every email your applications send is caught and readable in the Mail viewer (<kbd>Ctrl</kbd>+<kbd>5</kbd>): rendered, as plain text or as the raw source. Nothing leaves your machine.</p>
+
+<h2 id="storage">S3-compatible storage</h2>
+<p>Object storage on your machine, with public or private buckets and a browser for what is in them. Added to a Laravel application from the canvas, Phun creates its bucket and fills in its settings, so the <code>s3</code> disk works as it would against S3.</p>
+
+<h2 id="data">Databases, browsed</h2>
+<p>A database card opens the database browser: one grid for any table, and SQL that completes tables and columns, for MySQL, MariaDB and PostgreSQL. For Laravel, <strong>Open Schema</strong> draws the tables and model relationships as blueprints; drag one model onto another to relate them, and review the change to each model before it is written.</p>
+
+<h2 id="tools">Developer tools</h2>
+<p>Composer, Node.js, Bun, the Laravel installer, WP-CLI and Chrome for Testing install when you need them, without a system package manager.</p>
+<pre><code>phun tools
+phun install tool node</code></pre>
+
+<h2 id="cloud">Laravel Cloud</h2>
+<p>From a Laravel application's Infrastructure › Laravel Cloud, sign in with an API token, link it to a Cloud application, see what Cloud is missing compared with Phun, create it after confirming what Cloud bills for, and deploy. Phun keeps no copy of your token.</p>
+
+<nav class="pager" aria-label="More pages"><a class="prev" href="php.html"><small>Previous</small><b>PHP versions</b></a><a class="next" href="editor.html"><small>Next</small><b>The code editor</b></a></nav>
+</main>
+</div>
+<footer class="footer"><div class="footer-inner">
+<a class="brand" href="index.html"><svg viewBox="0 0 256 256" aria-hidden="true"><rect width="256" height="256" rx="58" fill="#131417"/><rect x="0.75" y="0.75" width="254.5" height="254.5" rx="57.25" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1.5"/><path d="M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z" transform="translate(-15 4)" fill="#fff" fill-rule="evenodd"/></svg><span>Phun</span></a>
+<a href="install.html">Documentation</a>
+<a href="https://github.com/cloudcake/phun/releases/latest">Releases</a>
+<a href="https://github.com/cloudcake/phun/discussions">Discussions</a>
+<a href="https://github.com/cloudcake/phun">GitHub</a>
+<span>Free, by Cloudcake</span>
+</div></footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
