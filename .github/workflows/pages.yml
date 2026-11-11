@@ -23,10 +23,6 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
   build:
     name: Build the site
@@ -47,6 +43,11 @@ jobs:
     name: Publish
     needs: build
     runs-on: ubuntu-latest
+    # One deployment at a time; a newer one waits rather than cutting one
+    # off half-way, as GitHub's own Pages workflow does.
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
