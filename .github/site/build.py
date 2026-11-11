@@ -283,7 +283,8 @@ def home():
             p = pages.page(slug)
             topics.append(
                 f'<a class="topic reveal" href="{slug}.html"><span class="tile-icon">{icon(p["icon"])}</span>'
-                f'<span><b>{esc(p["title"])}{' <span class="badge">Next release</span>' if p.get("next") else ""}</b><span>{esc(p["summary"])}</span></span></a>'
+                f'<span class="topic-text"><b>{esc(p["title"])}{' <span class="badge">Next release</span>' if p.get("next") else ""}</b>'
+                f'<span class="topic-sum">{esc(p["summary"])}</span></span></a>'
             )
     body = f'''<main id="main">
 <section class="hero ground"><div class="hero-inner">

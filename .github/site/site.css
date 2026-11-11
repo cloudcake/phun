@@ -268,11 +268,12 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   transition: border-color .15s ease, transform .15s ease;
 }
 .topic:hover { text-decoration: none; border-color: var(--border-strong); transform: translateY(-2px); }
-.topic .tile-icon { width: 44px; height: 44px; border-radius: 12px; }
+.topic .tile-icon { flex: none; width: 44px; height: 44px; border-radius: 12px; }
 .topic .tile-icon svg { width: 22px; height: 22px; }
-.topic b { display: block; font: 700 16.5px/1.3 var(--font-display); }
-.topic span { display: block; margin-top: 3px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
-.topic span.badge { display: inline-block; margin: 0 0 0 6px; padding: 2px 7px; font: 700 10px/1.2 var(--font-mono); color: var(--red-ink); }
+.topic .topic-text { min-width: 0; }
+.topic b { display: block; color: var(--fg); font: 700 16.5px/1.3 var(--font-display); }
+.topic .topic-sum { display: block; margin-top: 4px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
+.topic .badge { margin-left: 6px; padding: 2px 7px; font-size: 10px; }
 
 /* Scroll-in, only with the script and motion allowed. */
 .js .reveal { opacity: 0; transform: translateY(12px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
