@@ -47,35 +47,39 @@ def display_halo():
     return module.display_halo()
 
 
-def neon_glow(outline):
-    """The P's whole border lit like a neon tube that breathes: a wide blurred glow, a tighter one and a pale core."""
-    points = re.search(r'points="([^"]+)"', outline).group(1)
-    shape = f'points="{points}" fill="none" stroke-linecap="round" stroke-linejoin="round"'
+NEON_EDGE = re.compile(r'<(line|polygon) ([^>]*?)stroke="' + LOGO_RED + r'"([^>]*)/>')
+
+
+def neon_glow(edge):
+    """One of the P's edges lit like a neon tube that breathes: the edge, a wide blurred glow, a tighter one and a
+    pale core. Each glow sits right after its edge, so the faces drawn later still hide what the P hides."""
+    tag, before, after = edge.group(1), edge.group(2), edge.group(3)
+    shape = f"<{tag} {before}{after}".replace('fill="none"', "").rstrip() + ' fill="none" stroke-linecap="round"'
     return (
-        f'<polygon class="neon" {shape} stroke="{LOGO_RED}" stroke-width="7" filter="url(#icon-glow-wide)"/>'
-        f'<polygon class="neon" {shape} stroke="{LOGO_RED}" stroke-width="3" filter="url(#icon-glow-tight)"/>'
-        f'<polygon class="neon core" {shape} stroke="#ffc9cb" stroke-width="1.3"/>'
+        edge.group(0)
+        + f'{shape} class="neon" stroke="{LOGO_RED}" stroke-width="7" filter="url(#icon-glow-wide)"/>'
+        + f'{shape} class="neon" stroke="{LOGO_RED}" stroke-width="3" filter="url(#icon-glow-tight)"/>'
+        + f'{shape} class="neon core" stroke="#ffc9cb" stroke-width="1.3"/>'
     )
 
 
 def app_icon(x, y, size):
     """The app icon, the master from the app (`.github/site/logo.svg`): the red line-art P on its dark disc, with
-    the docs' display halo, and the P's border glowing like neon, pulsing on a loop."""
+    the docs' display halo, and every edge of the P glowing like neon, pulsing on a loop."""
     with open(LOGO_SVG, encoding="utf-8") as fh:
         svg = fh.read()
     body = svg[svg.index(">") + 1 : svg.rindex("</svg>")].strip()
     disc, rest = body.split("\n", 1)
-    mark = rest[rest.index("</g>") + 4 :].strip()
+    mark = NEON_EDGE.sub(neon_glow, rest[rest.index("</g>") + 4 :].strip())
     halo = display_halo().replace('fill="currentColor"', f'fill="{LOGO_RED}"')
-    outlines = re.findall(r'<polygon [^>]*fill="none"[^>]*/>', mark)
-    glow = "".join(neon_glow(o) for o in outlines)
+    region = 'filterUnits="userSpaceOnUse" x="-100" y="-100" width="200" height="200"'
     defs = (
-        '<defs><filter id="icon-glow-wide" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>'
-        '<filter id="icon-glow-tight" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.6"/></filter></defs>'
+        f'<defs><filter id="icon-glow-wide" {region}><feGaussianBlur stdDeviation="5"/></filter>'
+        f'<filter id="icon-glow-tight" {region}><feGaussianBlur stdDeviation="1.6"/></filter></defs>'
     )
     return (
         f'<svg x="{x:g}" y="{y:g}" width="{size:g}" height="{size:g}" viewBox="-100 -100 200 200">'
-        f"{GLOW_STYLE}{defs}{disc}\n{halo}\n{mark}\n{glow}</svg>"
+        f"{GLOW_STYLE}{defs}{disc}\n{halo}\n{mark}</svg>"
     )
 
 
