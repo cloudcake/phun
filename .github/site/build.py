@@ -368,7 +368,7 @@ def home():
     body = f'''<main id="main">
 <section class="hero ground"><div class="hero-inner">
 <div>
-<div class="lockup"><div class="app-icon">{app_icon()}</div>
+<div class="lockup"><div class="app-icon">{app_icon()}<canvas aria-hidden="true"></canvas></div>
 <h1 class="settle d1">Phun</h1></div>
 <p class="tagline settle d2">Your pocket-sized PHP playground.</p>
 <p class="platforms settle d3">For macOS, Linux and Windows.</p>
