@@ -85,23 +85,21 @@ def app_icon(x, y, size):
 
 WIRE_STYLE = (
     "<style>"
-    ".wire { animation: wire 2.8s ease-in-out infinite; }"
-    "@keyframes wire { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }"
+    ".wire { stroke-dasharray: 5 7; animation: wire 1.2s linear infinite; }"
+    "@keyframes wire { to { stroke-dashoffset: -24; } }"
     "</style>"
 )
 
 
-def neon_wire(points, delay):
-    """A wire lit like the icon's neon: wide and tight blurred glows under a pale core, breathing on the icon's
-    loop. `delay` staggers the wires outward from the hub, so the light seems to travel along them."""
+def neon_wire(points):
+    """A wire with red dashes flowing along it, from its first point to its last, over a faint track, with a soft
+    glow on the dashes."""
     d = "M" + " L".join(f"{x:g} {y:g}" for x, y in points)
-    style = f' style="animation-delay: {delay:g}s"'
     shape = f'd="{d}" fill="none" stroke-linecap="round" stroke-linejoin="round"'
     return (
         f'<path {shape} stroke="{BORDER}" stroke-width="1"/>'
-        f'<path class="wire" {shape} stroke="{RED}" stroke-width="5" filter="url(#wire-wide)"{style}/>'
-        f'<path class="wire" {shape} stroke="{RED}" stroke-width="2" filter="url(#wire-tight)"{style}/>'
-        f'<path class="wire" {shape} stroke="#ffc9cb" stroke-width="1"{style}/>'
+        f'<path class="wire" {shape} stroke="{RED}" stroke-width="3.5" opacity="0.7" filter="url(#wire-wide)"/>'
+        f'<path class="wire" {shape} stroke="{RED}" stroke-width="1.5"/>'
     )
 
 
@@ -118,8 +116,8 @@ def banner():
     body = [f'<circle cx="140" cy="200" r="150" fill="url(#glow)"/>', WIRE_STYLE]
     region = 'filterUnits="userSpaceOnUse" x="0" y="0" width="1280" height="400"'
     body.append(
-        f'<defs><filter id="wire-wide" {region}><feGaussianBlur stdDeviation="3.2"/></filter>'
-        f'<filter id="wire-tight" {region}><feGaussianBlur stdDeviation="1.1"/></filter></defs>'
+        f'<defs><filter id="wire-wide" {region}><feGaussianBlur stdDeviation="2.2"/></filter>'
+        '</defs>'
     )
     tx, tile = 236, 128
     ty = 128
@@ -156,17 +154,19 @@ def banner():
     top, bottom = 198, 282
     hub, bus = 178, 265
     gaps = (960, 1092)
+    mid = bx + bw / 2
     wires = [
-        ([(bx + bw / 2, by + bh), (bx + bw / 2, hub)], 0),
-        ([(centres[0], hub), (centres[-1], hub)], 0.2),
-        ([(gaps[0], hub), (gaps[0], bus)], 0.45),
-        ([(gaps[1], hub), (gaps[1], bus)], 0.45),
-        ([(centres[0], bus), (centres[-1], bus)], 0.7),
+        [(mid, by + bh), (mid, hub)],
+        [(mid, hub), (centres[0], hub), (centres[0], top)],
+        [(mid, hub), (centres[-1], hub), (centres[-1], top)],
+        [(mid, hub), (mid, top)],
+        [(gaps[0], hub), (gaps[0], bus), (centres[0], bus), (centres[0], bottom)],
+        [(gaps[0], bus), (mid, bus), (mid, bottom)],
+        [(gaps[1], hub), (gaps[1], bus), (centres[-1], bus), (centres[-1], bottom)],
+        [(gaps[1], bus), (mid, bus)],
     ]
-    wires += [([(c, hub), (c, top)], 0.45) for c in centres]
-    wires += [([(c, bus), (c, bottom)], 0.95) for c in centres]
-    for points, delay in wires:
-        body.append(neon_wire(points, delay))
+    for points in wires:
+        body.append(neon_wire(points))
     first = (("PHP", "per application"), ("MySQL", "databases"), ("Reverb", "websockets"))
     second = (("Queue", "workers"), ("Mail", "captured"), ("Xdebug", "step debugging"))
     for i, (title, sub) in enumerate(first):
