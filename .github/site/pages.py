@@ -26,7 +26,7 @@ NAV = (
     ("Get started", ("install", "first-launch")),
     ("Applications", ("applications", "create", "frameworks", "php", "sharing", "laravel-cloud")),
     ("Services", ("services", "quick-setup", "workers", "databases", "mail-storage", "developer-tools")),
-    ("Working in Phun", ("editor", "git", "debugging", "terminals", "logs", "technical-debt")),
+    ("Working in Phun", ("editor", "git", "debugging", "terminals", "logs", "technical-debt", "sticky-notes")),
     ("Insight", ("metrics", "security", "diagnostics", "notifications")),
     ("Phun itself", ("palette", "ai-agents", "updates", "collaboration", "cli")),
 )
@@ -157,6 +157,7 @@ def applications():
 <li><strong>Infrastructure</strong>: the canvas of its services; see <a href="services.html">Services</a>.</li>
 <li><strong>Security</strong>: dependency audits and Composer packages; see <a href="security.html">Security and packages</a>.</li>
 <li><strong>Technical Debt</strong>: see <a href="technical-debt.html">Technical Debt</a>.</li>
+<li><strong>Sticky Notes</strong>: a board of notes for the application; see <a href="sticky-notes.html">Sticky Notes</a>.</li>
 <li><strong>Sharing</strong>: a public URL through Cloudflare; see <a href="sharing.html">Sharing and the network</a>.</li>
 <li><strong>Settings</strong>: General, PHP, HTTPS and the Environment editor; see <a href="frameworks.html#environment">The environment</a>.</li>
 </ul>
@@ -568,6 +569,26 @@ def logs():
 '''
 
 
+def sticky_notes():
+    return f'''
+<h2 id="board">The board</h2>
+<p>Every application has a <strong>Sticky Notes</strong> tab: a board of columns, To do, Doing and Done to start with. Add a note from a column, or with <strong>Add a note</strong> at the top for the first column. Write what needs remembering, pick its colour and who sees it, and press {k("Ctrl", "Enter")} ({k("Cmd", "Enter")} on macOS) to pin it up.</p>
+<ul>
+<li><strong>Edit</strong> a note by clicking it, or with {k("Enter")} or {k("Space")} when it has focus. {k("Ctrl", "Enter")} saves and {k("Esc")} cancels.</li>
+<li><strong>Move</strong> a note by dragging it to another column or another place in its column, or with <strong>Move to</strong> in its menu.</li>
+<li><strong>Colour</strong> it yellow, orange, pink, purple, blue or green from its menu.</li>
+<li><strong>Columns</strong> are yours to change: add one, rename it, move it left or right, or delete it. Deleting a column moves its notes to another one; nothing but the column is deleted.</li>
+</ul>
+
+<h2 id="sharing">Shared or only yours</h2>
+<p>Each note says who sees it. <strong>Shared with the team</strong> notes are kept in the application's <code>.phun/notes.json</code>, so committing that file shares the board with everyone who works on the project. <strong>Only me</strong> notes are kept in <code>.phun/notes.local.json</code>, which Phun keeps out of git. A note's menu moves it between the two with <strong>Share with the team</strong> or <strong>Keep to myself</strong>.</p>
+<p>If one of the files cannot be read, for example after a bad merge, the board says so and stays read-only until the file is fixed, so nothing in it is overwritten.</p>
+
+<h2 id="reminders">Reminders</h2>
+<p><strong>Remind me</strong> in a note's menu offers in an hour, this evening, tomorrow morning and next Monday, or any date and time you choose. When it is due, Phun sends a <a href="notifications.html">notification</a>. Reminders are yours alone: they are kept in your own Phun settings, not in the notes files, so teammates are never reminded.</p>
+'''
+
+
 def technical_debt():
     return f'''
 {{{{figure:technical-debt}}}}
@@ -949,6 +970,7 @@ def notifications():
 <ul>
 <li>Queued jobs finishing or failing, Messenger messages handled or given up on, and scheduled tasks running or failing.</li>
 <li>Caught mail, and errors in an application's log.</li>
+<li>Your own <a href="sticky-notes.html#reminders">sticky note reminders</a>.</li>
 <li>A service or worker stopping.</li>
 <li>Installs and new applications finishing or failing, and shares ending.</li>
 <li>A new Phun release.</li>
@@ -1050,6 +1072,8 @@ PAGES = {
                       lede="Artisan, a console, Tinker and every log, in a dock at the bottom of the window, a key away.", body=terminals),
     "technical-debt": dict(title="Technical Debt", icon="technical-debt", summary="The work your team put off, the code smells and the deprecated PHP, with fixes.",
                            lede="The work your team put off and noted in the code, beside the code smells and deprecated PHP Phun finds, with a fix where one is safe.", body=technical_debt),
+    "sticky-notes": dict(title="Sticky Notes", icon="markdown-preview", summary="A board of notes for each application, shared with your team or kept to yourself.",
+                         lede="A board of sticky notes for each application, in columns you choose, shared through git or kept to yourself, with reminders.", body=sticky_notes),
     "frameworks": dict(title="Frameworks", icon="framework-stack", summary="Laravel, Symfony, WordPress, CodeIgniter and HTML applications, and their settings.",
                        lede="Phun knows each framework: its workers, its console, where it reads its settings, and the libraries it uses.", body=frameworks),
     "sharing": dict(title="Sharing and the network", icon="share", summary="A public URL, your own hostname, domains, proxies and other devices.",

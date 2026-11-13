@@ -11,6 +11,7 @@ feature tiles in tiles.py, the drawings of later features in drawings.py,
 the feature banners in banners.py and the download cards in platforms.py.
 """
 import os
+import re
 
 from art import *  # noqa: F401,F403
 from art import begin
@@ -18,18 +19,58 @@ from art import begin
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def app_icon(x, y, size):
-    """The app icon: the white P on a dark gray tile lit red from the corner."""
+LOGO_SVG = os.path.join(HERE, "..", "site", "logo.svg")
+LOGO_RED = "#e5484d"
+GLOW_STYLE = (
+    "<style>"
+    ".walk { stroke-dasharray: 16 84; animation: walk 3.6s linear infinite; }"
+    ".walk.window { animation-duration: 2.4s; animation-delay: -1.2s; }"
+    "@keyframes walk { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -100; } }"
+    "</style>"
+)
+
+
+def display_halo():
+    """The docs' halo of larger dots, which reads at banner size (the master's own dots are drawn for 1024px)."""
+    import importlib.util
+    import sys
+
+    site = os.path.join(HERE, "..", "site")
+    sys.path.insert(0, site)
+    try:
+        spec = importlib.util.spec_from_file_location("site_build", os.path.join(site, "build.py"))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    finally:
+        sys.path.remove(site)
+    return module.display_halo()
+
+
+def walking_glow(outline, cls):
+    """A glow that walks round one of the P's outlines on a loop: a soft blurred trail under a bright core."""
+    points = re.search(r'points="([^"]+)"', outline).group(1)
+    shape = f'points="{points}" pathLength="100" fill="none" stroke-linecap="round" stroke-linejoin="round"'
     return (
-        '<defs><radialGradient id="icon-glow" cx="0.72" cy="0.78" r="0.7">'
-        '<stop offset="0" stop-color="#d63d3d" stop-opacity="0.55"/><stop offset="1" stop-color="#d63d3d" stop-opacity="0"/>'
-        '</radialGradient><linearGradient id="icon-mark" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9dbe0"/></linearGradient></defs>'
-        f'<g transform="translate({x:g} {y:g}) scale({size / 256:.5f})">'
-        '<rect width="256" height="256" rx="58" fill="#131417"/>'
-        '<rect width="256" height="256" rx="58" fill="url(#icon-glow)"/>'
-        '<rect x="0.75" y="0.75" width="254.5" height="254.5" rx="57.25" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1.5"/>'
-        f'<path d="{LOGO}" transform="translate(-15 4)" fill="url(#icon-mark)" fill-rule="evenodd"/></g>'
+        f'<polygon class="walk {cls}" {shape} stroke="{LOGO_RED}" stroke-width="5" opacity="0.85" filter="url(#icon-glow-blur)"/>'
+        f'<polygon class="walk {cls}" {shape} stroke="#ffd2d3" stroke-width="1.6"/>'
+    )
+
+
+def app_icon(x, y, size):
+    """The app icon, the master from the app (`.github/site/logo.svg`): the red line-art P on its dark disc, with
+    the docs' display halo, and a glow walking round the P's outline and its window."""
+    with open(LOGO_SVG, encoding="utf-8") as fh:
+        svg = fh.read()
+    body = svg[svg.index(">") + 1 : svg.rindex("</svg>")].strip()
+    disc, rest = body.split("\n", 1)
+    mark = rest[rest.index("</g>") + 4 :].strip()
+    halo = display_halo().replace('fill="currentColor"', f'fill="{LOGO_RED}"')
+    outlines = re.findall(r'<polygon [^>]*fill="none"[^>]*/>', mark)
+    glow = "".join(walking_glow(o, cls) for o, cls in zip(outlines, ("outer", "window")))
+    defs = '<defs><filter id="icon-glow-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter></defs>'
+    return (
+        f'<svg x="{x:g}" y="{y:g}" width="{size:g}" height="{size:g}" viewBox="-100 -100 200 200">'
+        f"{GLOW_STYLE}{defs}{disc}\n{halo}\n{mark}\n{glow}</svg>"
     )
 
 
