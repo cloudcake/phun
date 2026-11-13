@@ -98,8 +98,8 @@ def neon_wire(points):
     shape = f'd="{d}" fill="none" stroke-linecap="round" stroke-linejoin="round"'
     return (
         f'<path {shape} stroke="{BORDER}" stroke-width="1"/>'
-        f'<path class="wire" {shape} stroke="{RED}" stroke-width="3.5" opacity="0.7" filter="url(#wire-wide)"/>'
-        f'<path class="wire" {shape} stroke="{RED}" stroke-width="1.5"/>'
+        f'<path class="wire" {shape} stroke="{RED}" stroke-width="2" opacity="0.5" filter="url(#wire-wide)"/>'
+        f'<path class="wire" {shape} stroke="{RED}" stroke-width="1.2"/>'
     )
 
 
@@ -116,7 +116,7 @@ def banner():
     body = [f'<circle cx="140" cy="200" r="150" fill="url(#glow)"/>', WIRE_STYLE]
     region = 'filterUnits="userSpaceOnUse" x="0" y="0" width="1280" height="400"'
     body.append(
-        f'<defs><filter id="wire-wide" {region}><feGaussianBlur stdDeviation="2.2"/></filter>'
+        f'<defs><filter id="wire-wide" {region}><feGaussianBlur stdDeviation="1.4"/></filter>'
         '</defs>'
     )
     tx, tile = 236, 128
