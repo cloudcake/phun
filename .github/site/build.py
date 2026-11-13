@@ -12,6 +12,7 @@ GitHub Pages serves docs/ from main, so the output is checked in. The README
 artwork workflow runs this after redrawing, and whenever .github/site changes. Page text lives in pages.py.
 """
 import colorsys
+import hashlib
 import html
 import math
 import os
@@ -315,8 +316,8 @@ def shell(title, description, body, root, current="", docs_menu=False):
 <meta property="og:title" content="{esc(full_title)}">
 <meta property="og:description" content="{esc(description)}">
 <meta property="og:type" content="website">
-<link rel="icon" href="{root}favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{root}assets/site.css">
+<link rel="icon" href="{root}favicon.svg?v={asset_version('favicon')}" type="image/svg+xml">
+<link rel="stylesheet" href="{root}assets/site.css?v={asset_version('site.css')}">
 {THEME_BOOT}
 </head>
 <body>
@@ -336,7 +337,7 @@ def shell(title, description, body, root, current="", docs_menu=False):
 <a href="{DISCUSSIONS}">Discussions</a>
 <a href="{GITHUB}">GitHub</a>
 </div></footer>
-<script src="{root}assets/site.js" defer></script>
+<script src="{root}assets/site.js?v={asset_version('site.js')}" defer></script>
 </body>
 </html>
 '''.replace("{root}", root)
@@ -431,6 +432,12 @@ def doc(slug):
 </main>
 </div>'''
     return shell(p["title"], p["summary"], body, "", "docs", docs_menu=True)
+
+
+def asset_version(name):
+    """A short content hash, so a browser never pairs a new page with a cached stylesheet or script."""
+    data = favicon().encode() if name == "favicon" else Path(HERE, name).read_bytes()
+    return hashlib.sha256(data).hexdigest()[:10]
 
 
 def favicon():
