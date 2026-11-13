@@ -13,6 +13,7 @@ artwork workflow runs this after redrawing, and whenever .github/site changes. P
 """
 import colorsys
 import html
+import math
 import os
 import re
 import shutil
@@ -27,13 +28,13 @@ sys.path.insert(0, README_ART)
 from icons import ICONS  # noqa: E402
 
 import pages  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 SITE_URL = "https://cloudcake.github.io/phun/"
 GITHUB = "https://github.com/cloudcake/phun"
 RELEASES = GITHUB + "/releases/latest"
 DISCUSSIONS = GITHUB + "/discussions"
 
-LOGO = "M78 48H144C204 48 220 80 220 116C220 156 198 188 140 188H114V208H78ZM114 84V152H138C170 152 184 136 184 116C184 96 168 84 138 84Z"
 
 
 # ── Daybreak twins of the artwork ────────────────────────────────────────
@@ -210,28 +211,60 @@ def icon(stem, cls=""):
     return f'<svg viewBox="0 0 24 24" aria-hidden="true"{c}>{paths}</svg>'
 
 
+LOGO_SVG = (Path(__file__).parent / "logo.svg").read_text()
+"""The app icon's master, copied from the Phun repo's `apps/phun-gui/src/assets/logo.svg`."""
+
+LOGO_RED = "#e5484d"
+LOGO_DISC = "#131417"
+
+HALO_SPACING = 9
+HALO_RADIUS = 1.2
+HALO_OPACITY = 0.5
+HALO_FADE = (0.3, 0.7, 0.97)
+
+
+def halo_strength(t):
+    full, half, gone = HALO_FADE
+    if t <= full:
+        return 1.0
+    if t <= half:
+        return 1 + (0.55 - 1) * ((t - full) / (half - full))
+    if t <= gone:
+        return 0.55 * (1 - (t - half) / (gone - half))
+    return 0.0
+
+
+def display_halo():
+    """The dot halo as the app draws its logo: the icon's fade on a grid sized to be seen at page sizes."""
+    reach = int(100 // HALO_SPACING)
+    dots = []
+    for gy in range(-reach, reach + 1):
+        for gx in range(-reach, reach + 1):
+            x, y = gx * HALO_SPACING, gy * HALO_SPACING
+            opacity = HALO_OPACITY * halo_strength(math.hypot(x, y) / 100)
+            if opacity > 0.004:
+                dots.append(f'<circle cx="{x:.3f}" cy="{y:.3f}" r="{HALO_RADIUS}" fill-opacity="{opacity:.3f}"/>')
+    return '<g fill="currentColor">' + "".join(dots) + "</g>"
+
+
+def logo_mark():
+    """The icon's P from the master, red turned into `currentColor` and its dark fills into the theme's disc colour."""
+    body = LOGO_SVG[LOGO_SVG.index(">") + 1 : LOGO_SVG.rindex("</svg>")].strip()
+    mark = body[body.index("</g>") + 4 :].strip()
+    return mark.replace(LOGO_RED, "currentColor").replace(f'fill="{LOGO_DISC}"', 'style="fill: var(--logo-disc)"')
+
+
 def mark_svg():
-    """The small P on its dark tile, for the top bar and footer."""
-    return (
-        '<svg viewBox="0 0 256 256" aria-hidden="true"><rect width="256" height="256" rx="58" fill="#131417"/>'
-        '<rect x="0.75" y="0.75" width="254.5" height="254.5" rx="57.25" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="1.5"/>'
-        f'<path d="{LOGO}" transform="translate(-15 4)" fill="#fff" fill-rule="evenodd"/></svg>'
-    )
+    """The logo for the top bar and footer: the theme's disc and the P, no halo at this size."""
+    return f'<svg class="phun-logo" viewBox="-100 -100 200 200" aria-hidden="true"><circle r="99.4" class="logo-disc"/>{logo_mark()}</svg>'
 
 
 def app_icon():
-    """The app icon as build.py draws it: the white P on a dark gray tile lit
-    red from the corner. The P resolves as the dots land."""
+    """The app icon for the home page, on the theme's disc with the dot halo; the disc settles, then the P fades in (CSS)."""
     return (
-        '<svg class="icon" viewBox="0 0 256 256" aria-hidden="true"><defs>'
-        '<radialGradient id="icon-glow" cx="0.72" cy="0.78" r="0.7"><stop offset="0" stop-color="#d63d3d" stop-opacity="0.55"/>'
-        '<stop offset="1" stop-color="#d63d3d" stop-opacity="0"/></radialGradient>'
-        '<linearGradient id="icon-mark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/>'
-        '<stop offset="1" stop-color="#d9dbe0"/></linearGradient></defs>'
-        '<g class="tile"><rect width="256" height="256" rx="58" fill="#131417"/>'
-        '<rect width="256" height="256" rx="58" fill="url(#icon-glow)"/>'
-        '<rect x="0.75" y="0.75" width="254.5" height="254.5" rx="57.25" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1.5"/></g>'
-        f'<path class="mark" d="{LOGO}" transform="translate(-15 4)" fill="url(#icon-mark)" fill-rule="evenodd"/></svg>'
+        '<svg class="icon phun-logo" viewBox="-100 -100 200 200" aria-hidden="true">'
+        f'<g class="tile"><circle r="99.4" class="logo-disc"/>{display_halo()}</g>'
+        f'<g class="mark">{logo_mark()}</g></svg>'
     )
 
 
@@ -334,7 +367,7 @@ def home():
     body = f'''<main id="main">
 <section class="hero ground"><div class="hero-inner">
 <div>
-<div class="lockup"><div class="app-icon">{app_icon()}<canvas aria-hidden="true"></canvas></div>
+<div class="lockup"><div class="app-icon">{app_icon()}</div>
 <h1 class="settle d1">Phun</h1></div>
 <p class="tagline settle d2">Your pocket-sized PHP playground.</p>
 <p class="platforms settle d3">For macOS, Linux and Windows.</p>
@@ -401,10 +434,10 @@ def doc(slug):
 
 
 def favicon():
-    return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="58" fill="#131417"/>'
-        f'<path d="{LOGO}" transform="translate(-15 4)" fill="#fff" fill-rule="evenodd"/></svg>\n'
-    )
+    """The tab icon: the dark icon with a heavier line and no halo, so the P reads at 16 to 32px."""
+    mark = logo_mark().replace('style="fill: var(--logo-disc)"', f'fill="{LOGO_DISC}"').replace("currentColor", LOGO_RED)
+    mark = re.sub(r'stroke-width="[\d.]+"', 'stroke-width="5"', mark, count=1).replace('fill-opacity="0.16"', 'fill-opacity="0.26"')
+    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200"><circle r="100" fill="{LOGO_DISC}"/>{mark}</svg>\n'
 
 
 def main():

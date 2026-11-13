@@ -118,6 +118,23 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   max-width: 1200px; margin: 0 auto; height: 64px;
   display: flex; align-items: center; gap: 8px; padding: 0 16px;
 }
+/* The Phun logo: the app icon's P on a disc that follows the theme. White in
+   the light theme, with a heavier line and stronger tint so the P holds up on
+   white; the icon's own dark disc in the dark theme. */
+.phun-logo { --logo-disc: #ffffff; --logo-edge: rgba(15, 17, 23, 0.10); color: rgb(200, 52, 58); }
+.phun-logo .logo-disc { fill: var(--logo-disc); stroke: var(--logo-edge); stroke-width: 1.2; }
+.phun-logo g[stroke-width] { stroke-width: 1.8; }
+.phun-logo [fill-opacity="0.16"] { fill-opacity: 0.22; }
+:root[data-theme="dark"] .phun-logo { --logo-disc: #131417; --logo-edge: rgba(255, 255, 255, 0.08); color: rgb(229, 72, 77); }
+:root[data-theme="dark"] .phun-logo g[stroke-width] { stroke-width: 1.1; }
+:root[data-theme="dark"] .phun-logo [fill-opacity="0.16"] { fill-opacity: 0.16; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .phun-logo { --logo-disc: #131417; --logo-edge: rgba(255, 255, 255, 0.08); color: rgb(229, 72, 77); }
+  :root:not([data-theme]) .phun-logo g[stroke-width] { stroke-width: 1.1; }
+  :root:not([data-theme]) .phun-logo [fill-opacity="0.16"] { fill-opacity: 0.16; }
+}
+.brand svg.phun-logo g[stroke-width] { stroke-width: 4; }
+.brand svg.phun-logo [fill-opacity] { fill-opacity: 0.26; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--fg); font: 700 19px/1 var(--font-display); letter-spacing: -0.01em; margin-right: auto; }
 .brand:hover { text-decoration: none; }
 .brand svg { width: 30px; height: 30px; flex: none; }
