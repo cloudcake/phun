@@ -344,6 +344,12 @@ Every command takes `--json` for machine-readable output, and
 | `phun service set-site <service> <app>` | Move a per-application instance to another application |
 | `phun tools` | List the developer tools and which are installed |
 | `phun install tool <id>` / `phun uninstall tool <id>` | Install or remove `composer`, `node`, `bun`, `laravel` or `wp-cli` |
+| `phun install node <version>` | Install another Node.js version alongside the others: a major (`20`), an exact version, `lts`, `lts/<codename>` or `latest` |
+| `phun uninstall node <version>` | Remove one Node.js version, e.g. `v20.11.1` |
+| `phun list node` | List installed Node.js versions, the default, and the version each application runs (`--available` lists nodejs.org's release lines) |
+| `phun use node <version>` | Set the default Node.js version (`auto` for the newest installed) |
+| `phun use <app> node <version>` | Give one application its own Node.js version (`auto` goes back to its `.nvmrc` or the default) |
+| `phun set node manager auto\|phun\|external` | Choose how Phun's `node`, `npm` and `npx` live with nvm or fnm |
 | `phun db list <service>` | List the databases in MySQL, MariaDB or PostgreSQL |
 | `phun db create` / `drop <service> <name>` | Create or drop a database |
 | `phun db backup` / `restore <service> <name> <file>` | Back a database up to SQL, or restore it |

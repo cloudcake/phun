@@ -241,7 +241,29 @@ def services():
 
 <h2 id="tools">Developer tools</h2>
 <p>Composer, Node.js, Bun, the Laravel installer, WP-CLI and Chrome for Testing install when you need them, without a system package manager.</p>
-{sh("phun tools", "phun install tool node")}
+{sh("phun tools", "phun install tool node   # the latest Node.js LTS")}
+
+<h2 id="node">Node.js versions</h2>
+<p>Install as many Node.js versions as your projects need, from the official nodejs.org builds, each checked against its published SHA-256. Name a major, an exact version, <code>lts</code>, an LTS line such as <code>lts/iron</code>, or <code>latest</code>. The Node.js versions card under Developer tools lists them and installs more.</p>
+{sh("phun install node 20", "phun install node lts/jod", "phun list node", "phun uninstall node v20.11.1")}
+<p>Phun's <code>node</code>, <code>npm</code> and <code>npx</code> pick a version for the folder you run them in, and so do the Vite and npm workers Phun starts for an application. The first of these wins:</p>
+<ul>
+<li><strong>The application's own version</strong>, set in its Settings › Node.js or with <code>phun use blog node 20</code>.</li>
+<li><strong>The project's files</strong>: the nearest <code>.nvmrc</code>, then <code>.node-version</code>, then <code>package.json</code>'s <code>engines.node</code>, looking upward from the folder.</li>
+<li><strong>The default</strong>, set on the card or with <code>phun use node 22</code>.</li>
+<li><strong>The newest installed version.</strong></li>
+</ul>
+<p>The highest installed version that matches is used. A version an application, <code>.nvmrc</code> or <code>.node-version</code> asks for that is not installed stops with the command to install it; an <code>engines.node</code> range nothing matches only warns. Settings › Node.js shows only for applications with a <code>package.json</code>. <code>phun use blog node auto</code> clears an application's version.</p>
+{sh("phun use node 22        # the default", "phun use blog node 20   # just blog.test", "phun use blog node auto # back to blog's .nvmrc or the default")}
+
+<h3 id="nvm">With nvm</h3>
+<p>Phun's bin folder comes before nvm's on your PATH, so Phun steps aside instead of fighting it. When nvm (or fnm) has a version active in your shell, after <code>nvm use</code> or from nvm's default alias, Phun's <code>node</code>, <code>npm</code> and <code>npx</code> run that version. Two settings change this:</p>
+<ul>
+<li><code>phun set node manager phun</code>: always run Phun's versions, even with nvm loaded.</li>
+<li><code>phun set node manager external</code>: take <code>node</code>, <code>npm</code> and <code>npx</code> out of Phun's bin folder altogether and leave them to nvm. Phun keeps its versions for its own use.</li>
+</ul>
+{sh("phun set node manager auto   # the default: step aside when nvm is active")}
+<p>On Windows, Phun's bin folder holds a copy of the default version and that is the one that runs: the per-application and project-file choices apply on macOS and Linux.</p>
 
 <h2 id="cloud">Laravel Cloud</h2>
 <p>A Laravel application can link to Laravel Cloud from Infrastructure › Laravel Cloud; see <a href="laravel-cloud.html">Laravel Cloud</a>.</p>
