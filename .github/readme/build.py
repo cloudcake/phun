@@ -83,22 +83,62 @@ def app_icon(x, y, size):
     )
 
 
+WIRE_STYLE = (
+    "<style>"
+    ".wire { animation: wire 2.8s ease-in-out infinite; }"
+    "@keyframes wire { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }"
+    "</style>"
+)
+
+
+def neon_wire(points, delay):
+    """A wire lit like the icon's neon: wide and tight blurred glows under a pale core, breathing on the icon's
+    loop. `delay` staggers the wires outward from the hub, so the light seems to travel along them."""
+    d = "M" + " L".join(f"{x:g} {y:g}" for x, y in points)
+    style = f' style="animation-delay: {delay:g}s"'
+    shape = f'd="{d}" fill="none" stroke-linecap="round" stroke-linejoin="round"'
+    return (
+        f'<path {shape} stroke="{BORDER}" stroke-width="1"/>'
+        f'<path class="wire" {shape} stroke="{RED}" stroke-width="5" filter="url(#wire-wide)"{style}/>'
+        f'<path class="wire" {shape} stroke="{RED}" stroke-width="2" filter="url(#wire-tight)"{style}/>'
+        f'<path class="wire" {shape} stroke="#ffc9cb" stroke-width="1"{style}/>'
+    )
+
+
+def service(x, y, title, sub, pulse):
+    out = [rect(x, y, 116, 50)]
+    out.append(dot(x + 16, y + 18, 3.5, GREEN, f"pulse {pulse}"))
+    out.append(text("bold", title, x + 27, y + 23, 14, FG))
+    out.append(text("mono", sub, x + 14, y + 40, 10, MUTED))
+    return "".join(out)
+
+
 def banner():
     W, H = 1280, 400
-    body = [f'<circle cx="140" cy="200" r="150" fill="url(#glow)"/>']
+    body = [f'<circle cx="140" cy="200" r="150" fill="url(#glow)"/>', WIRE_STYLE]
+    region = 'filterUnits="userSpaceOnUse" x="0" y="0" width="1280" height="400"'
+    body.append(
+        f'<defs><filter id="wire-wide" {region}><feGaussianBlur stdDeviation="3.2"/></filter>'
+        f'<filter id="wire-tight" {region}><feGaussianBlur stdDeviation="1.1"/></filter></defs>'
+    )
     tx, tile = 236, 128
-    ty = 136
+    ty = 128
     body.append(app_icon(72, ty, tile))
-    body.append(text("black", "Phun", tx, 196, 78, FG, tracking=-1))
-    body.append(text("semibold", "Your pocket-sized PHP playground.", tx, 238, 26, SOFT))
-    body.append(text("medium", "For macOS, Linux and Windows.", tx, 270, 19, MUTED))
-    x = tx
-    for label in ("Every application on .test", "Trusted HTTPS", "Databases, cache and mail"):
-        w, svg = pill(x, 296, label)
-        body.append(svg)
-        x += w + 10
+    body.append(text("black", "Phun", tx, 182, 78, FG, tracking=-1))
+    body.append(text("semibold", "Your pocket-sized PHP playground.", tx, 224, 26, SOFT))
+    body.append(text("medium", "For macOS, Linux and Windows.", tx, 256, 19, MUTED))
+    rows = (
+        ("Every application on .test", "Trusted HTTPS", "Databases, cache and mail"),
+        ("A code editor built in", "Live collaboration", "WebSockets, queues and Xdebug"),
+    )
+    for r, labels in enumerate(rows):
+        x = tx
+        for label in labels:
+            w, svg = pill(x, 280 + r * 38, label)
+            body.append(svg)
+            x += w + 10
 
-    bx, by, bw, bh = 836, 52, 380, 140
+    bx, by, bw, bh = 836, 40, 380, 118
     body.append(rect(bx, by, bw, bh))
     for i in range(3):
         body.append(dot(bx + 20 + i * 14, by + 19, 4, DIM))
@@ -106,26 +146,33 @@ def banner():
     body.append(padlock(bx + 74, by + 13))
     body.append(text("mono", "https://blog.test", bx + 88, by + 24, 11.5, SOFT))
     body.append(f'<path d="M{bx} {by + 39}H{bx + bw}" stroke="{BORDER}"/>')
-    body.append(rect(bx + 18, by + 54, 132, 8, r=4, fill=hsl(220, 10, 30), stroke=None))
-    for i, w in enumerate((300, 270, 220)):
-        body.append(rect(bx + 18, by + 74 + i * 14, w, 5, r=2.5, fill=hsl(222, 12, 20), stroke=None))
-    body.append(rect(bx + 18, by + 116, 68, 11, r=5.5, fill=RED, stroke=None))
+    body.append(rect(bx + 18, by + 52, 132, 8, r=4, fill=hsl(220, 10, 30), stroke=None))
+    for i, w in enumerate((300, 250)):
+        body.append(rect(bx + 18, by + 70 + i * 13, w, 5, r=2.5, fill=hsl(222, 12, 20), stroke=None))
+    body.append(rect(bx + 18, by + 96, 68, 10, r=5, fill=RED, stroke=None))
 
-    sy = 264
-    services = (("PHP", "per application"), ("MySQL", "databases"), ("Mail", "captured"))
-    centres = []
-    for i, (title, sub) in enumerate(services):
-        x = 836 + i * 132
-        body.append(rect(x, sy, 116, 72))
-        body.append(dot(x + 17, sy + 21, 3.5, GREEN, f"pulse {'abc'[i]}"))
-        body.append(text("bold", title, x + 28, sy + 26, 15, FG))
-        body.append(text("mono", sub, x + 14, sy + 54, 10.5, MUTED))
-        centres.append(x + 58)
-    hub = 230
-    body.append(line([(bx + bw / 2, by + bh), (bx + bw / 2, hub)]))
-    body.append(line([(centres[0], sy), (centres[0], hub), (centres[-1], hub), (centres[-1], sy)]))
-    body.append(line([(centres[1], hub), (centres[1], sy)]))
-    body.append(line([(centres[0], hub), (centres[-1], hub)], stroke=RED, sw=1.5, cls="flow"))
+    xs = (836, 968, 1100)
+    centres = [x + 58 for x in xs]
+    top, bottom = 198, 282
+    hub, bus = 178, 265
+    gaps = (960, 1092)
+    wires = [
+        ([(bx + bw / 2, by + bh), (bx + bw / 2, hub)], 0),
+        ([(centres[0], hub), (centres[-1], hub)], 0.2),
+        ([(gaps[0], hub), (gaps[0], bus)], 0.45),
+        ([(gaps[1], hub), (gaps[1], bus)], 0.45),
+        ([(centres[0], bus), (centres[-1], bus)], 0.7),
+    ]
+    wires += [([(c, hub), (c, top)], 0.45) for c in centres]
+    wires += [([(c, bus), (c, bottom)], 0.95) for c in centres]
+    for points, delay in wires:
+        body.append(neon_wire(points, delay))
+    first = (("PHP", "per application"), ("MySQL", "databases"), ("Reverb", "websockets"))
+    second = (("Queue", "workers"), ("Mail", "captured"), ("Xdebug", "step debugging"))
+    for i, (title, sub) in enumerate(first):
+        body.append(service(xs[i], top, title, sub, "abc"[i]))
+    for i, (title, sub) in enumerate(second):
+        body.append(service(xs[i], bottom, title, sub, "cab"[i]))
     body.append(dot(bx + bw / 2, hub, 4, RED))
     return frame(W, H, "\n".join(body), title="Phun", desc="Phun, your pocket-sized PHP playground, for macOS, Linux and Windows.")
 

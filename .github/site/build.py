@@ -346,7 +346,7 @@ def shell(title, description, body, root, current="", docs_menu=False):
 # ── Pages ────────────────────────────────────────────────────────────────
 def home():
     hero_art()
-    pills = "".join(f'<span class="pill">{p}</span>' for p in ("Every application on .test", "Trusted HTTPS", "Databases, cache and mail"))
+    pills = "".join(f'<span class="pill">{p}</span>' for p in ("Every application on .test", "Trusted HTTPS", "Databases, cache and mail", "A code editor built in", "Live collaboration", "WebSockets, queues and Xdebug"))
     features = []
     for stem, slug in pages.HOME_FEATURES:
         title, desc = drawing(stem)
