@@ -23,9 +23,10 @@ LOGO_SVG = os.path.join(HERE, "..", "site", "logo.svg")
 LOGO_RED = "#e5484d"
 GLOW_STYLE = (
     "<style>"
-    ".walk { stroke-dasharray: 16 84; animation: walk 3.6s linear infinite; }"
-    ".walk.window { animation-duration: 2.4s; animation-delay: -1.2s; }"
-    "@keyframes walk { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -100; } }"
+    ".neon { animation: neon 2.8s ease-in-out infinite; }"
+    ".neon.core { animation-name: neon-core; }"
+    "@keyframes neon { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }"
+    "@keyframes neon-core { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }"
     "</style>"
 )
 
@@ -46,19 +47,20 @@ def display_halo():
     return module.display_halo()
 
 
-def walking_glow(outline, cls):
-    """A glow that walks round one of the P's outlines on a loop: a soft blurred trail under a bright core."""
+def neon_glow(outline):
+    """The P's whole border lit like a neon tube that breathes: a wide blurred glow, a tighter one and a pale core."""
     points = re.search(r'points="([^"]+)"', outline).group(1)
-    shape = f'points="{points}" pathLength="100" fill="none" stroke-linecap="round" stroke-linejoin="round"'
+    shape = f'points="{points}" fill="none" stroke-linecap="round" stroke-linejoin="round"'
     return (
-        f'<polygon class="walk {cls}" {shape} stroke="{LOGO_RED}" stroke-width="5" opacity="0.85" filter="url(#icon-glow-blur)"/>'
-        f'<polygon class="walk {cls}" {shape} stroke="#ffd2d3" stroke-width="1.6"/>'
+        f'<polygon class="neon" {shape} stroke="{LOGO_RED}" stroke-width="7" filter="url(#icon-glow-wide)"/>'
+        f'<polygon class="neon" {shape} stroke="{LOGO_RED}" stroke-width="3" filter="url(#icon-glow-tight)"/>'
+        f'<polygon class="neon core" {shape} stroke="#ffc9cb" stroke-width="1.3"/>'
     )
 
 
 def app_icon(x, y, size):
     """The app icon, the master from the app (`.github/site/logo.svg`): the red line-art P on its dark disc, with
-    the docs' display halo, and a glow walking round the P's outline and its window."""
+    the docs' display halo, and the P's border glowing like neon, pulsing on a loop."""
     with open(LOGO_SVG, encoding="utf-8") as fh:
         svg = fh.read()
     body = svg[svg.index(">") + 1 : svg.rindex("</svg>")].strip()
@@ -66,8 +68,11 @@ def app_icon(x, y, size):
     mark = rest[rest.index("</g>") + 4 :].strip()
     halo = display_halo().replace('fill="currentColor"', f'fill="{LOGO_RED}"')
     outlines = re.findall(r'<polygon [^>]*fill="none"[^>]*/>', mark)
-    glow = "".join(walking_glow(o, cls) for o, cls in zip(outlines, ("outer", "window")))
-    defs = '<defs><filter id="icon-glow-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter></defs>'
+    glow = "".join(neon_glow(o) for o in outlines)
+    defs = (
+        '<defs><filter id="icon-glow-wide" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>'
+        '<filter id="icon-glow-tight" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.6"/></filter></defs>'
+    )
     return (
         f'<svg x="{x:g}" y="{y:g}" width="{size:g}" height="{size:g}" viewBox="-100 -100 200 200">'
         f"{GLOW_STYLE}{defs}{disc}\n{halo}\n{mark}\n{glow}</svg>"
