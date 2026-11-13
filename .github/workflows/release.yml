@@ -11,9 +11,10 @@
 # workflows run them on demand, so a runner that never starts cannot hold up
 # publishing.
 # After the release is published, the sync job writes the bookkeeping back
-# to cloudcake/phun-source main: the changelog's Unreleased section becomes this
-# version and the manifests move to the next patch. That needs the deploy
-# key to have write access.
+# to cloudcake/phun-source main: the entries the built commit had under
+# Unreleased become this version (entries added on main since stay under
+# Unreleased), and the manifests move to the next patch. That needs the
+# deploy key to have write access.
 
 name: Release
 
@@ -760,6 +761,7 @@ jobs:
       - name: Release the changelog and bump to the next version
         env:
           TAG: ${{ inputs.tag }}
+          BUILT_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
           set -uo pipefail
           warn() { echo "::warning title=Version sync skipped::$1 Run 'cargo xtask bump' locally to finish the release bookkeeping."; exit 0; }
@@ -791,20 +793,43 @@ jobs:
             exit 0
           fi
 
-          stamp=.release-tools/.github/scripts/stamp-version.py
-          python3 "$stamp" --tag "v$version" --manifests-only --root . || warn "Could not release the changelog for $version."
-          python3 "$stamp" --tag "v$next" --manifests-only --no-changelog --root . || warn "Could not bump the manifests to $next."
-          rm -rf .release-tools
-
-          if git diff --quiet; then
-            echo "::notice::Nothing changed, nothing to commit."
-            exit 0
-          fi
+          built_changelog="$RUNNER_TEMP/built-CHANGELOG.md"
+          git show "$BUILT_SHA:CHANGELOG.md" > "$built_changelog" || warn "Could not read the built commit's changelog."
+          tools=.release-tools/.github/scripts
+          python3 "$tools/stamp-version.py" --tag "v$next" --manifests-only --no-changelog --root . || warn "Could not bump the manifests to $next."
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -a -m "Release $version, start $next [skip changelog]" || warn "Could not commit."
+          message="Release $version, start $next [skip changelog]"
+          # bumped: whether HEAD is the bot's own commit, so the changelog can be
+          # added to it. A rebase drops it when main already has the same bump.
+          bumped=no
+          if ! git diff --quiet; then
+            git commit -a -q -m "$message" || warn "Could not commit."
+            bumped=yes
+          fi
           git fetch origin main || warn "Could not fetch main."
           git rebase origin/main || { git rebase --abort; warn "main moved while the release was building and the changes conflict."; }
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then
+            bumped=no
+          fi
+
+          # Release only the entries the built commit had. main may have gained
+          # entries for commits this release does not contain; they stay under
+          # Unreleased instead of being filed under $version.
+          python3 "$tools/release-changelog.py" --version "$version" --built "$built_changelog" --changelog CHANGELOG.md || warn "Could not release the changelog for $version."
+          rm -rf .release-tools
+          if ! git diff --quiet; then
+            if [ "$bumped" = yes ]; then
+              git commit -a -q --amend --no-edit || warn "Could not commit."
+            else
+              git commit -a -q -m "$message" || warn "Could not commit."
+              bumped=yes
+            fi
+          fi
+          if [ "$bumped" = no ]; then
+            echo "::notice::Nothing changed, nothing to commit."
+            exit 0
+          fi
           git push origin HEAD:main || warn "Could not push to main (the deploy key needs write access)."
           echo "::notice title=Version synced::Released $version in the changelog and bumped the repository to $next."
