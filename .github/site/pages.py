@@ -860,8 +860,18 @@ def databases():
 {{{{figure:schema-canvas}}}}
 <p>For a Laravel application the database card offers <strong>Open Schema</strong>. It reads every table, column and foreign key and the relationships the models declare, and draws them as blueprints: drag to pan, {k("Ctrl")} and the wheel to zoom. Draw a relationship by dragging one model onto another, change or remove one from its line, or accept one a foreign key suggests. Changes show as a diff of each model file and are written only when you apply them.</p>
 
+<h2 id="snapshots">Snapshots</h2>
+<p>A snapshot saves an application's database so you can put it back later, say before a migration you are not sure of. The database card's <strong>Snapshots</strong>, or the <strong>Snapshots</strong> tab of the database browser, lists them newest first with their size: <strong>Take snapshot</strong> with a name, <strong>Restore</strong> one, or delete it. Works with MySQL, MariaDB, PostgreSQL and SQLite.</p>
+<ul>
+<li><strong>Restoring</strong> puts the database back exactly: tables added since are dropped, and the application's database user keeps its access. Phun snapshots the current data first, so the newest <em>Before restoring</em> entry undoes a restore. If a restore fails part way, Phun puts the data from before back.</li>
+<li><strong>Before migrating</strong>: running <code>migrate</code>, <code>migrate:fresh</code>, <code>migrate:refresh</code>, <code>migrate:reset</code>, <code>migrate:rollback</code> or <code>db:wipe</code> from the Artisan terminal snapshots the database first. Turn the switch off to skip it.</li>
+<li>Snapshots you take stay until you delete them. Phun keeps its ten newest automatic ones per database. They live in Phun's data folder, under <code>db-snapshots</code>.</li>
+</ul>
+
 <h2 id="cli">From the terminal</h2>
 {sh("phun db list mysql", "phun db create mysql blog", "phun db provision blog          # the database blog's .env names", "phun db backup mysql blog blog.sql", "phun db restore mysql blog blog.sql", "phun db query mysql blog 'select count(*) from users'")}
+<p>Snapshots take an application name, or <code>&lt;service&gt;/&lt;database&gt;</code> for any database on a Phun server. Restore and delete take the id <code>phun db snapshots</code> prints, or just the number it starts with:</p>
+{sh("phun db snapshot blog 'Before the orders migration'", "phun db snapshots blog", "phun db snapshot-restore blog 1794744204746", "phun db snapshot-delete mysql/shop 1794744204746")}
 '''
 
 
@@ -1035,7 +1045,7 @@ def ai_agents():
     return f'''
 {{{{figure:mcp}}}}
 <h2 id="mcp">An MCP server for AI agents</h2>
-<p>Phun can serve its tools to AI coding agents on your machine over MCP, the Model Context Protocol, so agents such as Claude Code can list your applications, switch PHP, create databases and read caught mail.</p>
+<p>Phun can serve its tools to AI coding agents on your machine over MCP, the Model Context Protocol, so agents such as Claude Code can list your applications, switch PHP, create databases, snapshot a database before a migration and read caught mail. Agents cannot restore or delete snapshots; that stays with you.</p>
 <ol class="steps">
 <li><b>Turn it on</b><p>Settings › AI agents › <strong>Enable Phun's MCP server</strong>, or <code>phun settings mcp on</code>.</p></li>
 <li><b>Register Phun with your agent</b><p>The same section registers Phun with your agent. For Claude Code by hand:</p>
@@ -1084,8 +1094,8 @@ PAGES = {
                     lede="Share an application on a public URL, give it a hostname of your own, or open it on the devices around you.", body=sharing),
     "laravel-cloud": dict(title="Laravel Cloud", icon="laravel-cloud", summary="Link, compare, create and deploy, or bring a Cloud application home.",
                           lede="Link a Laravel application to Laravel Cloud, create what Cloud is missing and deploy, or bring a Cloud application home with the same infrastructure.", body=laravel_cloud),
-    "databases": dict(title="Databases", icon="database-browser", summary="MySQL, MariaDB, PostgreSQL, SQLite and MongoDB, browsed and drawn.",
-                      lede="Add a database in a click, browse any table, write SQL that completes, and draw a Laravel schema.", body=databases),
+    "databases": dict(title="Databases", icon="database-browser", summary="MySQL, MariaDB, PostgreSQL, SQLite and MongoDB, browsed, drawn and snapshotted.",
+                      lede="Add a database in a click, browse any table, write SQL that completes, draw a Laravel schema, and snapshot it before a migration.", body=databases),
     "mail-storage": dict(title="Mail and storage", icon="mail", summary="Every email caught, and S3-compatible storage on your machine.",
                          lede="Every email your applications send, caught and readable, and S3-compatible object storage beside them.", body=mail_storage),
     "debugging": dict(title="Debugging and profiling", icon="debugging", summary="Xdebug breakpoints in the editor, and a flame graph of any request.",

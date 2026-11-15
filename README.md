@@ -354,6 +354,9 @@ Every command takes `--json` for machine-readable output, and
 | `phun db create` / `drop <service> <name>` | Create or drop a database |
 | `phun db backup` / `restore <service> <name> <file>` | Back a database up to SQL, or restore it |
 | `phun db provision <app>` | Create the database an application's `.env` names |
+| `phun db snapshot <app> [name]` | Snapshot an application's database (or `<service>/<database>`) |
+| `phun db snapshots <app>` | List a database's snapshots, newest first |
+| `phun db snapshot-restore` / `snapshot-delete <app> <id>` | Put a database back to a snapshot, or delete one |
 | `phun db tables <service> <database>` | List a database's tables |
 | `phun db rows <service> <database> <table>` | Print a table's rows |
 | `phun db schema <service> <database>` | Print tables, columns and foreign keys |
