@@ -111,7 +111,7 @@ def first_launch():
 <p>If it cannot finish, retry there or run this in a terminal:</p>
 {sh("phun elevate")}</li>
 <li><b>Done</b>
-<p>Phun is ready. Applications, PHP and services are managed from the Overview.</p></li>
+<p>Phun is ready. It opens on Home; applications are on the Applications tab, with Services beside it.</p></li>
 </ol>
 
 <h2 id="no-admin">Without admin rights</h2>
@@ -119,7 +119,8 @@ def first_launch():
 
 <h2 id="finding-your-way">Finding your way</h2>
 <ul>
-<li><strong>The Overview</strong> lists your applications, with Services, Diagnostics and Settings beside them. {k("Ctrl", "1")} to {k("Ctrl", "4")} open those four in order ({k("Cmd")} on macOS), and {k("Ctrl", "5")} opens Mail.</li>
+<li><strong>Home</strong> is where Phun opens: live cards for requests, jobs and logs, and services and PHP, the leaderboard while you take part, and <strong>Around Phun</strong>, a timeline of what Phun players reached lately (levels, achievements, badges, leaderboard milestones, newcomers) and new releases with their notes. It shows only players with a public profile and "Show my activity on my profile" on, and only public names: never applications, paths or repositories. It keeps 90 days.</li>
+<li><strong>The tabs.</strong> Home, Applications, Services, Diagnostics and Settings. {k("Ctrl", "1")} to {k("Ctrl", "5")} open them in order ({k("Cmd")} on macOS), and {k("Ctrl", "6")} opens Mail.</li>
 <li><strong>The command palette</strong>, {k("Ctrl", "K")} ({k("Cmd", "K")} on macOS), reaches every page, application, Artisan command and action. Matching is forgiving: "tnkr" finds Tinker.</li>
 <li><strong>Themes.</strong> Daybreak and Nightfall, or follow the system, under Settings › Appearance. The choice reaches every window and the editor.</li>
 <li><strong>Key binds.</strong> Settings › Key binds gives any action in the command palette a key of your own.</li>
@@ -138,7 +139,7 @@ def applications():
     return f'''
 {{{{figure:link-and-park}}}}
 <h2 id="link">Link a folder</h2>
-<p>Linking serves one folder as an application at <code>&lt;name&gt;.test</code>. In the app, choose Create on the Overview, then <strong>Existing project</strong>, and pick the folder. From the terminal, in the project's folder:</p>
+<p>Linking serves one folder as an application at <code>&lt;name&gt;.test</code>. In the app, choose Create on the Applications tab, then <strong>Existing project</strong>, and pick the folder. From the terminal, in the project's folder:</p>
 {sh("phun link                 # serve this folder at <folder>.test", "phun link blog ~/Code/blog  # or name it and point at it")}
 <p>The web root, such as <code>public</code>, is found for you. To set it yourself use <code>phun root &lt;app&gt; public</code>, and <code>--auto</code> to go back to detecting it.</p>
 
@@ -172,7 +173,7 @@ def applications():
 <p>Share gives an application a public HTTPS address through Cloudflare; see <a href="sharing.html">Sharing and the network</a> for passwords, time limits, your own hostname and other devices.</p>
 
 <h2 id="groups">Groups and packages</h2>
-<p><strong>Groups</strong> keep the Overview tidy: put applications in a group, order the groups, and add a group folder, served like a parked one. A <strong>package</strong> is a Composer package or repository your applications use, listed under a group (Create › Package). It opens in the code editor with its own dock badge and is never served.</p>
+<p><strong>Groups</strong> keep the Applications tab tidy: put applications in a group, order the groups, and add a group folder, served like a parked one. A <strong>package</strong> is a Composer package or repository your applications use, listed under a group (Create › Package). It opens in the code editor with its own dock badge and is never served.</p>
 {sh("phun group create Clients", "phun group assign blog Clients")}
 
 <h2 id="instances">More than one instance</h2>
@@ -185,7 +186,7 @@ def create():
     return f'''
 {{{{figure:new-application}}}}
 <h2 id="menu">The Create menu</h2>
-<p><strong>Create</strong>, on the Overview, holds everything that adds an application:</p>
+<p><strong>Create</strong>, on the Applications tab, holds everything that adds an application:</p>
 <ul>
 <li><strong>Existing Project</strong>: a folder on this computer, a Git repository Phun clones, or a Laravel Cloud application.</li>
 <li><strong>Park</strong>, <strong>Group</strong> and <strong>Package</strong>; see <a href="applications.html">Linking and parking</a>.</li>
@@ -279,7 +280,7 @@ def services():
 <p>A Laravel application's Infrastructure header has <strong>Quick setup</strong>, which sets it up from a typical stack and shows every change first; see <a href="quick-setup.html">Quick setup</a>.</p>
 
 <h2 id="services-page">The Services page</h2>
-<p>Services, on the Overview, lists every service Phun can run, installed or not, with Install or Update in its row. They run natively, started with Phun: no Docker, no virtual machine.</p>
+<p>The Services tab lists every service Phun can run, installed or not, with Install or Update in its row. They run natively, started with Phun: no Docker, no virtual machine.</p>
 <ul>
 <li><strong>Databases</strong>: MySQL, MariaDB, PostgreSQL and MongoDB.</li>
 <li><strong>Cache</strong>: Redis and Memcached.</li>
@@ -303,7 +304,7 @@ def developer_tools():
     return f'''
 {{{{figure:developer-tools}}}}
 <h2 id="tools">Developer tools</h2>
-<p>Services, on the Overview, has a <strong>Developer tools</strong> card. Each tool installs its latest release (the LTS for Node.js) into Phun's data folder, puts its commands on your PATH and updates from the same row. No system package manager is involved.</p>
+<p>The Services tab has a <strong>Developer tools</strong> card. Each tool installs its latest release (the LTS for Node.js) into Phun's data folder, puts its commands on your PATH and updates from the same row. No system package manager is involved.</p>
 <ul>
 <li><strong>Composer</strong>, the PHP dependency manager.</li>
 <li><strong>Node.js</strong>, with <code>npm</code> and <code>npx</code>, for building frontend assets. More versions are below.</li>
@@ -882,7 +883,7 @@ def mail_storage():
     return f'''
 {{{{figure:mail}}}}
 <h2 id="mail">Every email, caught</h2>
-<p>Phun catches every email your applications send, so nothing reaches a real inbox. The Mail viewer ({k("Ctrl", "5")}, or Services › Mail) reads each message rendered, as its plain-text part, or as the raw source exactly as the application sent it, with a Copy button. New mail can arrive as a desktop notification.</p>
+<p>Phun catches every email your applications send, so nothing reaches a real inbox. The Mail viewer ({k("Ctrl", "6")}, or Services › Mail) reads each message rendered, as its plain-text part, or as the raw source exactly as the application sent it, with a Copy button. New mail can arrive as a desktop notification.</p>
 <p>Applications are wired to it when you add mail on the Infrastructure canvas.</p>
 {sh("phun mail list", "phun mail show <id>", "phun mail clear", "phun mail port 2525")}
 
@@ -963,7 +964,7 @@ def diagnostics():
     return f'''
 {{{{figure:health-checks}}}}
 <h2 id="checks">Health checks</h2>
-<p><strong>Diagnostics</strong>, on the Overview ({k("Ctrl", "3")}), runs Phun's checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off. The palette can run the safe fixes too.</p>
+<p><strong>Diagnostics</strong> ({k("Ctrl", "4")}) runs Phun's checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off. The palette can run the safe fixes too.</p>
 {sh("phun status       # the daemon, ports, DNS, certificates and PHP at a glance", "phun doctor", "phun doctor fix")}
 
 <h2 id="ports">A port that is already taken</h2>
@@ -1032,12 +1033,12 @@ def palette():
 <p>Settings › Key binds gives any action in the command palette a key of your own, plus the dock's actions for the application you are on. Press a key cap to record. Phun asks before taking a key another action has, refuses keys that typing needs, and can clear or reset each one. {k("Ctrl", "/")} shows every shortcut.</p>
 <div class="table-wrap"><table><thead><tr><th>Keys</th><th>What they do</th></tr></thead><tbody>
 <tr><td>{k("Ctrl", "K")}</td><td>The command palette</td></tr>
-<tr><td>{k("Ctrl", "1")} to {k("Ctrl", "4")}</td><td>Overview, Services, Diagnostics, Settings</td></tr>
-<tr><td>{k("Ctrl", "5")}</td><td>Mail</td></tr>
+<tr><td>{k("Ctrl", "1")} to {k("Ctrl", "5")}</td><td>Home, Applications, Services, Diagnostics, Settings</td></tr>
+<tr><td>{k("Ctrl", "6")}</td><td>Mail</td></tr>
 <tr><td>{k("Ctrl", ",")}</td><td>Settings</td></tr>
 <tr><td>{k("Ctrl", "Shift", "L")}</td><td>Switch between light and dark</td></tr>
 <tr><td>{k("Ctrl", "Shift", "R")}</td><td>Restart the daemon</td></tr>
-<tr><td>{k("Ctrl", "Shift", "Right")} and {k("Ctrl", "Shift", "Left")}</td><td>Next and previous application, in the Overview's order, on the same tab ({k("Ctrl")} on macOS too)</td></tr>
+<tr><td>{k("Ctrl", "Shift", "Right")} and {k("Ctrl", "Shift", "Left")}</td><td>Next and previous application, in the Applications tab's order, on the same tab ({k("Ctrl")} on macOS too)</td></tr>
 <tr><td>{k("Ctrl", "Down")}</td><td>Open or close the dock's list ({k("Ctrl")} on macOS too)</td></tr>
 <tr><td>{k("Ctrl", "Up")}</td><td>Hide or show the dock's button ({k("Ctrl")} on macOS too)</td></tr>
 <tr><td>{k("`")}</td><td>Open or close the Console for the application you are on</td></tr>
