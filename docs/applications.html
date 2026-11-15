@@ -57,7 +57,7 @@
 
 <figure><div class="art-panel"><img class="art-dark" src="art/dark/link-and-park.svg" alt="Link a folder, or park them all. Link a folder, or park a whole directory, and every project in it is served at name.test. The web root is found for you." loading="lazy" decoding="async"><img class="art-light" src="art/light/link-and-park.svg" alt="" aria-hidden="true" loading="lazy" decoding="async"></div></figure>
 <h2 id="link">Link a folder</h2>
-<p>Linking serves one folder as an application at <code>&lt;name&gt;.test</code>. In the app, choose Create on the Overview, then <strong>Existing project</strong>, and pick the folder. From the terminal, in the project's folder:</p>
+<p>Linking serves one folder as an application at <code>&lt;name&gt;.test</code>. In the app, choose Create on the Applications tab, then <strong>Existing project</strong>, and pick the folder. From the terminal, in the project's folder:</p>
 <pre><code>phun link  <span class="c"># serve this folder at &lt;folder&gt;.test</span>
 phun link blog ~/Code/blog  <span class="c"># or name it and point at it</span></code></pre>
 <p>The web root, such as <code>public</code>, is found for you. To set it yourself use <code>phun root &lt;app&gt; public</code>, and <code>--auto</code> to go back to detecting it.</p>
@@ -96,7 +96,7 @@ phun proxy add reverb http://localhost:8080</code></pre>
 <p>Share gives an application a public HTTPS address through Cloudflare; see <a href="sharing.html">Sharing and the network</a> for passwords, time limits, your own hostname and other devices.</p>
 
 <h2 id="groups">Groups and packages</h2>
-<p><strong>Groups</strong> keep the Overview tidy: put applications in a group, order the groups, and add a group folder, served like a parked one. A <strong>package</strong> is a Composer package or repository your applications use, listed under a group (Create › Package). It opens in the code editor with its own dock badge and is never served.</p>
+<p><strong>Groups</strong> keep the Applications tab tidy: put applications in a group, order the groups, and add a group folder, served like a parked one. A <strong>package</strong> is a Composer package or repository your applications use, listed under a group (Create › Package). It opens in the code editor with its own dock badge and is never served.</p>
 <pre><code>phun group create Clients
 phun group assign blog Clients</code></pre>
 
