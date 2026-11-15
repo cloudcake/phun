@@ -68,6 +68,7 @@
 <h2 id="laravel">Laravel</h2>
 <p>The Laravel starter runs the Laravel installer with the choices it would ask in a terminal:</p>
 <ul>
+<li><strong>Template</strong>: <strong>Full Stack</strong>, the regular Laravel app; <strong>Filament</strong>, which adds the latest Filament with an admin panel at <code>/admin</code> (add a user to sign in with <code>php artisan make:filament-user</code>); or <strong>Micro Service</strong>, an API with no frontend: no <code>package.json</code>, Vite, frontend resources or npm scripts, and its classes in <code>service/</code> under the <code>Service\</code> namespace instead of <code>app/</code>. When git is on, the template's changes are committed after Laravel's first commit.</li>
 <li><strong>Starter kit</strong>: none, React, Vue, Livewire or Svelte, or a community kit by its package name.</li>
 <li><strong>Authentication</strong>: Laravel's built-in or WorkOS AuthKit, with team support, and standalone class components for Livewire.</li>
 <li><strong>Frontend dependencies</strong>: install and build with npm or Bun, or skip them for later. Node.js or Bun is installed for you when missing.</li>
@@ -82,7 +83,7 @@
 <p>These start from each framework's own Composer skeleton. Symfony has a <strong>Web application</strong> switch for Twig, Doctrine, forms, security, mailer and Messenger; leave it off for the minimal skeleton, as for an API. Flex's Docker files are left out, mail goes to Phun's capture, and a web application starts on SQLite, all in <code>.env.local</code>.</p>
 
 <h2 id="html">HTML app</h2>
-<p>A folder with an <code>index.html</code>, from a <strong>Single-page app</strong> with a few client-side routes or a <strong>Plain page</strong>. It needs no PHP version; see <a href="frameworks.html#html">HTML applications</a>.</p>
+<p>A folder with an <code>index.html</code>, from a <strong>Single-page app</strong> with a few client-side routes, a <strong>Plain page</strong>, or a small app in <strong>Vue</strong>, <strong>React</strong>, <strong>Preact</strong>, <strong>Alpine.js</strong> or <strong>Lit</strong>. The framework starters load a pinned version from a CDN, so there is still nothing to install or build, though the page needs the internet the first time it opens. It needs no PHP version; see <a href="frameworks.html#html">HTML applications</a>.</p>
 
 <h2 id="clone">Clone from Git</h2>
 <p>Existing Project › <strong>Clone from Git</strong> takes an <code>https://</code>, <code>ssh://</code> or <code>git@host:path</code> address and an optional branch. Phun clones it with the git on your PATH, so private repositories use the SSH keys and credential helpers git already has. Then it runs <code>composer install</code> when there is a <code>composer.json</code>, copies <code>.env.example</code> to <code>.env</code> when the project ships one, and for Laravel generates an <code>APP_KEY</code>, links public storage and installs the JavaScript dependencies. The command palette can start a clone too.</p>
@@ -94,9 +95,10 @@
 <p><code>phun new</code> creates an application in the current folder, or <code>--dir</code>, and follows it until it is ready. <code>--php</code> picks the version.</p>
 <pre><code>phun new symfony shop --webapp
 phun new html site --spa
+phun new html todo --starter vue
 phun new git blog --url git@github.com:acme/blog.git --branch main
 phun new codeigniter api --php 8.3</code></pre>
-<p>Laravel and WordPress take their choices as JSON with <code>--options</code>; the app's starters are the easier route for those.</p>
+<p>Laravel and WordPress take their choices as JSON with <code>--options</code>, where Laravel's <code>"template"</code> is <code>full_stack</code>, <code>filament</code> or <code>micro_service</code>; the app's starters are the easier route for those.</p>
 
 <nav class="pager" aria-label="More pages"><a class="prev" href="applications.html"><small>Previous</small><b>Linking and parking</b></a><a class="next" href="frameworks.html"><small>Next</small><b>Frameworks</b></a></nav>
 </main>
