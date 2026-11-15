@@ -105,6 +105,9 @@ jobs:
         env:
           PHUN_TLD: test
           RUST_TARGET: ${{ matrix.target }}
+          # Phun sends GITHUB_TOKEN to api.github.com: runners share an address,
+          # whose 60 unauthenticated calls an hour ran out (Bun, cloudflared: 403).
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
           # Pick the .app for this target so an Intel run cannot test the

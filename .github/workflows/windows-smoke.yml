@@ -71,6 +71,10 @@ jobs:
 
       - name: Smoke test
         shell: pwsh
+        # Phun sends GITHUB_TOKEN to api.github.com: runners share an address,
+        # whose 60 unauthenticated calls an hour ran out (Bun, cloudflared: 403).
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: .\scripts\windows-smoke.ps1
 
       - name: Upload evidence

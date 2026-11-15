@@ -69,6 +69,10 @@ jobs:
         run: ./scripts/build.sh --no-install
 
       - name: Smoke test
+        # Phun sends GITHUB_TOKEN to api.github.com: runners share an address,
+        # whose 60 unauthenticated calls an hour ran out (Bun, cloudflared: 403).
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: bash scripts/linux-smoke.sh
 
       - name: Upload evidence
@@ -105,6 +109,10 @@ jobs:
         run: bash scripts/build-arch.sh
 
       - name: Smoke test
+        # Phun sends GITHUB_TOKEN to api.github.com: runners share an address,
+        # whose 60 unauthenticated calls an hour ran out (Bun, cloudflared: 403).
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           useradd -m smoke
@@ -115,6 +123,7 @@ jobs:
           runuser -u smoke -- env \
             GITHUB_ACTIONS="$GITHUB_ACTIONS" \
             GITHUB_STEP_SUMMARY="$GITHUB_STEP_SUMMARY" \
+            GITHUB_TOKEN="$GITHUB_TOKEN" \
             bash scripts/linux-smoke.sh "$pkg"
 
       - name: Upload evidence
