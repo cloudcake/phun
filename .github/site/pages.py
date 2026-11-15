@@ -193,6 +193,9 @@ def create():
 </ul>
 <p>Each starter asks for a name, a folder and the PHP version the application runs on, and says when a version is too old for the framework. It checks first for what it needs, such as Composer or the Laravel installer, then shows each step as it runs.</p>
 
+<h2 id="github">Put it on GitHub</h2>
+<p>The last step of each starter can create a GitHub repository for the new application, under your account or an organisation where Phun's GitHub app is installed, private or public. Once the application is ready, Phun creates the repository, makes the folder a git repository with a first commit if it is not one yet, and pushes it. Phun signs that push in with your GitHub sign-in for that one command; nothing is saved in the repository. Signed out, the same place offers to sign in to GitHub first.</p>
+
 <h2 id="laravel">Laravel</h2>
 <p>The Laravel starter runs the Laravel installer with the choices it would ask in a terminal:</p>
 <ul>
