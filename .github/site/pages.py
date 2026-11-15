@@ -459,7 +459,7 @@ def terminals():
     return f'''
 {{{{figure:terminal-dock}}}}
 <h2 id="dock">The dock</h2>
-<p>Terminals live in a dock at the bottom of the window. An application's page header opens them:</p>
+<p>Terminals live in the dock: one round button that floats over the window. An application's page header opens them:</p>
 <ul>
 <li><strong>Artisan</strong>: Laravel's commands with their forms. It offers your models, tables, views, components and route names as you type. A Symfony application has <code>bin/console</code> in the same place.</li>
 <li><strong>Console</strong>: an interactive shell for the application.</li>
@@ -467,7 +467,9 @@ def terminals():
 <li><strong>Logs</strong>: every log the application has, in one list; see <a href="logs.html">Logs</a>.</li>
 </ul>
 <p>Artisan and Tinker show only for a Laravel application. Clicking anywhere outside an open terminal minimises it to its badge in the dock; the badge brings it back. The code editor minimises there too.</p>
-<p>The dock's hide button tucks it behind a small handle that shows how many items it holds, and the dock remembers whether you hid it. Settings › Appearance › <strong>Show other applications in the dock</strong> is on by default; turn it off and an application's page docks only its own terminals and editors, while the others keep running.</p>
+<p>The button shows how many terminals, editors and installs are open. It turns amber while one is busy and red when one failed, and a ring around it fills as an install downloads. Click it and the badges pop out in a list, towards the middle of the window; click a badge to open it, as before. The list steps aside while a terminal is open and comes back when you minimise it, and pressing the button with a terminal open minimises it back to the list. In the list, the arrow keys move between badges, {k("Enter")} opens one and {k("Esc")} closes the list.</p>
+<p>The button sits at the bottom right. Settings › Appearance › <strong>Dock button</strong> moves it to any of eight spots: top, middle or bottom, at the left, centre or right (not the middle of the window). You can also drag it, and it snaps to the nearest spot. At the top it sits below the page's header. A terminal opens from the button's side of the window: up from the bottom, down from under the button at the top, and in from the side for the middle spots.</p>
+<p><strong>Show the dock button</strong>, in the same place, hides the button; terminals keep running and their keys still open them. Settings › Appearance › <strong>Show other applications in the dock</strong> is on by default; turn it off and an application's page docks only its own terminals and editors, while the others keep running.</p>
 
 <h2 id="console-tabs">Console tabs</h2>
 <p>The Console has tabs, each its own shell in the application's folder, so you can run commands in one and keep something like Claude Code running in another. Tabs keep running, at their size, while you are in another, in the dock or inside the editor.</p>
@@ -487,8 +489,9 @@ def terminals():
 <ul>
 <li>{k("`")} opens the Console for the application you are on, and closes it again, even from inside it.</li>
 <li>{k("Shift", "`")} moves to its next open terminal.</li>
-<li>{k("Ctrl", "Up")} hides and shows the dock, on macOS too.</li>
-<li>Settings › Key binds can give your own keys to opening every terminal at once, the code editor, minimising the terminal and hiding the dock.</li>
+<li>{k("Ctrl", "Down")} opens and closes the dock's list, on macOS too.</li>
+<li>{k("Ctrl", "Up")} hides and shows the dock's button, on macOS too.</li>
+<li>Settings › Key binds can give your own keys to opening every terminal at once, the code editor, minimising the terminal, the dock's list and hiding its button.</li>
 </ul>
 
 <h2 id="logs">Logs</h2>
@@ -1035,7 +1038,8 @@ def palette():
 <tr><td>{k("Ctrl", "Shift", "L")}</td><td>Switch between light and dark</td></tr>
 <tr><td>{k("Ctrl", "Shift", "R")}</td><td>Restart the daemon</td></tr>
 <tr><td>{k("Ctrl", "Shift", "Right")} and {k("Ctrl", "Shift", "Left")}</td><td>Next and previous application, in the Overview's order, on the same tab ({k("Ctrl")} on macOS too)</td></tr>
-<tr><td>{k("Ctrl", "Up")}</td><td>Hide or show the dock ({k("Ctrl")} on macOS too)</td></tr>
+<tr><td>{k("Ctrl", "Down")}</td><td>Open or close the dock's list ({k("Ctrl")} on macOS too)</td></tr>
+<tr><td>{k("Ctrl", "Up")}</td><td>Hide or show the dock's button ({k("Ctrl")} on macOS too)</td></tr>
 <tr><td>{k("`")}</td><td>Open or close the Console for the application you are on</td></tr>
 <tr><td>{k("Shift", "`")}</td><td>Its next open terminal</td></tr>
 <tr><td>{k("Ctrl", "/")}</td><td>Every shortcut</td></tr>
@@ -1089,8 +1093,8 @@ PAGES = {
                 lede="Stage, commit, branch, pull and read the history without leaving the code editor.", body=git),
     "logs": dict(title="Logs", icon="problems", summary="Every log in one list, with filters, stack traces and exceptions.",
                  lede="Every log an application writes, in one list you can filter and search, with stack traces that open the editor.", body=logs),
-    "terminals": dict(title="Terminals and the dock", icon="terminal-dock", summary="Artisan, Console, Tinker and Logs at the bottom of the window.",
-                      lede="Artisan, a console, Tinker and every log, in a dock at the bottom of the window, a key away.", body=terminals),
+    "terminals": dict(title="Terminals and the dock", icon="terminal-dock", summary="Artisan, Console, Tinker and Logs, a click on the dock's button away.",
+                      lede="Artisan, a console, Tinker and every log, in a dock that floats where you put it, a key away.", body=terminals),
     "technical-debt": dict(title="Technical Debt", icon="technical-debt", summary="The work your team put off, the code smells and the deprecated PHP, with fixes.",
                            lede="The work your team put off and noted in the code, beside the code smells and deprecated PHP Phun finds, with a fix where one is safe.", body=technical_debt),
     "sticky-notes": dict(title="Sticky Notes", icon="markdown-preview", summary="A board of notes for each application, shared with your team or kept to yourself.",
