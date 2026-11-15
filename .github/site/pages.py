@@ -963,6 +963,13 @@ def diagnostics():
 <p><strong>Diagnostics</strong>, on the Overview ({k("Ctrl", "3")}), runs Phun's checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off. The palette can run the safe fixes too.</p>
 {sh("phun status       # the daemon, ports, DNS, certificates and PHP at a glance", "phun doctor", "phun doctor fix")}
 
+<h2 id="ports">A port that is already taken</h2>
+<p>When another program holds a port Phun needs, such as 80 or 443, the DNS port, or a database's port, Diagnostics names it with its process id and says what it is: Apache, nginx, Caddy, Herd, IIS, Skype, Docker, another MySQL, MariaDB, PostgreSQL or Redis, or a copy of one of Phun's own services left running. Then it offers the fix. <strong>Stop</strong> appears only when that is safe: a program you own that nothing will start again behind your back. A system service gets the command that really stops it instead, such as <code>sudo systemctl stop nginx</code>, <code>brew services stop mysql</code> or <code>docker stop</code>, ready to copy. <strong>Use port</strong> moves Phun's service to a free port and restarts it. A service that can't start for this reason says the same in its error.</p>
+
+<h2 id="certificates">Certificates that are about to expire</h2>
+<p>Phun warns 30 days before its local certificate authority or an application's certificate expires: in Diagnostics, and with one notice when it gets close, again in its last week, and once it has expired, never on every launch. Renewing an application's certificate takes one click and needs nothing trusted again. Renewing the certificate authority asks first, because the new one has to be trusted again, which may ask for your password.</p>
+{sh("phun cert list               # certificates that expire within 30 days", "phun cert renew blog.test", "phun cert renew-ca --yes     # then trust it again: sudo phun elevate trust")}
+
 <h2 id="report">A problem report</h2>
 {{{{figure:diagnostics-report}}}}
 <p>Diagnostics › Report gathers what a bug report needs in one file: versions, services, Phun's processes, a <code>.test</code> lookup, health checks and recent logs. Passwords, tokens, keys, email addresses, share links, card or ID numbers and your user name are removed before you see it. Copy it, or Save file puts it in Downloads. Copy diagnostics on the daemon panel is redacted the same way. Problems and ideas are welcome in <a href="https://github.com/cloudcake/phun/discussions">Discussions</a>.</p>

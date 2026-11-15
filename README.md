@@ -486,6 +486,9 @@ Every command takes `--json` for machine-readable output, and
 | `phun status` | The daemon, ports, DNS, certificates and PHP at a glance |
 | `phun doctor` | Check the setup for common problems |
 | `phun doctor fix` | Repair what it safely can |
+| `phun cert list` | Certificates that expire within 30 days |
+| `phun cert renew <host>` | Issue a fresh certificate for a host |
+| `phun cert renew-ca --yes` | Replace the local certificate authority, then trust it again with `sudo phun elevate trust` |
 | `phun restart daemon` | Restart the daemon |
 | `phun update` | Check for a new Phun (`--yes` installs it) |
 | `phun uninstall` | Uninstall Phun |
