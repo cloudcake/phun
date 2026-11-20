@@ -119,6 +119,26 @@ jobs:
           workspaces: ${{ github.workspace }}
           key: ${{ matrix.target }}
 
+      # The bundled Xdebug builds. scripts/bundle-xdebug.sh keeps them in
+      # target/xdebug/<xdebug-version>/ and reuses any already there. On the
+      # Intel job they compile under Rosetta and took about 41 of its 62-67
+      # minutes (about 3 on arm64 and Linux). The key carries the target and a
+      # hash of the build recipe (build-xdebug.sh, bundle-xdebug.sh and the
+      # xdebug-version pins), so any change to how or which Xdebug is built
+      # starts cold. The restore key falls back only across downloads.json
+      # changes: a PHP patch bump reuses the minor's build, as bundle-xdebug.sh
+      # does locally, and a new minor is built and saved under the new key.
+      # Post steps run in reverse, so this saves before Rust cache's post step
+      # cleans target/. Windows takes prebuilt DLLs (build.ps1): nothing to cache.
+      - name: Xdebug build cache
+        if: matrix.kind != 'windows'
+        uses: actions/cache@v6
+        with:
+          path: target/xdebug
+          key: xdebug-v1-${{ matrix.target }}-${{ hashFiles('scripts/build-xdebug.sh', 'scripts/bundle-xdebug.sh', 'scripts/xdebug-version*') }}-${{ hashFiles('resources/downloads.json') }}
+          restore-keys: |
+            xdebug-v1-${{ matrix.target }}-${{ hashFiles('scripts/build-xdebug.sh', 'scripts/bundle-xdebug.sh', 'scripts/xdebug-version*') }}-
+
       - name: Node
         uses: actions/setup-node@v7
         with:
