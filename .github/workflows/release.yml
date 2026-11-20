@@ -694,10 +694,10 @@ jobs:
       # the minisign secret key (secret PHUN_MINISIGN_KEY, its password in
       # PHUN_MINISIGN_PASSWORD when it has one) whose public half is
       # UPDATE_PUBLIC_KEY in crates/phun-update; without it the release
-      # ships unsigned, as before, and only warns. Automatic updates install
-      # only signed files (the installers, the live daemons and the UI
-      # bundle, all signed by the loop below), so an unsigned release is
-      # left to Update now.
+      # ships unsigned, which is the norm for now: no Cloudcake-held signing
+      # key exists yet. Phun checks every update (installers, live daemons and
+      # the UI bundle) against this SHA256SUMS, and checks a .minisig too when
+      # the release has one, so an unsigned release still updates.
       - name: Checksums and update signatures
         env:
           MINISIGN_KEY: ${{ secrets.PHUN_MINISIGN_KEY }}
@@ -711,7 +711,7 @@ jobs:
           sha256sum -- "${installers[@]}" > SHA256SUMS
           cat SHA256SUMS
           if [ -z "$MINISIGN_KEY" ]; then
-            echo "::warning title=Installers not signed::PHUN_MINISIGN_KEY is not set, so the release has no .minisig files: automatic updates and phun update --yes cannot install it."
+            echo "Signing is off (PHUN_MINISIGN_KEY is not set): no .minisig files. Updates are checked against SHA256SUMS."
             exit 0
           fi
           sudo apt-get update -qq >/dev/null
