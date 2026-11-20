@@ -27,6 +27,19 @@ on:
           - arm64
           - intel
           - both
+  # release.yml calls this before publishing, with the commit it built.
+  # workflow_call has no choice type: arch is arm64, intel or both.
+  workflow_call:
+    inputs:
+      ref:
+        description: Branch, tag or commit of cloudcake/phun-source to test
+        required: true
+        type: string
+      arch:
+        description: Which Macs to test on (arm64, intel or both)
+        required: false
+        default: arm64
+        type: string
 
 permissions:
   contents: read

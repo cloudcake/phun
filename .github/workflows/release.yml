@@ -7,9 +7,12 @@
 # semver) is stamped into the phun checkout so installer names and the
 # in-app version match the release. The GUI should read that build
 # version (Tauri getVersion / AboutMetadata), not a hardcoded string.
-# No smoke tests run here: the linux-smoke, macos-smoke and windows-smoke
-# workflows run them on demand, so a runner that never starts cannot hold up
-# publishing.
+# The linux-smoke, macos-smoke (arm64) and windows-smoke workflows run as
+# reusable workflows against the same pinned commit, in parallel with the
+# builds, and the GitHub release is only published when all three pass. They
+# build from source rather than test the installers built here. Each has a
+# timeout-minutes, so a hung runner fails the release instead of holding it
+# indefinitely. In an emergency, skip_smoke publishes without them.
 # After the release is published, the sync job writes the bookkeeping back
 # to cloudcake/phun-source main: the entries the built commit had under
 # Unreleased become this version (entries added on main since stay under
@@ -30,6 +33,11 @@ on:
         required: true
         default: main
         type: string
+      skip_smoke:
+        description: Emergency only - publish without the Linux, macOS and Windows smoke tests
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -655,9 +663,58 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  # Smoke tests of the pinned commit, run alongside the builds so they only
+  # add time when they outlast them. They need the deploy key (secrets:
+  # inherit) and only read.
+  smoke-linux:
+    name: Smoke (Linux)
+    needs: resolve
+    if: ${{ !inputs.skip_smoke }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/linux-smoke.yml
+    with:
+      ref: ${{ needs.resolve.outputs.sha }}
+    secrets: inherit
+
+  smoke-macos:
+    name: Smoke (macOS)
+    needs: resolve
+    if: ${{ !inputs.skip_smoke }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/macos-smoke.yml
+    with:
+      ref: ${{ needs.resolve.outputs.sha }}
+      arch: arm64
+    secrets: inherit
+
+  smoke-windows:
+    name: Smoke (Windows)
+    needs: resolve
+    if: ${{ !inputs.skip_smoke }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/windows-smoke.yml
+    with:
+      ref: ${{ needs.resolve.outputs.sha }}
+    secrets: inherit
+
   release:
     name: GitHub Release
-    needs: [resolve, build, arch]
+    needs: [resolve, build, arch, smoke-linux, smoke-macos, smoke-windows]
+    # Every build must pass, and every smoke test too unless skip_smoke was
+    # set (then they are skipped). The explicit condition is needed because a
+    # skipped need would otherwise skip this job.
+    if: >-
+      ${{ !cancelled()
+      && needs.resolve.result == 'success'
+      && needs.build.result == 'success'
+      && needs.arch.result == 'success'
+      && (inputs.skip_smoke
+      || (needs.smoke-linux.result == 'success'
+      && needs.smoke-macos.result == 'success'
+      && needs.smoke-windows.result == 'success')) }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -774,6 +831,9 @@ jobs:
   readme:
     name: Point the README and its download headers at this release
     needs: release
+    # Explicit: with skip_smoke the skipped smoke jobs upstream would
+    # otherwise skip this job even though the release succeeded.
+    if: ${{ !cancelled() && needs.release.result == 'success' }}
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
@@ -833,7 +893,8 @@ jobs:
   sync:
     name: Sync version and changelog
     needs: [resolve, release]
-    if: inputs.ref == 'main'
+    # Explicit result check for the same reason as the readme job.
+    if: ${{ !cancelled() && needs.resolve.result == 'success' && needs.release.result == 'success' && inputs.ref == 'main' }}
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:

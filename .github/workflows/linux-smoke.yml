@@ -28,6 +28,13 @@ on:
         required: true
         default: main
         type: string
+  # release.yml calls this before publishing, with the commit it built.
+  workflow_call:
+    inputs:
+      ref:
+        description: Branch, tag or commit of cloudcake/phun-source to test
+        required: true
+        type: string
 
 permissions:
   contents: read
