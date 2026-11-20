@@ -747,19 +747,18 @@ jobs:
           merge-multiple: true
 
       # SHA256SUMS and `<installer>.minisig` are what phun-update's
-      # select_asset looks for next to each installer. The signatures need
-      # the minisign secret key (secret PHUN_MINISIGN_KEY, its password in
-      # PHUN_MINISIGN_PASSWORD when it has one) whose public half is
-      # UPDATE_PUBLIC_KEY in crates/phun-update; without it the release
-      # ships unsigned, which is the norm for now: no Cloudcake-held signing
-      # key exists yet. Phun checks every update (installers, live daemons and
-      # the UI bundle) against this SHA256SUMS, and checks a .minisig too when
-      # the release has one, so an unsigned release still updates.
+      # select_asset looks for next to each installer. Releases are unsigned
+      # for now: Phun carries no public key and checks every update
+      # (installers, live daemons and the UI bundle) against this SHA256SUMS.
+      # Signing comes back with a Cloudcake-held key: the secret
+      # PHUN_MINISIGN_KEY (its password in PHUN_MINISIGN_PASSWORD) signs, and
+      # the repository variable PHUN_MINISIGN_PUBLIC_KEY checks each signature
+      # as it is made.
       - name: Checksums and update signatures
         env:
           MINISIGN_KEY: ${{ secrets.PHUN_MINISIGN_KEY }}
           MINISIGN_PASSWORD: ${{ secrets.PHUN_MINISIGN_PASSWORD }}
-          UPDATE_PUBLIC_KEY: RWRXUQIpU8uZ3B6SV3yFsK3+aAWZX+efytjc8F+8PTuViL8/nNPsQxpi
+          MINISIGN_PUBLIC_KEY: ${{ vars.PHUN_MINISIGN_PUBLIC_KEY }}
         run: |
           set -euo pipefail
           cd release-assets
@@ -778,7 +777,9 @@ jobs:
           printf '%s\n' "$MINISIGN_KEY" > "$key"
           for f in "${installers[@]}"; do
             printf '%s\n' "$MINISIGN_PASSWORD" | minisign -S -s "$key" -m "$f" -x "$f.minisig" >/dev/null
-            minisign -V -q -P "$UPDATE_PUBLIC_KEY" -m "$f" -x "$f.minisig"
+            if [ -n "$MINISIGN_PUBLIC_KEY" ]; then
+              minisign -V -q -P "$MINISIGN_PUBLIC_KEY" -m "$f" -x "$f.minisig"
+            fi
           done
           ls -la
 
