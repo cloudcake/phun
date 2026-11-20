@@ -479,6 +479,84 @@ jobs:
             throw "installer names must include the tag version $version"
           }
 
+      # Live updates (phun-source docs/design/live-updates.md): the daemon on
+      # its own (Phun_<ver>_phund_<platform>), and from the Linux job the UI
+      # bundle (Phun_<ver>_ui-api<N>.tar.gz), so a running Phun takes them
+      # without a restart. The release job signs them with the installers.
+      # A source without apps/phun-gui/native-api predates live updates and
+      # publishes neither.
+      - name: Collect the daemon and UI bundle for live updates
+        if: matrix.kind != 'windows'
+        env:
+          KIND: ${{ matrix.kind }}
+          RUST_TARGET: ${{ matrix.target }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ ! -f apps/phun-gui/native-api ]; then
+            echo "this source predates live updates; nothing to collect"
+            exit 0
+          fi
+          VERSION="${TAG#[vV]}"
+          candidates=("target/$RUST_TARGET/release/phund")
+          if [ "$RUST_TARGET" != "x86_64-apple-darwin" ]; then
+            candidates+=(target/release/phund)
+          fi
+          phund=""
+          for candidate in "${candidates[@]}"; do
+            if [ -f "$candidate" ]; then
+              phund="$candidate"
+              break
+            fi
+          done
+          test -n "$phund" || { echo "phund not found in ${candidates[*]}" >&2; exit 1; }
+          case "$RUST_TARGET" in
+            x86_64-unknown-linux-gnu) slug=linux-x86_64 ;;
+            aarch64-apple-darwin) slug=macos-arm64; want=arm64 ;;
+            x86_64-apple-darwin) slug=macos-x64; want=x86_64 ;;
+            *) echo "no live daemon for $RUST_TARGET" >&2; exit 1 ;;
+          esac
+          out="dist/Phun_${VERSION}_phund_${slug}"
+          cp "$phund" "$out"
+          chmod 755 "$out"
+          if [ "$KIND" = "macos" ]; then
+            codesign --force --sign - "$out"
+            test "$(lipo -archs "$out")" = "$want" || { echo "$out is not $want" >&2; exit 1; }
+          fi
+          echo "daemon: $out"
+          if [ "$KIND" = "linux" ]; then
+            api=$(tr -d '[:space:]' < apps/phun-gui/native-api)
+            [[ "$api" =~ ^[0-9]+$ ]] || { echo "apps/phun-gui/native-api is not a number" >&2; exit 1; }
+            test -f apps/phun-gui/dist/index.html || { echo "apps/phun-gui/dist was not built" >&2; exit 1; }
+            ui=$(mktemp -d)
+            cp -R apps/phun-gui/dist/. "$ui/"
+            printf '{"version":"%s","nativeApi":%s}\n' "$VERSION" "$api" > "$ui/ui-manifest.json"
+            tar -czf "dist/Phun_${VERSION}_ui-api${api}.tar.gz" -C "$ui" .
+            echo "UI bundle: dist/Phun_${VERSION}_ui-api${api}.tar.gz"
+          fi
+
+      - name: Collect the daemon for live updates (Windows)
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Test-Path apps/phun-gui/native-api)) {
+            Write-Host 'this source predates live updates; nothing to collect'
+            exit 0
+          }
+          $version = $env:TAG
+          if ($version -match '^[vV]') { $version = $version.Substring(1) }
+          $phund = $null
+          foreach ($candidate in @('target/x86_64-pc-windows-msvc/release/phund.exe', 'target/release/phund.exe')) {
+            if (Test-Path $candidate) { $phund = $candidate; break }
+          }
+          if (-not $phund) { throw 'phund.exe not found under target/' }
+          $out = Join-Path 'dist' "Phun_${version}_phund_windows-x64.exe"
+          Copy-Item $phund -Destination $out -Force
+          Write-Host "daemon: $out"
+
       - name: Upload installers
         uses: actions/upload-artifact@v4
         with:
@@ -555,6 +633,21 @@ jobs:
           ls /usr/lib/Phun/php-ext/xdebug/xdebug-*-linux-x86_64.so
           (cd /usr/lib/Phun/php-ext/xdebug && test -s SHA256SUMS && sha256sum -c SHA256SUMS)
 
+      # The Arch package's daemon is built with the `pacman` feature, so Arch
+      # installs take their live daemon update from this one, not the .deb's
+      # (see the build job's live-update step).
+      - name: Collect the daemon for live updates
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ ! -f apps/phun-gui/native-api ]; then
+            echo "this source predates live updates; nothing to collect"
+            exit 0
+          fi
+          VERSION="${TAG#[vV]}"
+          install -m 755 /usr/bin/phund "dist/Phun_${VERSION}_phund_linux-x86_64-arch"
+
       - name: Upload installers
         uses: actions/upload-artifact@v4
         with:
@@ -601,7 +694,10 @@ jobs:
       # the minisign secret key (secret PHUN_MINISIGN_KEY, its password in
       # PHUN_MINISIGN_PASSWORD when it has one) whose public half is
       # UPDATE_PUBLIC_KEY in crates/phun-update; without it the release
-      # ships unsigned, as before, and only warns.
+      # ships unsigned, as before, and only warns. Automatic updates install
+      # only signed files (the installers, the live daemons and the UI
+      # bundle, all signed by the loop below), so an unsigned release is
+      # left to Update now.
       - name: Checksums and update signatures
         env:
           MINISIGN_KEY: ${{ secrets.PHUN_MINISIGN_KEY }}
@@ -615,7 +711,7 @@ jobs:
           sha256sum -- "${installers[@]}" > SHA256SUMS
           cat SHA256SUMS
           if [ -z "$MINISIGN_KEY" ]; then
-            echo "::warning title=Installers not signed::PHUN_MINISIGN_KEY is not set, so the release has no .minisig files and phun update --yes cannot install it."
+            echo "::warning title=Installers not signed::PHUN_MINISIGN_KEY is not set, so the release has no .minisig files: automatic updates and phun update --yes cannot install it."
             exit 0
           fi
           sudo apt-get update -qq >/dev/null
