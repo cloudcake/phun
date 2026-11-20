@@ -581,7 +581,9 @@ jobs:
             if (Test-Path $candidate) { $phund = $candidate; break }
           }
           if (-not $phund) { throw 'phund.exe not found under target/' }
-          $out = Join-Path 'dist' "Phun_${version}_phund_windows-x64.exe"
+          # No .exe on the name: Phun 0.8.1 and older take any windows-x64 .exe
+          # for the installer, and GitHub lists this one before the setup.
+          $out = Join-Path 'dist' "Phun_${version}_phund_windows-x64"
           Copy-Item $phund -Destination $out -Force
           Write-Host "daemon: $out"
 
