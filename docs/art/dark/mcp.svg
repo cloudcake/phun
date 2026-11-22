@@ -1,7 +1,7 @@
 <!-- Phun artwork. Copyright Cloudcake. All rights reserved. Not licensed for use outside https://github.com/cloudcake/phun. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="518" height="180" viewBox="736 12 518 180" role="img" aria-labelledby="t d">
 <title id="t">An MCP server for AI agents</title>
-<desc id="d">Turn it on and agents such as Claude Code can list sites, switch PHP, create databases and read caught mail.</desc>
+<desc id="d">Turn it on and agents such as Claude Code can list apps, switch PHP, create databases and read caught mail.</desc>
 <metadata>
   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
     <rdf:Description rdf:about="https://github.com/cloudcake/phun">

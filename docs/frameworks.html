@@ -79,10 +79,10 @@ phun messenger enable shop
 phun console shop cache:clear</code></pre>
 
 <h2 id="wordpress">WordPress</h2>
-<p>Create a WordPress site from Create, or <code>phun new wordpress</code>. Services are written into <code>wp-config.php</code>: MySQL or MariaDB, and Redis for the Redis Object Cache plugin. Turn on one-click admin sign-in under the application's Settings › HTTPS, or from the terminal:</p>
-<pre><code>phun wordpress auto-login site on
-phun wordpress login-url site  <span class="c"># a one-time admin sign-in link</span>
-phun wordpress users site</code></pre>
+<p>Create a WordPress application from Create, or <code>phun new wordpress</code>. Services are written into <code>wp-config.php</code>: MySQL or MariaDB, and Redis for the Redis Object Cache plugin. Turn on one-click admin sign-in under the application's Settings › HTTPS, or from the terminal:</p>
+<pre><code>phun wordpress auto-login shop on
+phun wordpress login-url shop  <span class="c"># a one-time admin sign-in link</span>
+phun wordpress users shop</code></pre>
 
 <h2 id="others">CodeIgniter, Drupal, Magento and more</h2>
 <p>CodeIgniter gets its databases, Redis, Memcached and mail in its own <code>.env</code> settings. WordPress, CodeIgniter (with <code>codeigniter4/tasks</code>), Drupal (with Drush) and Magento get scheduled tasks from Infrastructure › Processes, which run the application's own cron command every minute, with its output in the application's logs and a notification when a run fails.</p>

@@ -110,7 +110,7 @@ Latest release: **[v0.8.3](https://github.com/cloudcake/phun/releases/tag/v0.8.3
 
 <img src=".github/readme/banners/themes.svg" alt="Two themes. Daybreak and Nightfall, or follow the system. Your choice reaches every window and the editor." width="100%">
 
-<img src=".github/readme/banners/mcp.svg" alt="An MCP server for AI agents. Turn it on and agents such as Claude Code can list sites, switch PHP, create databases and read caught mail." width="100%">
+<img src=".github/readme/banners/mcp.svg" alt="An MCP server for AI agents. Turn it on and agents such as Claude Code can list apps, switch PHP, create databases and read caught mail." width="100%">
 
 <img src=".github/readme/banners/cli.svg" alt="The phun command. Link, park, secure, share and switch PHP from your terminal. The app and the command share one daemon." width="100%">
 
@@ -186,7 +186,7 @@ a card per feature group and a tile per feature. Rebuilt by
 <p align="center">
 <img src=".github/readme/features/command-palette.svg" alt="A command palette. Every page, application, Artisan command and action, a few keystrokes away." width="49%">
 <img src=".github/readme/features/themes.svg" alt="Two themes. Daybreak and Nightfall, or follow the system. Your choice reaches every window and the editor." width="49%">
-<img src=".github/readme/features/mcp.svg" alt="An MCP server for AI agents. Turn it on and agents such as Claude Code can list sites, switch PHP, create databases and read caught mail." width="49%">
+<img src=".github/readme/features/mcp.svg" alt="An MCP server for AI agents. Turn it on and agents such as Claude Code can list apps, switch PHP, create databases and read caught mail." width="49%">
 <img src=".github/readme/features/cli.svg" alt="The phun command. Link, park, secure, share and switch PHP from your terminal. The app and the command share one daemon." width="49%">
 <img src=".github/readme/features/health-checks.svg" alt="Health checks with fixes. Built-in checks for DNS, certificates, ports and PHP, each with a one-click fix when something is off." width="49%">
 <img src=".github/readme/features/updates.svg" alt="Updates itself. Phun checks for new versions and installs them from the app, with the release notes beside them." width="49%">
@@ -258,7 +258,7 @@ Every command takes `--json` for machine-readable output, and
 
 | Command | What it does |
 |---|---|
-| `phun sites` | List every parked and linked application |
+| `phun apps` | List every parked and linked application |
 | `phun link [name] [path]` | Serve a folder as `<name>.test` (the current folder under its own name when given nothing) |
 | `phun unlink <app>` | Stop serving a linked application |
 | `phun park <path>` | Serve every folder inside `<path>` as its own `.test` application |
@@ -314,7 +314,7 @@ Every command takes `--json` for machine-readable output, and
 | `phun php pool set <version> max_children <n>` | Set how many PHP workers one version may run |
 | `phun php pool unset <version> max_children` | Put it back to the default |
 | `phun php pool list` | List per-version pool settings |
-| `phun exec [--site <app>] <tool> [args...]` | Run `php`, `composer` or another tool on the PHP version an application uses |
+| `phun exec [--app <app>] <tool> [args...]` | Run `php`, `composer` or another tool on the PHP version an application uses |
 | `phun which <tool>` | Print the binary `phun exec` would run |
 | `phun coverage [args...]` | Run a script on the default PHP with pcov coverage on |
 | `phun path install` / `uninstall` | Add Phun's `php`, `composer` and friends to your shell's PATH, or take them out |
@@ -341,7 +341,7 @@ Every command takes `--json` for machine-readable output, and
 | `phun service logs <service>` | Show the end of its log |
 | `phun service add --type <type>` | Add another instance, or a per-application server such as Reverb |
 | `phun service remove <service>` | Remove a per-application instance |
-| `phun service set-site <service> <app>` | Move a per-application instance to another application |
+| `phun service set-app <service> <app>` | Move a per-application instance to another application |
 | `phun tools` | List the developer tools and which are installed |
 | `phun install tool <id>` / `phun uninstall tool <id>` | Install or remove `composer`, `node`, `bun`, `laravel` or `wp-cli` |
 | `phun install node <version>` | Install another Node.js version alongside the others: a major (`20`), an exact version, `lts`, `lts/<codename>` or `latest` |
@@ -397,9 +397,9 @@ Every command takes `--json` for machine-readable output, and
 | `phun dotenv <app>` | Print an application's `.env` |
 | `phun js-install <app>` | Install JavaScript dependencies with the application's package manager |
 | `phun wordpress login-url <app>` | Print a one-time admin sign-in link |
-| `phun wordpress users <app>` | List the site's administrators |
+| `phun wordpress users <app>` | List the application's administrators |
 | `phun wordpress auto-login <app> on\|off` | Turn one-click admin sign-in on or off |
-| `phun wordpress versions` | List the WordPress versions a new site can start from |
+| `phun wordpress versions` | List the WordPress versions a new application can start from |
 
 </details>
 

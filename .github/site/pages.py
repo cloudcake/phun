@@ -209,7 +209,7 @@ def create():
 </ul>
 
 <h2 id="wordpress">WordPress</h2>
-<p>Choose the core version, the locale, the site title and the admin account, and the database name and table prefix. Phun creates the database in MySQL or MariaDB, downloads WordPress, writes <code>wp-config.php</code> and runs the install; see <a href="frameworks.html#wordpress">WordPress</a> for signing in.</p>
+<p>Choose the core version, the locale, the application title and the admin account, and the database name and table prefix. Phun creates the database in MySQL or MariaDB, downloads WordPress, writes <code>wp-config.php</code> and runs the install; see <a href="frameworks.html#wordpress">WordPress</a> for signing in.</p>
 
 <h2 id="others">Symfony, CodeIgniter, CakePHP and Slim</h2>
 <p>These start from each framework's own Composer skeleton. Symfony has a <strong>Web application</strong> switch for Twig, Doctrine, forms, security, mailer and Messenger; leave it off for the minimal skeleton, as for an API. Flex's Docker files are left out, mail goes to Phun's capture, and a web application starts on SQLite, all in <code>.env.local</code>.</p>
@@ -225,7 +225,7 @@ def create():
 
 <h2 id="cli">From the terminal</h2>
 <p><code>phun new</code> creates an application in the current folder, or <code>--dir</code>, and follows it until it is ready. <code>--php</code> picks the version.</p>
-{sh("phun new symfony shop --webapp", "phun new html site --spa", "phun new html todo --starter vue", "phun new git blog --url git@github.com:acme/blog.git --branch main", "phun new codeigniter api --php 8.3")}
+{sh("phun new symfony shop --webapp", "phun new html landing --spa", "phun new html todo --starter vue", "phun new git blog --url git@github.com:acme/blog.git --branch main", "phun new codeigniter api --php 8.3")}
 <p>Laravel and WordPress take their choices as JSON with <code>--options</code>, where Laravel's <code>"template"</code> is <code>full_stack</code>, <code>filament</code> or <code>micro_service</code>; the app's starters are the easier route for those.</p>
 '''
 
@@ -242,7 +242,7 @@ def php():
 <p>Each application picks its own PHP version in its Settings › PHP, and the rest keep theirs. From the terminal:</p>
 {sh("phun use blog <version>   # just blog.test", "phun use <version>        # the default, used by the terminal's php too")}
 <p>To run a tool on the version an application uses, use <code>phun exec</code>:</p>
-{sh("phun exec --site blog composer install")}
+{sh("phun exec --app blog composer install")}
 
 <h2 id="settings">Settings and extensions</h2>
 <p>Set <code>php.ini</code> values for every version at once or for one version, and see each version's extensions:</p>
@@ -784,8 +784,8 @@ def frameworks():
 {sh("phun new symfony shop --webapp", "phun messenger enable shop", "phun console shop cache:clear")}
 
 <h2 id="wordpress">WordPress</h2>
-<p>Create a WordPress site from Create, or <code>phun new wordpress</code>. Services are written into <code>wp-config.php</code>: MySQL or MariaDB, and Redis for the Redis Object Cache plugin. Turn on one-click admin sign-in under the application's Settings › HTTPS, or from the terminal:</p>
-{sh("phun wordpress auto-login site on", "phun wordpress login-url site   # a one-time admin sign-in link", "phun wordpress users site")}
+<p>Create a WordPress application from Create, or <code>phun new wordpress</code>. Services are written into <code>wp-config.php</code>: MySQL or MariaDB, and Redis for the Redis Object Cache plugin. Turn on one-click admin sign-in under the application's Settings › HTTPS, or from the terminal:</p>
+{sh("phun wordpress auto-login shop on", "phun wordpress login-url shop   # a one-time admin sign-in link", "phun wordpress users shop")}
 
 <h2 id="others">CodeIgniter, Drupal, Magento and more</h2>
 <p>CodeIgniter gets its databases, Redis, Memcached and mail in its own <code>.env</code> settings. WordPress, CodeIgniter (with <code>codeigniter4/tasks</code>), Drupal (with Drush) and Magento get scheduled tasks from Infrastructure › Processes, which run the application's own cron command every minute, with its output in the application's logs and a notification when a run fails.</p>

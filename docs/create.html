@@ -80,7 +80,7 @@
 </ul>
 
 <h2 id="wordpress">WordPress</h2>
-<p>Choose the core version, the locale, the site title and the admin account, and the database name and table prefix. Phun creates the database in MySQL or MariaDB, downloads WordPress, writes <code>wp-config.php</code> and runs the install; see <a href="frameworks.html#wordpress">WordPress</a> for signing in.</p>
+<p>Choose the core version, the locale, the application title and the admin account, and the database name and table prefix. Phun creates the database in MySQL or MariaDB, downloads WordPress, writes <code>wp-config.php</code> and runs the install; see <a href="frameworks.html#wordpress">WordPress</a> for signing in.</p>
 
 <h2 id="others">Symfony, CodeIgniter, CakePHP and Slim</h2>
 <p>These start from each framework's own Composer skeleton. Symfony has a <strong>Web application</strong> switch for Twig, Doctrine, forms, security, mailer and Messenger; leave it off for the minimal skeleton, as for an API. Flex's Docker files are left out, mail goes to Phun's capture, and a web application starts on SQLite, all in <code>.env.local</code>.</p>
@@ -97,7 +97,7 @@
 <h2 id="cli">From the terminal</h2>
 <p><code>phun new</code> creates an application in the current folder, or <code>--dir</code>, and follows it until it is ready. <code>--php</code> picks the version.</p>
 <pre><code>phun new symfony shop --webapp
-phun new html site --spa
+phun new html landing --spa
 phun new html todo --starter vue
 phun new git blog --url git@github.com:acme/blog.git --branch main
 phun new codeigniter api --php 8.3</code></pre>

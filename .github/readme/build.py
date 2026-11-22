@@ -192,7 +192,7 @@ def feature(number, title, lines, art, desc):
 
 def applications_art():
     out = []
-    folders = (("blog", "Laravel"), ("shop", "WordPress"), ("docs", "Static site"))
+    folders = (("blog", "Laravel"), ("shop", "WordPress"), ("docs", "Static app"))
     for i, (name, kind) in enumerate(folders):
         y = 52 + i * 70
         out.append(rect(640, y, 190, 50))

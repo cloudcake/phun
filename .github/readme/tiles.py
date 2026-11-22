@@ -217,7 +217,7 @@ def php_per_app():
 
 def new_app():
     o = []
-    kinds = ("Laravel", "WordPress", "CodeIgniter", "CakePHP", "Slim", "Static site", "HTML app", "Git repository")
+    kinds = ("Laravel", "WordPress", "CodeIgniter", "CakePHP", "Slim", "Static app", "HTML app", "Git repository")
     for i, k in enumerate(kinds):
         x, y = 36 + (i % 4) * 143, 36 + (i // 4) * 88
         o.append(rect(x, y, 136, 78))
@@ -225,7 +225,7 @@ def new_app():
         if k == "Git repository":
             o.append(dot(x + 23, y + 21, 2.5, ART) + dot(x + 23, y + 35, 2.5, ART) + dot(x + 33, y + 25, 2.5, ART))
             o.append(path(f"M{x + 23} {y + 23.5}V{y + 32.5}M{x + 33} {y + 27.5}c0 5-10 3-10 5", ART, 1.3))
-        elif k in ("Static site", "HTML app"):
+        elif k in ("Static app", "HTML app"):
             o.append(path(f"M{x + 23} {y + 23}l-4 5 4 5M{x + 33} {y + 23}l4 5-4 5", ART, 1.5))
         else:
             o.append(text("bold", k[0], x + 28 - width("bold", k[0], 15) / 2, y + 33.5, 15, SOFT))
@@ -936,7 +936,7 @@ def mcp():
     o.append(line([(286, 84), (316, 84), (316, 120), (330, 120)], RED, 1.5, "flow"))
     o.append(rect(330, 30, 274, 180))
     o.append(text("mono", "TOOL CALLS", 348, 54, 9.5, MUTED, tracking=1))
-    calls = (("list_sites", "3 sites"), ("create_database", "blog"), ("list_available_php", "4 versions"), ("set_site_php", "blog"))
+    calls = (("list_apps", "3 apps"), ("create_database", "blog"), ("list_available_php", "4 versions"), ("set_app_php", "blog"))
     for i, (name, res) in enumerate(calls):
         y = 84 + i * 32
         g = check(352, y - 4, GREEN, 6) + text("mono", name, 366, y, 11.5, FG) + text("mono", res, 588 - width("mono", res, 10.5), y, 10.5, MUTED)
@@ -1071,7 +1071,7 @@ TILES = (
     ("themes", 4, "Two themes",
      "Daybreak and Nightfall, or follow the system. Your choice reaches every window and the editor.", themes, 2),
     ("mcp", 4, "An MCP server for AI agents",
-     "Turn it on and agents such as Claude Code can list sites, switch PHP, create databases and read caught mail.", mcp, 4),
+     "Turn it on and agents such as Claude Code can list apps, switch PHP, create databases and read caught mail.", mcp, 4),
     ("cli", 4, "The phun command",
      "Link, park, secure, share and switch PHP from your terminal. The app and the command share one daemon.", cli, 4),
     ("health-checks", 4, "Health checks with fixes",

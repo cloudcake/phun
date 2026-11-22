@@ -68,7 +68,7 @@ phun uninstall php &lt;version&gt;  <span class="c"># only when nothing uses it<
 <pre><code>phun use blog &lt;version&gt;  <span class="c"># just blog.test</span>
 phun use &lt;version&gt;  <span class="c"># the default, used by the terminal&#x27;s php too</span></code></pre>
 <p>To run a tool on the version an application uses, use <code>phun exec</code>:</p>
-<pre><code>phun exec --site blog composer install</code></pre>
+<pre><code>phun exec --app blog composer install</code></pre>
 
 <h2 id="settings">Settings and extensions</h2>
 <p>Set <code>php.ini</code> values for every version at once or for one version, and see each version's extensions:</p>
