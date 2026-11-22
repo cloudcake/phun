@@ -123,7 +123,7 @@ def banner():
     ty = 128
     body.append(app_icon(72, ty, tile))
     body.append(text("black", "Phun", tx, 182, 78, FG, tracking=-1))
-    body.append(text("semibold", "Your pocket-sized PHP playground.", tx, 224, 26, SOFT))
+    body.append(text("semibold", "Your pocket-sized dev playground.", tx, 224, 26, SOFT))
     body.append(text("medium", "For macOS, Linux and Windows.", tx, 256, 19, MUTED))
     rows = (
         ("Every application on .test", "Trusted HTTPS", "Databases, cache and mail"),
@@ -174,7 +174,7 @@ def banner():
     for i, (title, sub) in enumerate(second):
         body.append(service(xs[i], bottom, title, sub, "cab"[i]))
     body.append(dot(bx + bw / 2, hub, 4, RED))
-    return frame(W, H, "\n".join(body), title="Phun", desc="Phun, your pocket-sized PHP playground, for macOS, Linux and Windows.")
+    return frame(W, H, "\n".join(body), title="Phun", desc="Phun, your pocket-sized dev playground, for macOS, Linux and Windows.")
 
 
 def feature(number, title, lines, art, desc):

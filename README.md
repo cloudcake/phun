@@ -1,11 +1,11 @@
 <p align="center">
-  <img src=".github/readme/banner.svg" alt="Phun, your pocket-sized PHP playground, for macOS, Linux and Windows." width="100%">
+  <img src=".github/readme/banner.svg" alt="Phun, your pocket-sized dev playground, for macOS, Linux and Windows." width="100%">
 </p>
 
-Phun runs your PHP applications on your own machine. Every folder you link is
-served at its own `.test` address over trusted HTTPS, with the PHP version it
-needs, and the databases, cache, search and mail it uses run beside it as
-native processes. It is one desktop app for macOS, Linux and Windows, with a
+Phun runs your apps on your own machine: PHP, Node.js and C#. Every web app you
+link is served at its own `.test` address over trusted HTTPS, with the PHP,
+Node.js or .NET version it needs, and the databases, cache, search and mail it
+uses run beside it as native processes. It is one desktop app for macOS, Linux and Windows, with a
 small background service and a `phun` command for the terminal. No Docker, no
 virtual machine, and no password for everyday work.
 

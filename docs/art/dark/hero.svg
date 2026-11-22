@@ -1,7 +1,7 @@
 <!-- Phun artwork. Copyright Cloudcake. All rights reserved. Not licensed for use outside https://github.com/cloudcake/phun. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="424" height="316" viewBox="812 40 424 316" role="img" aria-labelledby="t d">
 <title id="t">Phun</title>
-<desc id="d">Phun, your pocket-sized PHP playground, for macOS, Linux and Windows.</desc>
+<desc id="d">Phun, your pocket-sized dev playground, for macOS, Linux and Windows.</desc>
 <metadata>
   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
     <rdf:Description rdf:about="https://github.com/cloudcake/phun">

@@ -15,9 +15,9 @@ README = os.path.join(os.path.dirname(os.path.dirname(HERE)), "README.md")
 RELEASES = "https://github.com/cloudcake/phun/releases/latest"
 
 INTRO = (
-    "Phun runs your PHP applications on your own machine. Every folder you link is served at its own "
-    "<code>.test</code> address over trusted HTTPS, with the PHP version it needs, and the databases, cache, "
-    "search and mail it uses run beside it as native processes. It is one desktop app with a small background "
+    "Phun runs your apps on your own machine: PHP, Node.js and C#. Every web app you link is served at its own "
+    "<code>.test</code> address over trusted HTTPS, with the PHP, Node.js or .NET version it needs, and the "
+    "databases, cache, search and mail it uses run beside it as native processes. It is one desktop app with a small background "
     "service and a <code>phun</code> command for the terminal. No Docker, no virtual machine, and no password "
     "for everyday work."
 )
