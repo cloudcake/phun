@@ -62,9 +62,34 @@ jobs:
         id: sha
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+  # The Linux Xdebug builds (one per pinned PHP) the Windows installer
+  # carries for apps inside WSL, built where Linux is.
+  xdebug-wsl:
+    name: Linux Xdebug for WSL
+    needs: resolve
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private source
+        uses: actions/checkout@v7
+        with:
+          repository: cloudcake/phun-source
+          ref: ${{ needs.resolve.outputs.sha }}
+          ssh-key: ${{ secrets.PHUN_DEPLOY_KEY }}
+          persist-credentials: false
+      - name: Build
+        run: |
+          sudo apt-get install -y autoconf >/dev/null
+          bash scripts/bundle-xdebug.sh x86_64
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: xdebug-wsl
+          path: resources/php-ext/xdebug/xdebug-*-linux-x86_64.so
+          if-no-files-found: error
+
   build:
     name: ${{ matrix.name }}
-    needs: resolve
+    needs: [resolve, xdebug-wsl]
     runs-on: ${{ matrix.os }}
     strategy:
       # One platform failing must not cancel the others; Stephen needs
@@ -204,10 +229,27 @@ jobs:
           fi
           ./scripts/build.sh --no-install --target x86_64-apple-darwin
 
+      # Apps inside WSL run Phun's Linux PHP there, which needs a Linux
+      # Xdebug. build.ps1 keeps these beside the Windows DLLs and lists them
+      # in SHA256SUMS, from which the daemon places one in the distribution.
+      - name: Get the Linux Xdebug for WSL
+        if: matrix.kind == 'windows'
+        uses: actions/download-artifact@v4
+        with:
+          name: xdebug-wsl
+          path: resources/php-ext/xdebug
+
       - name: Build the Windows installers
         if: matrix.kind == 'windows'
         shell: pwsh
         run: powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1 -NoInstall
+
+      - name: Check the Windows build carries the Linux Xdebug
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        run: |
+          $sums = Get-Content resources/php-ext/xdebug/SHA256SUMS -Raw
+          if ($sums -notmatch 'xdebug-[0-9.]+-linux-x86_64\.so') { throw 'no Linux Xdebug for WSL in SHA256SUMS' }
 
       # build.sh builds the .app with `tauri build --bundles app --no-sign`
       # and then a styled DMG (background, icon layout, window size from
