@@ -50,8 +50,6 @@ Latest release: **[v0.12.2](https://github.com/cloudcake/phun/releases/tag/v0.12
 
 <img src=".github/readme/banners/infrastructure.svg" alt="An infrastructure canvas. Each application&#x27;s services drawn as a canvas. Add a database, cache or storage and Phun writes the settings into its .env." width="100%">
 
-<img src=".github/readme/banners/laravel-cloud.svg" alt="Laravel Cloud. Link an application to Laravel Cloud, create what Cloud is missing and deploy, or bring a Cloud application home with the same infrastructure." width="100%">
-
 <img src=".github/readme/banners/framework-stack.svg" alt="Your stack, recognised. Every application shows its framework and the libraries it uses with their versions: Laravel, Livewire, Filament, Vue, React, Inertia, Tailwind, Vite and more." width="100%">
 
 ### PHP and services

@@ -15,7 +15,7 @@
     root.setAttribute("data-theme", theme);
     var btn = document.querySelector(".theme-toggle");
     if (btn) {
-      var other = theme === "dark" ? "Daybreak" : "Nightfall";
+      var other = theme === "dark" ? "light" : "dark";
       btn.setAttribute("data-tip", "Switch to " + other);
       btn.setAttribute("aria-label", "Switch to " + other);
     }

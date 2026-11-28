@@ -66,8 +66,6 @@ def banner(_number, _section, title, body, draw, n_cycle, stem):
 
 # Features added since the tile set, in the same shape as tiles.TILES.
 ADDED = (
-    ("laravel-cloud", 0, "Laravel Cloud",
-     "Link an application to Laravel Cloud, create what Cloud is missing and deploy, or bring a Cloud application home with the same infrastructure.", drawings.laravel_cloud, 4),
     ("framework-stack", 0, "Your stack, recognised",
      "Every application shows its framework and the libraries it uses with their versions: Laravel, Livewire, Filament, Vue, React, Inertia, Tailwind, Vite and more.", drawings.framework_stack, 6),
     ("debugging", 2, "Debugging with Xdebug",

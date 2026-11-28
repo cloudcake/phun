@@ -6,66 +6,6 @@ from art import AMBER, ART, BG, BLUE, BORDER, CARD, DIM, FG, GOLD, GREEN, INSET,
 from tiles import check, chip, code, cyc, globe, keycap, switch, window
 
 
-# laravel-cloud
-
-CLOUD_ROWS = (("Database", "MySQL"), ("Cache", "Redis"), ("Bucket", "S3"), ("Queue workers", "2"))
-CLOUD_MISSING = 2
-
-
-def laravel_cloud():
-    o = []
-    # Local application.
-    o.append(rect(36, 30, 200, 180))
-    o.append(globe(56, 48, 7))
-    o.append(text("mono", "blog.test", 72, 52.5, 13, FG))
-    w, c = chip(220 - (width("medium", "Local", 10.5) + 18), 37, "Local", 10.5, color=SOFT)
-    o.append(c)
-    o.append(path("M36 66H236", BORDER, 1))
-    # Laravel Cloud environment.
-    o.append(rect(368, 30, 236, 180))
-    o.append(path("M386 56h14a5 5 0 0 0 .6-9.9 7 7 0 0 0-13.4-2 5 5 0 0 0-1.2 11.9z", SOFT, 1.4))
-    o.append(text("bold", "Laravel Cloud", 410, 53, 13, FG))
-    w, c = chip(590 - (width("mono", "production", 10) + 18), 37, "production", 10, color=SOFT, font="mono")
-    o.append(c)
-    o.append(path("M368 66H604", BORDER, 1))
-    # The link between them.
-    o.append(line([(236, 48), (368, 48)]))
-    w, c = chip(302 - (width("semibold", "Linked", 10.5) + 18) / 2, 37, "Linked", 10.5, fill=INSET, color=SOFT, font="semibold")
-    o.append(c)
-
-    for i, (name, kind) in enumerate(CLOUD_ROWS):
-        y = 88 + i * 26
-        o.append(dot(52, y, 3.5, GREEN, f"pulse {'abca'[i]}"))
-        o.append(text("semibold", name, 64, y + 4.5, 12.5, SOFT))
-        o.append(text("mono", kind, 222 - width("mono", kind, 10.5), y + 4, 10.5, DIM))
-        o.append(line([(236, y), (368, y)], LINE, 1))
-        if i == CLOUD_MISSING:
-            o.append(line([(236, y), (368, y)], RED, 1.5, "flow"))
-            mw = width("semibold", "Missing", 10.5) + 18
-            missing = (dot(386, y, 3.5, RED) + text("semibold", name, 398, y + 4.5, 12.5, FG)
-                       + rect(590 - mw, y - 10, mw, 20, r=6, fill=REDSOFT, stroke=None)
-                       + text("semibold", "Missing", 599 - mw, y + 4, 10.5, RED))
-            created = (check(386, y, GREEN, 5.5) + text("semibold", name, 398, y + 4.5, 12.5, FG)
-                       + text("medium", "Created", 590 - width("medium", "Created", 10.5), y + 4, 10.5, GREEN))
-            o.append(f'<g class="swap-a">{missing}</g><g class="swap-b">{created}</g>')
-        else:
-            o.append(check(386, y, GREEN, 5.5))
-            o.append(text("semibold", name, 398, y + 4.5, 12.5, SOFT))
-            o.append(text("medium", "Ready", 590 - width("medium", "Ready", 10.5), y + 4, 10.5, MUTED))
-
-    # Footers: where the code lives, and the deploy followed in Phun.
-    o.append(path("M36 184H236", BORDER, 1))
-    o.append(text("mono", "~/Code/blog", 52, 201, 10.5, MUTED))
-    o.append(path("M368 184H604", BORDER, 1))
-    o.append(dot(386, 197, 3.5, RED, "pulse"))
-    o.append(text("semibold", "Deploy", 398, 201.5, 11.5, SOFT))
-    o.append(bar(456, 194, 132, 6, DIM))
-    o.append(f'<rect x="456" y="194" width="132" height="6" rx="3" fill="{RED}" class="grow" style="animation-duration: 6s"/>')
-    o.append(line([(236, 197), (368, 197)], LINE, 1))
-    o.append(line([(236, 197), (368, 197)], RED, 1.5, "flow"))
-    return "".join(o)
-
-
 # framework-stack
 
 STACK_N, STACK_P = 6, 9

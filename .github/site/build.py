@@ -381,7 +381,7 @@ def home():
 
 <section class="section"><div class="wrap">
 <p class="eyebrow">What Phun is</p>
-<h2>Your PHP applications, on your own machine</h2>
+<h2>Your apps, on your own machine</h2>
 <p class="lede">{pages.INTRO}</p>
 {"".join(features)}
 </div></section>
